@@ -45,11 +45,16 @@ public class Validator{
                 return true;
         }
 
-        public static boolean checkSignin(SigninRequest user, UserDB db) {
-                if (db.hasUser(user)) {
-                    return true;
+        public static boolean checkSignin(SigninRequest user) {
+                if (!checkEmail(user.getLogin())) {
+                        return false;
                 }
-                return false;
+
+                if (!checkPassword(user.getPassword())) {
+                        return false;
+                }
+
+                return true;
 
         }
 
