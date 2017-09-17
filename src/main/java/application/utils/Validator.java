@@ -1,6 +1,5 @@
 package application.utils;
 
-import application.db.UserDB;
 import application.utils.requests.SignupRequest;
 import application.utils.requests.SigninRequest;
 

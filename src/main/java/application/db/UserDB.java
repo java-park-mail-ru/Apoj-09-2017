@@ -1,9 +1,10 @@
 package application.db;
 
 import application.models.User;
-import application.utils.requests.SigninRequest;
 import application.utils.requests.SignupRequest;
+
 import org.jetbrains.annotations.Nullable;
+import javax.validation.constraints.NotNull;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -14,6 +15,7 @@ public  class UserDB{
 
   public UserDB() {}
 
+  @NotNull
   public long addUser(SignupRequest user) {
       map.put(id, new User(id, user));
       return id++;
@@ -23,7 +25,8 @@ public  class UserDB{
       return map.get(id);
   }
 
-  public @Nullable Long getId(String login) {
+  @Nullable
+  public Long getId(String login) {
       for(long i = 1; i < id; ++i) {
           if (map.get(i).getLogin().equals(login)) {
               return i;
@@ -50,8 +53,7 @@ public  class UserDB{
       return false;
     }
 
-
-  public boolean checkSignin(long id, String password) {
+    public boolean checkSignin(long id, String password) {
       return map.get(id).getPassword().equals(password);
   }
 }

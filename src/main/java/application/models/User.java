@@ -1,6 +1,7 @@
 package application.models;
 
 import application.utils.requests.SignupRequest;
+import javax.validation.constraints.NotNull;
 
 public class User{
     private final long id;
@@ -16,16 +17,20 @@ public class User{
         this.email = user.getEmail();
     }
 
+    @NotNull
     public long getId() { return id; }
 
+    @NotNull
     public String getLogin() {
         return login;
     }
 
+    @NotNull
     public String getPassword() {
         return password;
     }
 
+    @NotNull
     public String getEmail() {
         return email;
     }

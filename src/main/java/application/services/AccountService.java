@@ -13,7 +13,7 @@ public class AccountService {
     private static UserDB db;
 
     public AccountService(UserDB newDB){
-        this.db = newDB;
+        db = newDB;
     }
 
     public long addUser(SignupRequest user){
@@ -24,7 +24,8 @@ public class AccountService {
         return db.getUser(id);
     }
 
-    public @Nullable Long getId(String login){
+    @Nullable
+    public Long getId(String login){
         return db.getId(login);
     }
 

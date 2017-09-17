@@ -22,11 +22,13 @@ public class SessionController {
     @PostMapping(path = "/signup", consumes = "application/json", produces = "application/json")
     public ResponseEntity signup(@RequestBody SignupRequest body, HttpSession httpSession) {
         if (!Validator.checkSignup(body)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(1);
+        }else if (httpSession.getAttribute("userId") != null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(2);
         }
 
         if (!service.checkSignup(body.getLogin(), body.getEmail())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(3);
         }
 
         long id = service.addUser(body);
@@ -39,15 +41,17 @@ public class SessionController {
     public ResponseEntity greetingSubmit(@RequestBody SigninRequest body, HttpSession httpSession) {
         if (!Validator.checkSignin(body)){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(1);
+        }else if (httpSession.getAttribute("userId") != null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(2);
         }
 
         Long id = service.getId(body.getLogin());
         if (id == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(2);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(3);
         }
 
         if (!service.checkSignin(id, body.getPassword())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(3);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(4);
         }
 
         httpSession.setAttribute("userId", id);
