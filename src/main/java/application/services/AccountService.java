@@ -13,7 +13,7 @@ public class AccountService {
     private static UserDB db;
 
     public AccountService(UserDB newDB){
-        db = newDB;
+        this.db = newDB;
     }
 
     public long addUser(SignupRequest user){

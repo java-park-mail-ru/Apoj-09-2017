@@ -45,7 +45,7 @@ public  class UserDB{
 
   public boolean hasEmail(String email) {
       for(long i = 1; i < id; ++i) {
-          if (map.get(i).getLogin().equals(email)) {
+          if (map.get(i).getEmail().equals(email)) {
               return true;
           }
       }

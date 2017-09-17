@@ -46,7 +46,7 @@ public class Validator{
         }
 
         public static boolean checkSignin(SigninRequest user) {
-                if (!checkEmail(user.getLogin())) {
+                if (!checkLogin(user.getLogin())) {
                         return false;
                 }
 

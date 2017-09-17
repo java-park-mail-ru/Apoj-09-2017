@@ -38,16 +38,16 @@ public class SessionController {
     @PostMapping(path = "/signin", consumes = "application/json", produces = "application/json")
     public ResponseEntity greetingSubmit(@RequestBody SigninRequest body, HttpSession httpSession) {
         if (!Validator.checkSignin(body)){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(1);
         }
 
         Long id = service.getId(body.getLogin());
         if (id == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(2);
         }
 
         if (!service.checkSignin(id, body.getPassword())){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(3);
         }
 
         httpSession.setAttribute("userId", id);

@@ -8,12 +8,6 @@ public class User{
     private final String password;
     private final String email;
 
-    public User(long id, String login, String email, String password) {
-        this.id = id;
-        this.password = password;
-        this.login = login;
-        this.email = email;
-    }
 
     public User(long id, SignupRequest user) {
         this.id = id;
