@@ -4,8 +4,6 @@ import application.models.User;
 import application.utils.requests.SigninRequest;
 import application.utils.requests.SignupRequest;
 import org.jetbrains.annotations.Nullable;
-
-
 import java.util.Map;
 import java.util.HashMap;
 
