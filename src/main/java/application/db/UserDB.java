@@ -4,47 +4,47 @@ import application.models.User;
 import application.utils.requests.SigninRequest;
 import application.utils.requests.SignupRequest;
 
+import java.util.Map;
+import java.util.HashMap;
+
 
 public  class UserDB{
-  private User[] map = new User[100];
-  private static int id = 0;
+  private Map<Long, User> map = new HashMap<>();
+  private static long id = 0;
 
   public UserDB() {}
 
   public User addUser(SignupRequest user) {
-      this.map[id] = new User(id, user);
-      return map[id++];
+      map.put(id, new User(id, user));
+      return map.get(id++);
   }
+
   public User getUser(String login) {
-      for (int i = 0; i < id; ++i) {
-          if (map[i].getLogin().equals(login)) {
-              return map[i];
+      for (long i = 0; i < id; ++i) {
+          if (map.get(i).getLogin().equals(login)) {
+              return map.get(i);
           }
       }
       return null;
   }
 
   public boolean hasLogin(String login) {
-      if(id != 0) {
-          for(int i = 0; i < id; ++i) {
-              if (map[i].getLogin().equals(login)) {
+          for(long i = 0; i < id; ++i) {
+              if (map.get(i).getLogin().equals(login)) {
                   return true;
               }
           }
-      }
       return false;
   }
 
   public boolean hasUser(SigninRequest user) {
-      if(id != 0) {
-          for(int i = 0; i < id; ++i) {
-              if (map[i].getLogin().equals(user.getLogin())) {
-                  if(map[i].getPassword().equals(user.getPassword())) {
+          for(long i = 0; i < id; ++i) {
+              if (map.get(i).getLogin().equals(user.getLogin())) {
+                  if(map.get(i).getPassword().equals(user.getPassword())) {
                       return true;
                   }
               }
           }
-      }
       return false;
   }
 }

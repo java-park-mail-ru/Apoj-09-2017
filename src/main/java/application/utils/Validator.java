@@ -10,10 +10,10 @@ import java.util.regex.Pattern;
 
 public class Validator{
 
-        private static boolean checkLogin(String login, UserDB db){
+        private static boolean checkLogin(String login){
                 Pattern p = Pattern.compile("^[a-z0-9_-]{3,15}$");
                 Matcher m = p.matcher(login);
-                return (m.matches() && !(db.hasLogin(login)));
+                return m.matches();
         }
 
         private static boolean checkEmail(String email){
@@ -28,9 +28,9 @@ public class Validator{
                 return m.matches();
         }
 
-        public static boolean checkSignup(SignupRequest user, UserDB db) {
+        public static boolean checkSignup(SignupRequest user) {
 
-                if (!checkLogin(user.getLogin(), db)) {
+                if (!checkLogin(user.getLogin())) {
                         return false;
                 }
 
@@ -43,7 +43,6 @@ public class Validator{
                 }
 
                 return true;
-
         }
 
         public static boolean checkSignin(SigninRequest user, UserDB db) {

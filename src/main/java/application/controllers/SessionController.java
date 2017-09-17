@@ -18,7 +18,7 @@ public class SessionController {
 
     @PostMapping(path = "/signup", consumes = "application/json", produces = "application/json")
     public ResponseEntity signup(@RequestBody SignupRequest body) {
-        if (!Validator.checkSignup(body, db)) {
+        if (!Validator.checkSignup(body)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
         User newUser = db.addUser(body);
