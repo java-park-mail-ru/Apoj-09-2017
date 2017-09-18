@@ -12,23 +12,24 @@ public class User{
     private final String login;
     private final String password;
     private final String email;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+//    @Autowired
+//    private PasswordEncoder passwordEncoder;
+//
+//    @Bean
+//    public PasswordEncoder passwordEncoder(){
+//        return new BCryptPasswordEncoder();
+//    }
 
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
-    }
     public User(long id, SignupRequest user) {
         this.id = id;
-        this.password = passwordEncoder.encode(user.getPassword());
+        this.password = user.getPassword();
         this.login = user.getLogin();
         this.email = user.getEmail();
     }
 
     public User(long id, String password, String login, String email){
         this.id = id;
-        this.password = passwordEncoder.encode(password);
+        this.password = password;
         this.login = login;
         this.email = email;
     }

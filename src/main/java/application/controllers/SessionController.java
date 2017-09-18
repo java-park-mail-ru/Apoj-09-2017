@@ -98,16 +98,16 @@ public class SessionController {
     @PostMapping(path = "/logout", consumes = "application/json", produces = "application/json")
     public ResponseEntity logout( HttpSession httpSession) {
         if (httpSession.getAttribute("userId") == null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(2);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(2);
         }
-        httpSession.setAttribute("userId", null);
+        httpSession.removeAttribute("userId");
         return ResponseEntity.status(HttpStatus.OK).body(3);
     }
 
     @GetMapping(path = "/user", consumes = "application/json", produces ="application/json")
     public ResponseEntity user(HttpSession httpSession){
         if (httpSession.getAttribute("userId") == null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(2);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(2);
         }
         Long id = (Long)httpSession.getAttribute("userId");
         return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));

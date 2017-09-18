@@ -4,10 +4,6 @@ import application.models.User;
 import application.utils.requests.SignupRequest;
 
 import org.jetbrains.annotations.Nullable;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import javax.validation.constraints.NotNull;
 import java.util.Map;
 import java.util.HashMap;
@@ -16,14 +12,9 @@ import java.util.HashMap;
 public  class UserDB{
   private Map<Long, User> map = new HashMap<>();
   private static long id = 1;
-  @Autowired
-  private PasswordEncoder passwordEncoder;
+
   public UserDB() {}
 
-  @Bean
-  public PasswordEncoder passwordEncoder(){
-      return new BCryptPasswordEncoder();
-  }
   @NotNull
   public long addUser(SignupRequest user) {
       map.put(id, new User(id, user));
@@ -66,8 +57,4 @@ public  class UserDB{
       }
       return false;
     }
-
-    public boolean checkSignin(long id, String password) {
-      return passwordEncoder.matches(password,map.get(id).getPassword())
-  }
 }

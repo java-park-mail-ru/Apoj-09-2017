@@ -9,7 +9,7 @@ public class SignupRequest {
     @NotNull
     private final String login;
     @NotNull
-    private final String password;
+    private String password;
     @NotNull
     private final String email;
 
@@ -35,5 +35,9 @@ public class SignupRequest {
     @NotNull
     public String getPassword() {
         return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
