@@ -10,9 +10,9 @@ public class UserResponseWP {
     private String email;
 
     public UserResponseWP(User user) {
-    	this.id = user.getId();
-    	this.login = user.getLogin();
-    	this.email = user.getEmail();
+        this.id = user.getId();
+        this.login = user.getLogin();
+        this.email = user.getEmail();
     }
 
 }

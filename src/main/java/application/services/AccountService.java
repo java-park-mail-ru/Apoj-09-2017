@@ -15,34 +15,34 @@ public class AccountService {
     private static UserDB db;
     private final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public AccountService(UserDB newDB){
+    public AccountService(UserDB newDB) {
         db = newDB;
     }
 
-    public long addUser(SignupRequest user){
+    public long addUser(SignupRequest user) {
         final String encodedPassword = encoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
         return db.addUser(user);
     }
-  
+
     public void changeUserData(User user) {
         db.changeUserData(user);
     }
 
-    public User getUser(long id){
+    public User getUser(long id) {
         return db.getUser(id);
     }
 
-    public @Nullable Long getId(String login){
+    public @Nullable Long getId(String login) {
         return db.getId(login);
     }
 
-    public boolean checkSignup(String login, String email){
+    public boolean checkSignup(String login, String email) {
         return !(db.hasLogin(login) || db.hasEmail(email));
     }
 
-    public boolean checkSignin(long id, String password){
-        return encoder.matches(password,db.getUser(id).getPassword());
+    public boolean checkSignin(long id, String password) {
+        return encoder.matches(password, db.getUser(id).getPassword());
     }
 
 }

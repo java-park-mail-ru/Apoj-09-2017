@@ -14,9 +14,9 @@ public class SettingsRequest {
 
     @JsonCreator
     public SettingsRequest(@JsonProperty("password") @NotNull String password,
-                           @JsonProperty("newPassword")  String newPassword,
-                           @JsonProperty("login")  String login,
-                           @JsonProperty("email")  String email) {
+                           @JsonProperty("newPassword") String newPassword,
+                           @JsonProperty("login") String login,
+                           @JsonProperty("email") String email) {
         this.password = password;
         this.newPassword = newPassword;
         this.login = login;
@@ -36,6 +36,8 @@ public class SettingsRequest {
         return password;
     }
 
-    public String getNewPassword() { return newPassword; }
+    public String getNewPassword() {
+        return newPassword;
+    }
 }
 

@@ -5,19 +5,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotNull;
 
-public class SigninRequest{
+public class SigninRequest {
 
-  @NotNull
-  private final String login;
-  @NotNull
-  private final String password;
+    @NotNull
+    private final String login;
+    @NotNull
+    private final String password;
 
-  @JsonCreator
-  public SigninRequest(@JsonProperty("login") @NotNull String login,
-                       @JsonProperty("password") @NotNull String password) {
-    this.login = login;
-    this.password = password;
-  }
+    @JsonCreator
+    public SigninRequest(@JsonProperty("login") @NotNull String login,
+                         @JsonProperty("password") @NotNull String password) {
+        this.login = login;
+        this.password = password;
+    }
 
     @NotNull
     public String getLogin() {
