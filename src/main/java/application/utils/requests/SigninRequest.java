@@ -8,9 +8,9 @@ import javax.validation.constraints.NotNull;
 public class SigninRequest{
 
   @NotNull
-  private String login;
+  private final String login;
   @NotNull
-  private String password;
+  private final String password;
 
   @JsonCreator
   public SigninRequest(@JsonProperty("login") @NotNull String login,
