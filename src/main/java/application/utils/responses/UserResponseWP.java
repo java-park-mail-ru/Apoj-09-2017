@@ -15,18 +15,4 @@ public class UserResponseWP {
     	this.email = user.getEmail();
     }
 
-    @NotNull
-    public long getId() {
-        return id;
-    }
-
-    @NotNull
-    public String getLogin() {
-        return login;
-    }
-
-    @NotNull
-    public String getEmail() {
-        return email;
-    }
 }

@@ -13,25 +13,21 @@ public  class UserDB{
   private Map<Long, User> map = new HashMap<>();
   private static long id = 1;
 
-  public UserDB() {}
-
-  @NotNull
+    @NotNull
   public long addUser(SignupRequest user) {
       map.put(id, new User(id, user));
       return id++;
   }
 
-  public long changeUserData(User user){
+  public void changeUserData(User user){
       map.put(user.getId(), user);
-      return user.getId();
   }
 
-  public User getUser(long id) {
-      return map.get(id);
+  public User getUser(long userId) {
+      return map.get(userId);
   }
 
-  @Nullable
-  public Long getId(String login) {
+  public @Nullable Long getId(String login) {
       for(long i = 1; i < id; ++i) {
           if (map.get(i).getLogin().equals(login)) {
               return i;

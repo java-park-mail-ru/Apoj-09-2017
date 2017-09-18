@@ -32,9 +32,9 @@ public class SessionController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(3);
         }
 
-        long id = service.addUser(body);
+        final long id = service.addUser(body);
         httpSession.setAttribute("userId", id);
-        User newUser = new User(id, body);
+        final User newUser = new User(id, body);
         return ResponseEntity.ok(new UserResponseWP(newUser));
     }
 
@@ -46,7 +46,7 @@ public class SessionController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(2);
         }
 
-        Long id = service.getId(body.getLogin());
+        final Long id = service.getId(body.getLogin());
         if (id == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(3);
         }
@@ -67,29 +67,29 @@ public class SessionController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(2);
         }
 
-        Long id = (Long)httpSession.getAttribute("userId");
+        final Long id = (Long)httpSession.getAttribute("userId");
 
         if (!service.checkSignin(id, body.getPassword())){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(4);
         }
 
-        User user = service.getUser(id);
-        String email;
-        String login;
-        String newPassword;
-        if(body.getEmail() != null && body.getEmail().trim().length()!=0)
+        final User user = service.getUser(id);
+        final String email;
+        if(body.getEmail() != null && !body.getEmail().trim().isEmpty())
             email = body.getEmail();
         else
             email = user.getEmail();
-        if(body.getLogin() != null && body.getLogin().trim().length()!=0)
+        final String login;
+        if(body.getLogin() != null && !body.getLogin().trim().isEmpty())
             login = body.getLogin();
         else
             login = user.getLogin();
-        if(body.getNewPassword() != null && body.getNewPassword().trim().length()!=0)
+        final String newPassword;
+        if(body.getNewPassword() != null && !body.getNewPassword().trim().isEmpty())
             newPassword = body.getNewPassword();// ENCODE PASSWORD
         else
             newPassword = user.getPassword();
-        User changed = new User (id, newPassword, login, email);
+        final User changed = new User (id, newPassword, login, email);
         service.changeUserData(changed);
 
         return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));
@@ -109,7 +109,7 @@ public class SessionController {
         if (httpSession.getAttribute("userId") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(2);
         }
-        Long id = (Long)httpSession.getAttribute("userId");
+        final Long id = (Long)httpSession.getAttribute("userId");
         return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));
     }
 }

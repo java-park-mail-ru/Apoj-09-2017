@@ -25,14 +25,15 @@ public class AccountService {
         return db.addUser(user);
     }
   
-    public long changeUserData(User user) { return db.changeUserData(user);}
+    public void changeUserData(User user) {
+        db.changeUserData(user);
+    }
 
     public User getUser(long id){
         return db.getUser(id);
     }
 
-    @Nullable
-    public Long getId(String login){
+    public @Nullable Long getId(String login){
         return db.getId(login);
     }
 
