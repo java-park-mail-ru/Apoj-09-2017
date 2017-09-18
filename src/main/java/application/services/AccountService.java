@@ -34,7 +34,8 @@ public class AccountService {
         return db.getUser(id);
     }
 
-    public @Nullable Long getId(String login) {
+    @Nullable
+    public Long getId(String login) {
         return db.getId(login);
     }
 

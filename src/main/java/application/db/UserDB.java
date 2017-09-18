@@ -28,7 +28,8 @@ public class UserDB {
         return map.get(userId);
     }
 
-    public @Nullable Long getId(String login) {
+    @Nullable
+    public Long getId(String login) {
         for (long i = 1; i < id; ++i) {
             if (map.get(i).getLogin().equals(login)) {
                 return i;

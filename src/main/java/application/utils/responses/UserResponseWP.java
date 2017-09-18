@@ -2,8 +2,6 @@ package application.utils.responses;
 
 import application.models.User;
 
-import javax.validation.constraints.NotNull;
-
 public class UserResponseWP {
     private final long id;
     private String login;

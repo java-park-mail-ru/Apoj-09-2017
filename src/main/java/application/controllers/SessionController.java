@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.HttpSession;
 
-
 @RestController
+@CrossOrigin
 public class SessionController {
     private static AccountService service;
 
@@ -91,7 +91,7 @@ public class SessionController {
         }
         final String newPassword;
         if (body.getNewPassword() != null && !body.getNewPassword().trim().isEmpty()) {
-            newPassword = body.getNewPassword();// ENCODE PASSWORD
+            newPassword = body.getNewPassword(); // ENCODE PASSWORD
         } else {
             newPassword = user.getPassword();
         }
