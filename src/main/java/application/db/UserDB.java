@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import javax.validation.constraints.NotNull;
 import java.util.Map;
 import java.util.HashMap;
@@ -69,6 +68,6 @@ public  class UserDB{
     }
 
     public boolean checkSignin(long id, String password) {
-      return passwordEncoder.matches(password,map.get(id).getPassword());
+      return passwordEncoder.matches(password,map.get(id).getPassword())
   }
 }

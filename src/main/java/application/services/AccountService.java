@@ -19,7 +19,7 @@ public class AccountService {
     public long addUser(SignupRequest user){
         return db.addUser(user);
     }
-
+  
     public long changeUserData(User user) { return db.changeUserData(user);}
 
     public User getUser(long id){
