@@ -13,10 +13,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Service
 public class AccountService {
     private static UserDB db;
-    private final PasswordEncoder encoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder encoder;
 
-    public AccountService(UserDB newDB) {
-        db = newDB;
+    public AccountService() {
+        db = new UserDB();
+        encoder = new BCryptPasswordEncoder();
     }
 
     public long addUser(SignupRequest user) {
