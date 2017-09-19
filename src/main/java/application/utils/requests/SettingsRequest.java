@@ -8,27 +8,14 @@ import javax.validation.constraints.NotNull;
 public class SettingsRequest {
     @NotNull
     private final String password;
-    private final String newPassword;
-    private final String login;
-    private final String email;
+    @NotNull
+    private final String fieldToChange;
 
     @JsonCreator
     public SettingsRequest(@JsonProperty("password") @NotNull String password,
-                           @JsonProperty("newPassword") String newPassword,
-                           @JsonProperty("login") String login,
-                           @JsonProperty("email") String email) {
+                           @JsonProperty("change") @NotNull String fieldToChange) {
         this.password = password;
-        this.newPassword = newPassword;
-        this.login = login;
-        this.email = email;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public String getEmail() {
-        return email;
+        this.fieldToChange = fieldToChange;
     }
 
     @NotNull
@@ -36,8 +23,9 @@ public class SettingsRequest {
         return password;
     }
 
-    public String getNewPassword() {
-        return newPassword;
+    @NotNull
+    public String getFieldToChange() {
+        return fieldToChange;
     }
 }
 
