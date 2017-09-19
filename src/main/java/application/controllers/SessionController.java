@@ -116,7 +116,7 @@ public class SessionController {
         return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));
     }
 
-    @PostMapping(path = "/logout", consumes = "application/json", produces = "application/json")
+    @GetMapping(path = "/logout", produces = "application/json")
     public ResponseEntity logout(HttpSession httpSession) {
         if (httpSession.getAttribute("userId") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("User not authorize"));
@@ -125,7 +125,7 @@ public class SessionController {
         return ResponseEntity.status(HttpStatus.OK).body(new ErrorResponse("Successful"));
     }
 
-    @GetMapping(path = "/user", consumes = "application/json", produces = "application/json")
+    @GetMapping(path = "/user", produces = "application/json")
     public ResponseEntity user(HttpSession httpSession) {
         if (httpSession.getAttribute("userId") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("User not authorize"));
