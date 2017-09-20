@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotNull;
 
-public class ErrorResponse {
+public class MessageResponse {
     @NotNull
     private final String message;
 
-    public ErrorResponse(@JsonProperty("error") @NotNull String message) {
+    public MessageResponse(@JsonProperty("error") @NotNull String message) {
         this.message = message;
     }
 
