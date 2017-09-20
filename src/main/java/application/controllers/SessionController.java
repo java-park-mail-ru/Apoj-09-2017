@@ -20,8 +20,10 @@ import javax.servlet.http.HttpSession;
 public class SessionController {
     private static AccountService service;
 
-    public SessionController() {
-        service = new AccountService();
+    private static final String USER_ID = "userId";
+
+    public SessionController(AccountService service) {
+        SessionController.service = service;
     }
 
     @PostMapping(path = "/signup", consumes = "application/json", produces = "application/json")
@@ -29,7 +31,7 @@ public class SessionController {
         final String error = Validator.checkSignup(body);
         if (!error.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(error));
-        } else if (httpSession.getAttribute("userId") != null) {
+        } else if (httpSession.getAttribute(USER_ID) != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("User already authorize"));
         }
 
@@ -38,7 +40,7 @@ public class SessionController {
         }
 
         final long id = service.addUser(body);
-        httpSession.setAttribute("userId", id);
+        httpSession.setAttribute(USER_ID, id);
         final User newUser = new User(id, body);
         return ResponseEntity.ok(new UserResponseWP(newUser));
     }
@@ -48,7 +50,7 @@ public class SessionController {
         final String error = Validator.checkSignin(body);
         if (!error.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(error));
-        } else if (httpSession.getAttribute("userId") != null) {
+        } else if (httpSession.getAttribute(USER_ID) != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("User already authorize"));
         }
 
@@ -61,7 +63,7 @@ public class SessionController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Wrong login or password"));
         }
 
-        httpSession.setAttribute("userId", id);
+        httpSession.setAttribute(USER_ID, id);
         return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));
     }
 
@@ -70,7 +72,7 @@ public class SessionController {
         if (httpSession.getAttribute("userId") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("User not authorize"));
         }
-        final Long id = (Long) httpSession.getAttribute("userId");
+        final Long id = (Long) httpSession.getAttribute(USER_ID);
         if (!service.checkSignin(id, body.getPassword())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Wrong password"));
         }
@@ -87,7 +89,7 @@ public class SessionController {
         if (httpSession.getAttribute("userId") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("User not authorize"));
         }
-        final Long id = (Long) httpSession.getAttribute("userId");
+        final Long id = (Long) httpSession.getAttribute(USER_ID);
         if (!service.checkSignin(id, body.getPassword())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Wrong password"));
         }
@@ -101,10 +103,10 @@ public class SessionController {
 
     @PostMapping(path = "/newemail", consumes = "application/json", produces = "application/json")
     public ResponseEntity setEmail(@RequestBody SettingsRequest body, HttpSession httpSession) {
-        if (httpSession.getAttribute("userId") == null) {
+        if (httpSession.getAttribute(USER_ID) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("User not authorize"));
         }
-        final Long id = (Long) httpSession.getAttribute("userId");
+        final Long id = (Long) httpSession.getAttribute(USER_ID);
         if (!service.checkSignin(id, body.getPassword())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("Wrong password"));
         }
@@ -118,19 +120,19 @@ public class SessionController {
 
     @GetMapping(path = "/logout", produces = "application/json")
     public ResponseEntity logout(HttpSession httpSession) {
-        if (httpSession.getAttribute("userId") == null) {
+        if (httpSession.getAttribute(USER_ID) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("User not authorize"));
         }
-        httpSession.removeAttribute("userId");
+        httpSession.removeAttribute(USER_ID);
         return ResponseEntity.status(HttpStatus.OK).body(new ErrorResponse("Successful"));
     }
 
     @GetMapping(path = "/user", produces = "application/json")
     public ResponseEntity user(HttpSession httpSession) {
-        if (httpSession.getAttribute("userId") == null) {
+        if (httpSession.getAttribute(USER_ID) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("User not authorize"));
         }
-        final Long id = (Long) httpSession.getAttribute("userId");
+        final Long id = (Long) httpSession.getAttribute(USER_ID);
         return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));
     }
 }
