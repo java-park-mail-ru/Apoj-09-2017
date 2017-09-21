@@ -13,7 +13,7 @@ public class UserResponseWP {
     @NotNull
     private final String email;
 
-    public UserResponseWP(@Nullable @NotNull User user) {
+    public UserResponseWP(@Nullable User user) {
         this.id = user.getId();
         this.login = user.getLogin();
         this.email = user.getEmail();

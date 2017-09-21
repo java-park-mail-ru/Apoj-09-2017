@@ -1,20 +1,20 @@
 package application.services;
 
 import application.db.UserDB;
-
 import application.models.User;
 import application.utils.requests.SignupRequest;
-import org.springframework.stereotype.Service;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 
 @Service
 public class AccountService {
-    private UserDB db;
+    private final UserDB db;
     private final PasswordEncoder encoder;
 
-    public AccountService(UserDB db, PasswordEncoder encoder) {
+    public AccountService(@NotNull UserDB db, @NotNull PasswordEncoder encoder) {
         this.db = db;
         this.encoder = encoder;
     }
@@ -43,8 +43,7 @@ public class AccountService {
         db.changeUserData(user);
     }
 
-    @Nullable
-    public User getUser(long id) {
+    public @NotNull User getUser(long id) {
         return db.getUser(id);
     }
 

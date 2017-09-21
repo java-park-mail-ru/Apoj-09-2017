@@ -2,7 +2,6 @@ package application.controllers;
 
 import application.models.User;
 import application.services.AccountService;
-import application.utils.ControllerHelper;
 import application.utils.Validator;
 import application.utils.requests.SettingsRequest;
 import application.utils.requests.SigninRequest;
@@ -20,21 +19,32 @@ import javax.servlet.http.HttpSession;
 @CrossOrigin(origins = "https://gametes.herokuapp.com/")
 public class SessionController {
     private AccountService service;
-    private ControllerHelper helper;
 
     private static final String USER_ID = "userId";
     private static final String JSON = "application/json";
+    private static final String NOT_AUTHORIZE = "User not authorize";
+    private static final String AUTHORIZED = "User already authorized";
+    private static final String EXSISTS = "Login or Email already exists";
+    private static final String WRONG_LOGIN_PASSWORD = "Wrong login or password";
+    private static final String WRONG_PASSWORD = "Wrong password";
+    private static final String LOGIN_EXSISTS = "Login or Email already exists";
+    private static final String EMAIL_EXSISTS = "Login or Email already exists";
 
-    public SessionController(AccountService service, ControllerHelper helper) {
+    public SessionController(AccountService service) {
         this.service = service;
-        this.helper = helper;
     }
 
     @PostMapping(path = "/signup", consumes = JSON, produces = JSON)
     public ResponseEntity signup(@RequestBody SignupRequest body, HttpSession httpSession) {
-        final ResponseEntity error = helper.signupCheck(body, httpSession, service);
-        if (error != null) {
-            return error;
+        final String error = Validator.checkSignup(body);
+        if (!error.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(error));
+        } else if (httpSession.getAttribute(USER_ID) != null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(AUTHORIZED));
+        }
+
+        if (!service.checkSignup(body.getLogin(), body.getEmail())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(EXSISTS));
         }
         final Long id = service.addUser(body);
         httpSession.setAttribute(USER_ID, id);
@@ -44,10 +54,15 @@ public class SessionController {
 
     @PostMapping(path = "/signin", consumes = JSON, produces = JSON)
     public ResponseEntity greetingSubmit(@RequestBody SigninRequest body, HttpSession httpSession) {
+        final String error = Validator.checkSignin(body);
+        if (!error.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(error));
+        } else if (httpSession.getAttribute(USER_ID) != null) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(AUTHORIZED));
+        }
         final Long id = service.getId(body.getLogin());
-        final ResponseEntity error = helper.signinCheck(body, httpSession, service, id);
-        if (error != null) {
-            return error;
+        if (id == null || !service.checkSignin(id, body.getPassword())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(WRONG_LOGIN_PASSWORD));
         }
         httpSession.setAttribute(USER_ID, id);
         return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));
@@ -55,13 +70,16 @@ public class SessionController {
 
     @PostMapping(path = "/newpswrd", consumes = JSON, produces = JSON)
     public ResponseEntity setPassword(@RequestBody SettingsRequest body, HttpSession httpSession) {
-        final Long id = (Long) httpSession.getAttribute(USER_ID);
-        final ResponseEntity error = helper.newCheck(body, httpSession, service, id);
-        if (error != null) {
-            return error;
+        if (httpSession.getAttribute("userId") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(NOT_AUTHORIZE));
         }
-        if (!Validator.checkPassword(body.getFieldToChange()).isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Invalid new password"));
+        final Long id = (Long) httpSession.getAttribute(USER_ID);
+        if (!service.checkSignin(id, body.getPassword())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(WRONG_PASSWORD));
+        }
+        final String error = Validator.checkPassword(body.getPassword());
+        if (!error.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(error));
         }
         service.changePassword(id, body.getFieldToChange());
 
@@ -70,13 +88,15 @@ public class SessionController {
 
     @PostMapping(path = "/newlogin", consumes = JSON, produces = JSON)
     public ResponseEntity setLogin(@RequestBody SettingsRequest body, HttpSession httpSession) {
+        if (httpSession.getAttribute("userId") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(NOT_AUTHORIZE));
+        }
         final Long id = (Long) httpSession.getAttribute(USER_ID);
-        final ResponseEntity error = helper.newCheck(body, httpSession, service, id);
-        if (error != null) {
-            return error;
+        if (!service.checkSignin(id, body.getPassword())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(WRONG_PASSWORD));
         }
         if (!service.checkLogin(body.getFieldToChange())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Login already exsists"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(LOGIN_EXSISTS));
         }
         service.changeLogin(id, body.getFieldToChange());
 
@@ -85,13 +105,15 @@ public class SessionController {
 
     @PostMapping(path = "/newemail", consumes = JSON, produces = JSON)
     public ResponseEntity setEmail(@RequestBody SettingsRequest body, HttpSession httpSession) {
+        if (httpSession.getAttribute("userId") == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(NOT_AUTHORIZE));
+        }
         final Long id = (Long) httpSession.getAttribute(USER_ID);
-        final ResponseEntity error = helper.newCheck(body, httpSession, service, id);
-        if (error != null) {
-            return error;
+        if (!service.checkSignin(id, body.getPassword())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(WRONG_PASSWORD));
         }
         if (!service.checkEmail(body.getFieldToChange())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Email already exsists"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(EMAIL_EXSISTS));
         }
         service.changeEmail(id, body.getFieldToChange());
 
@@ -101,7 +123,7 @@ public class SessionController {
     @GetMapping(path = "/logout", produces = JSON)
     public ResponseEntity logout(HttpSession httpSession) {
         if (httpSession.getAttribute(USER_ID) == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("User not authorize"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(NOT_AUTHORIZE));
         }
         httpSession.removeAttribute(USER_ID);
         return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Successful"));
@@ -110,7 +132,7 @@ public class SessionController {
     @GetMapping(path = "/user", produces = JSON)
     public ResponseEntity user(HttpSession httpSession) {
         if (httpSession.getAttribute(USER_ID) == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("User not authorize"));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(NOT_AUTHORIZE));
         }
         final Long id = (Long) httpSession.getAttribute(USER_ID);
         return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));

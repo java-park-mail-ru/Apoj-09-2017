@@ -24,7 +24,7 @@ public class UserDB {
         map.put(user.getId(), user);
     }
 
-    @Nullable
+    @NotNull
     public User getUser(long userId) {
         return map.get(userId);
     }
