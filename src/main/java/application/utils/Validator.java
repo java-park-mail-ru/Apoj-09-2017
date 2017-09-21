@@ -19,16 +19,20 @@ public class Validator {
     private static final String EMPTY_PASSWORD = "Empty password ";
     private static final String SHORT_PASSWORD = "Short password ";
     private static final String LONG_PASSWORD = "Long password ";
+    private static final int LOGIN_MIN_LENGTH = 3;
+    private static final int LOGIN_MAX_LENGTH = 15;
+    private static final int PASSWORD_MIN_LENGTH = 8;
+    private static final int PASSWORD_MAX_LENGTH = 24;
 
     public static String checkLogin(@NotNull String login) {
         String error = "";
         if (StringUtils.isEmpty(login)) {
             error += EMPTY_LOGIN;
         }
-        if (login.length() < 3) {
+        if (login.length() < LOGIN_MIN_LENGTH) {
             error += SHORT_LOGIN;
         }
-        if (login.length() > 15) {
+        if (login.length() > LOGIN_MAX_LENGTH) {
             error += LONG_LOGIN;
         }
         final Pattern p = Pattern.compile("^[a-z0-9_-]{3,15}$");
@@ -57,10 +61,10 @@ public class Validator {
         if (StringUtils.isEmpty(password)) {
             error += EMPTY_PASSWORD;
         }
-        if (password.length() < 8) {
+        if (password.length() < PASSWORD_MIN_LENGTH) {
             error += SHORT_PASSWORD;
         }
-        if (password.length() > 24) {
+        if (password.length() > PASSWORD_MAX_LENGTH) {
             error += LONG_PASSWORD;
         }
         return error;
