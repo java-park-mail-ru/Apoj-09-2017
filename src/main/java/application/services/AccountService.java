@@ -43,7 +43,8 @@ public class AccountService {
         db.changeUserData(user);
     }
 
-    public @NotNull User getUser(long id) {
+    @NotNull
+    public User getUser(long id) {
         return db.getUser(id);
     }
 
