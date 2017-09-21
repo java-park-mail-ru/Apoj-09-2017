@@ -3,22 +3,30 @@ package application.models;
 import application.utils.requests.SignupRequest;
 
 import javax.validation.constraints.NotNull;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class User {
-    private final long id;
+    private final Long id;
     private String login;
     private String password;
     private String email;
 
-    public User(long id, SignupRequest user) {
+    public User(Long id, SignupRequest user) {
         this.id = id;
         this.password = user.getPassword();
         this.login = user.getLogin();
         this.email = user.getEmail();
     }
 
+    public User(Long id, String login, String password, String email) {
+        this.id = id;
+        this.password = password;
+        this.login = login;
+        this.email = email;
+    }
+
     @NotNull
-    public long getId() {
+    public Long getId() {
         return id;
     }
 

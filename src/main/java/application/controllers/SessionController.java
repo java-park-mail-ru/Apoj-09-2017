@@ -16,17 +16,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import javax.servlet.http.HttpSession;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "https://gametes.herokuapp.com/")
 public class SessionController {
-    private static AccountService service;
+    private AccountService service;
 
     private static final String USER_ID = "userId";
+    private static final String JSON = "application/json";
 
     public SessionController(AccountService service) {
-        SessionController.service = service;
+        this.service = service;
     }
 
-    @PostMapping(path = "/signup", consumes = "application/json", produces = "application/json")
+    @PostMapping(path = "/signup", consumes = JSON, produces = JSON)
     public ResponseEntity signup(@RequestBody SignupRequest body, HttpSession httpSession) {
         final String error = Validator.checkSignup(body);
         if (!error.isEmpty()) {
@@ -36,16 +37,16 @@ public class SessionController {
         }
 
         if (!service.checkSignup(body.getLogin(), body.getEmail())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Login or Email already exsists"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Login or Email already exists"));
         }
 
-        final long id = service.addUser(body);
+        final Long id = service.addUser(body);
         httpSession.setAttribute(USER_ID, id);
         final User newUser = new User(id, body);
         return ResponseEntity.ok(new UserResponseWP(newUser));
     }
 
-    @PostMapping(path = "/signin", consumes = "application/json", produces = "application/json")
+    @PostMapping(path = "/signin", consumes = JSON, produces = JSON)
     public ResponseEntity greetingSubmit(@RequestBody SigninRequest body, HttpSession httpSession) {
         final String error = Validator.checkSignin(body);
         if (!error.isEmpty()) {
@@ -67,7 +68,7 @@ public class SessionController {
         return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));
     }
 
-    @PostMapping(path = "/newpswrd", consumes = "application/json", produces = "application/json")
+    @PostMapping(path = "/newpswrd", consumes = JSON, produces = JSON)
     public ResponseEntity setPassword(@RequestBody SettingsRequest body, HttpSession httpSession) {
         if (httpSession.getAttribute("userId") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("User not authorize"));
@@ -84,7 +85,7 @@ public class SessionController {
         return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));
     }
 
-    @PostMapping(path = "/newlogin", consumes = "application/json", produces = "application/json")
+    @PostMapping(path = "/newlogin", consumes = JSON, produces = JSON)
     public ResponseEntity setLogin(@RequestBody SettingsRequest body, HttpSession httpSession) {
         if (httpSession.getAttribute("userId") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("User not authorize"));
@@ -101,7 +102,7 @@ public class SessionController {
         return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));
     }
 
-    @PostMapping(path = "/newemail", consumes = "application/json", produces = "application/json")
+    @PostMapping(path = "/newemail", consumes = JSON, produces = JSON)
     public ResponseEntity setEmail(@RequestBody SettingsRequest body, HttpSession httpSession) {
         if (httpSession.getAttribute(USER_ID) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("User not authorize"));
@@ -118,7 +119,7 @@ public class SessionController {
         return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));
     }
 
-    @GetMapping(path = "/logout", produces = "application/json")
+    @GetMapping(path = "/logout", produces = JSON)
     public ResponseEntity logout(HttpSession httpSession) {
         if (httpSession.getAttribute(USER_ID) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("User not authorize"));
@@ -127,7 +128,7 @@ public class SessionController {
         return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Successful"));
     }
 
-    @GetMapping(path = "/user", produces = "application/json")
+    @GetMapping(path = "/user", produces = JSON)
     public ResponseEntity user(HttpSession httpSession) {
         if (httpSession.getAttribute(USER_ID) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("User not authorize"));

@@ -7,23 +7,21 @@ import application.utils.requests.SignupRequest;
 import org.springframework.stereotype.Service;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 
 @Service
 public class AccountService {
-    private static UserDB db;
+    private UserDB db;
     private final PasswordEncoder encoder;
 
-    public AccountService() {
-        db = new UserDB();
-        encoder = new BCryptPasswordEncoder();
+    public AccountService(UserDB db, PasswordEncoder encoder) {
+        this.db = db;
+        this.encoder = encoder;
     }
 
-    public long addUser(SignupRequest user) {
+    public Long addUser(SignupRequest user) {
         final String encodedPassword = encoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
-        return db.addUser(user);
+        return db.addUser(user.getLogin(), encodedPassword, user.getEmail());
     }
 
     public void changePassword(long id, String password) {

@@ -15,7 +15,7 @@ public class Application {
     }
 
     @Bean
-    public UserDB dataBase() {
+    public UserDB database() {
         return new UserDB();
     }
 

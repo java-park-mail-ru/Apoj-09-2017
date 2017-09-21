@@ -6,11 +6,11 @@ import javax.validation.constraints.NotNull;
 
 public class UserResponseWP {
     @NotNull
-    private final long id;
+    private final Long id;
     @NotNull
-    private String login;
+    private final String login;
     @NotNull
-    private String email;
+    private final String email;
 
     public UserResponseWP(@NotNull User user) {
         this.id = user.getId();
@@ -26,7 +26,7 @@ public class UserResponseWP {
         return email;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 }
