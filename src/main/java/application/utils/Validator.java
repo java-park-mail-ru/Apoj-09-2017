@@ -12,64 +12,66 @@ import java.util.regex.Pattern;
 public class Validator {
     private static final String LOGIN_ERROR = "Invalid login ";
     private static final String EMAIL_ERROR = "Invalid email ";
-    private static final String PASSWORD_ERROR = "Invalid password ";
+    private static final String EMPTY_LOGIN = "Empty login ";
+    private static final String SHORT_LOGIN = "Short login ";
+    private static final String LONG_LOGIN = "Long login ";
+    private static final String EMPTY_EMAIL = "Empty email ";
+    private static final String EMPTY_PASSWORD = "Empty password ";
+    private static final String SHORT_PASSWORD = "Short password ";
+    private static final String LONG_PASSWORD = "Long password ";
 
-    public static boolean checkLogin(@NotNull String login) {
+    public static String checkLogin(@NotNull String login) {
+        String error = "";
         if (StringUtils.isEmpty(login)) {
-            return false;
+            error += EMPTY_LOGIN;
+        }
+        if (login.length() < 3) {
+            error += SHORT_LOGIN;
+        }
+        if (login.length() > 15) {
+            error += LONG_LOGIN;
         }
         final Pattern p = Pattern.compile("^[a-z0-9_-]{3,15}$");
         final Matcher m = p.matcher(login);
-        return m.matches();
+        if (!m.matches()) {
+            error += LOGIN_ERROR;
+        }
+        return error;
     }
 
-    public static boolean checkEmail(@NotNull String email) {
+    public static String checkEmail(@NotNull String email) {
+        String error = "";
         if (StringUtils.isEmpty(email)) {
-            return false;
+            error += EMPTY_EMAIL;
         }
         final Pattern p = Pattern.compile("^[-\\w.]+@([A-z0-9][-A-z0-9]+\\.)+[A-z]{2,4}$");
         final Matcher m = p.matcher(email);
-        return m.matches();
+        if (!m.matches()) {
+            error += EMAIL_ERROR;
+        }
+        return error;
     }
 
-    public static boolean checkPassword(@NotNull String password) {
+    public static String checkPassword(@NotNull String password) {
+        String error = "";
         if (StringUtils.isEmpty(password)) {
-            return false;
+            error += EMPTY_PASSWORD;
         }
-        final Pattern p = Pattern.compile("(?=^.{8,}$)((?=.*\\d)|(?=.*\\W+))(?![.\\n])(?=.*[A-Z])(?=.*[a-z]).*$");
-        final Matcher m = p.matcher(password);
-        return m.matches();
+        if (password.length() < 8) {
+            error += SHORT_PASSWORD;
+        }
+        if (password.length() > 24) {
+            error += LONG_PASSWORD;
+        }
+        return error;
     }
 
     public static String checkSignup(@NotNull SignupRequest user) {
-        String error = "";
-        if (!checkLogin(user.getLogin())) {
-            error += LOGIN_ERROR;
-        }
-
-        if (!checkEmail(user.getEmail())) {
-            error += EMAIL_ERROR;
-        }
-
-        if (!checkPassword(user.getPassword())) {
-            error += PASSWORD_ERROR;
-        }
-
-        return error;
+        return checkLogin(user.getLogin()) + checkPassword(user.getPassword()) + checkEmail(user.getEmail());
     }
 
     public static String checkSignin(@NotNull SigninRequest user) {
-        String error = "";
-        if (!checkLogin(user.getLogin())) {
-            error += LOGIN_ERROR;
-        }
-
-        if (!checkPassword(user.getPassword())) {
-            error += PASSWORD_ERROR;
-        }
-
-        return error;
-
+        return checkLogin(user.getLogin()) + checkPassword(user.getPassword());
     }
 
 }

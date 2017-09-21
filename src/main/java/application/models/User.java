@@ -3,7 +3,6 @@ package application.models;
 import application.utils.requests.SignupRequest;
 
 import javax.validation.constraints.NotNull;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class User {
     private final Long id;

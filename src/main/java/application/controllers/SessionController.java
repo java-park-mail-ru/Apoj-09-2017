@@ -2,6 +2,7 @@ package application.controllers;
 
 import application.models.User;
 import application.services.AccountService;
+import application.utils.ControllerHelper;
 import application.utils.Validator;
 import application.utils.requests.SettingsRequest;
 import application.utils.requests.SigninRequest;
@@ -19,27 +20,22 @@ import javax.servlet.http.HttpSession;
 @CrossOrigin(origins = "https://gametes.herokuapp.com/")
 public class SessionController {
     private AccountService service;
+    private ControllerHelper helper;
 
     private static final String USER_ID = "userId";
     private static final String JSON = "application/json";
 
-    public SessionController(AccountService service) {
+    public SessionController(AccountService service, ControllerHelper helper) {
         this.service = service;
+        this.helper = helper;
     }
 
     @PostMapping(path = "/signup", consumes = JSON, produces = JSON)
     public ResponseEntity signup(@RequestBody SignupRequest body, HttpSession httpSession) {
-        final String error = Validator.checkSignup(body);
-        if (!error.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(error));
-        } else if (httpSession.getAttribute(USER_ID) != null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("User already authorize"));
+        final ResponseEntity error = helper.signupCheck(body, httpSession, service);
+        if (error != null) {
+            return error;
         }
-
-        if (!service.checkSignup(body.getLogin(), body.getEmail())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Login or Email already exists"));
-        }
-
         final Long id = service.addUser(body);
         httpSession.setAttribute(USER_ID, id);
         final User newUser = new User(id, body);
@@ -48,36 +44,23 @@ public class SessionController {
 
     @PostMapping(path = "/signin", consumes = JSON, produces = JSON)
     public ResponseEntity greetingSubmit(@RequestBody SigninRequest body, HttpSession httpSession) {
-        final String error = Validator.checkSignin(body);
-        if (!error.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(error));
-        } else if (httpSession.getAttribute(USER_ID) != null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse("User already authorize"));
-        }
-
         final Long id = service.getId(body.getLogin());
-        if (id == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("User not found"));
+        final ResponseEntity error = helper.signinCheck(body, httpSession, service, id);
+        if (error != null) {
+            return error;
         }
-
-        if (!service.checkSignin(id, body.getPassword())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Wrong login or password"));
-        }
-
         httpSession.setAttribute(USER_ID, id);
         return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));
     }
 
     @PostMapping(path = "/newpswrd", consumes = JSON, produces = JSON)
     public ResponseEntity setPassword(@RequestBody SettingsRequest body, HttpSession httpSession) {
-        if (httpSession.getAttribute("userId") == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("User not authorize"));
-        }
         final Long id = (Long) httpSession.getAttribute(USER_ID);
-        if (!service.checkSignin(id, body.getPassword())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Wrong password"));
+        final ResponseEntity error = helper.newCheck(body, httpSession, service, id);
+        if (error != null) {
+            return error;
         }
-        if (!Validator.checkPassword(body.getFieldToChange())) {
+        if (!Validator.checkPassword(body.getFieldToChange()).isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Invalid new password"));
         }
         service.changePassword(id, body.getFieldToChange());
@@ -87,12 +70,10 @@ public class SessionController {
 
     @PostMapping(path = "/newlogin", consumes = JSON, produces = JSON)
     public ResponseEntity setLogin(@RequestBody SettingsRequest body, HttpSession httpSession) {
-        if (httpSession.getAttribute("userId") == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("User not authorize"));
-        }
         final Long id = (Long) httpSession.getAttribute(USER_ID);
-        if (!service.checkSignin(id, body.getPassword())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Wrong password"));
+        final ResponseEntity error = helper.newCheck(body, httpSession, service, id);
+        if (error != null) {
+            return error;
         }
         if (!service.checkLogin(body.getFieldToChange())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Login already exsists"));
@@ -104,12 +85,10 @@ public class SessionController {
 
     @PostMapping(path = "/newemail", consumes = JSON, produces = JSON)
     public ResponseEntity setEmail(@RequestBody SettingsRequest body, HttpSession httpSession) {
-        if (httpSession.getAttribute(USER_ID) == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse("User not authorize"));
-        }
         final Long id = (Long) httpSession.getAttribute(USER_ID);
-        if (!service.checkSignin(id, body.getPassword())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Wrong password"));
+        final ResponseEntity error = helper.newCheck(body, httpSession, service, id);
+        if (error != null) {
+            return error;
         }
         if (!service.checkEmail(body.getFieldToChange())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse("Email already exsists"));

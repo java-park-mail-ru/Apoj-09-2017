@@ -43,6 +43,7 @@ public class AccountService {
         db.changeUserData(user);
     }
 
+    @Nullable
     public User getUser(long id) {
         return db.getUser(id);
     }
