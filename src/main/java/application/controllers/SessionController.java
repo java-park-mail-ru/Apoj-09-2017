@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import javax.servlet.http.HttpSession;
 
 @RestController
-@CrossOrigin(origins = "https://gametes.herokuapp.com/")
+@CrossOrigin(origins = {"https://gametes.herokuapp.com", "localhost"})
 public class SessionController {
     private AccountService service;
 
@@ -24,11 +24,12 @@ public class SessionController {
     private static final String JSON = "application/json";
     private static final String NOT_AUTHORIZE = "User not authorize";
     private static final String AUTHORIZED = "User already authorized";
-    private static final String EXSISTS = "Login or Email already exists";
+    private static final String EXSISTS = "Login or Email already exist";
     private static final String WRONG_LOGIN_PASSWORD = "Wrong login or password";
     private static final String WRONG_PASSWORD = "Wrong password";
-    private static final String LOGIN_EXSISTS = "Login or Email already exists";
-    private static final String EMAIL_EXSISTS = "Login or Email already exists";
+    private static final String LOGIN_EXSISTS = "Login already exist";
+    private static final String EMAIL_EXSISTS = "Email already exist";
+    private static final String SUCCESS = "Successful";
 
     public SessionController(AccountService service) {
         this.service = service;
@@ -70,7 +71,7 @@ public class SessionController {
 
     @PostMapping(path = "/newpswrd", consumes = JSON, produces = JSON)
     public ResponseEntity setPassword(@RequestBody SettingsRequest body, HttpSession httpSession) {
-        if (httpSession.getAttribute("userId") == null) {
+        if (httpSession.getAttribute(USER_ID) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(NOT_AUTHORIZE));
         }
         final Long id = (Long) httpSession.getAttribute(USER_ID);
@@ -88,7 +89,7 @@ public class SessionController {
 
     @PostMapping(path = "/newlogin", consumes = JSON, produces = JSON)
     public ResponseEntity setLogin(@RequestBody SettingsRequest body, HttpSession httpSession) {
-        if (httpSession.getAttribute("userId") == null) {
+        if (httpSession.getAttribute(USER_ID) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(NOT_AUTHORIZE));
         }
         final Long id = (Long) httpSession.getAttribute(USER_ID);
@@ -105,7 +106,7 @@ public class SessionController {
 
     @PostMapping(path = "/newemail", consumes = JSON, produces = JSON)
     public ResponseEntity setEmail(@RequestBody SettingsRequest body, HttpSession httpSession) {
-        if (httpSession.getAttribute("userId") == null) {
+        if (httpSession.getAttribute(USER_ID) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(NOT_AUTHORIZE));
         }
         final Long id = (Long) httpSession.getAttribute(USER_ID);
@@ -126,7 +127,7 @@ public class SessionController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(NOT_AUTHORIZE));
         }
         httpSession.removeAttribute(USER_ID);
-        return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse("Successful"));
+        return ResponseEntity.status(HttpStatus.OK).body(new MessageResponse(SUCCESS));
     }
 
     @GetMapping(path = "/user", produces = JSON)
