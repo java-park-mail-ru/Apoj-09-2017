@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import javax.servlet.http.HttpSession;
 
 @RestController
-//@CrossOrigin(origins = {"https://gametes.herokuapp.com", "localhost:8080"})
+@CrossOrigin//(origins = {"https://gametes.herokuapp.com", "localhost:8080"})
 public class SessionController {
     private AccountService service;
 
