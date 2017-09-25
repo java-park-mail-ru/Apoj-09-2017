@@ -3,6 +3,7 @@ package application.utils.responses;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 
 public class MessageResponse {
     @NotNull
