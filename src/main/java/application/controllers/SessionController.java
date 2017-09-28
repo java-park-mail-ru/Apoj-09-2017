@@ -19,7 +19,7 @@ import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 
 @RestController
-@CrossOrigin //(origins = {"https://gametes.herokuapp.com", "localhost"})
+@CrossOrigin // (origins = {"https://gametes.herokuapp.com", "localhost"})
 public class SessionController {
     private AccountService service;
     public static final String JSON = "application/json";
@@ -38,7 +38,7 @@ public class SessionController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(Messages.AUTHORIZED));
         }
         if (!service.checkSignup(body.getLogin(), body.getEmail())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(Messages.EXISTS));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(Messages.EXISTS));
         }
         final Long id = service.addUser(body);
         httpSession.setAttribute(Messages.USER_ID, id);
@@ -91,7 +91,7 @@ public class SessionController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(Messages.WRONG_PASSWORD));
         }
         if (!service.checkLogin(body.getFieldToChange())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(Messages.LOGIN_EXISTS));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(Messages.LOGIN_EXISTS));
         }
         service.changeLogin(id, body.getFieldToChange());
 
@@ -108,7 +108,7 @@ public class SessionController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(Messages.WRONG_PASSWORD));
         }
         if (!service.checkEmail(body.getFieldToChange())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(Messages.EMAIL_EXISTS));
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(Messages.EMAIL_EXISTS));
         }
         service.changeEmail(id, body.getFieldToChange());
 
