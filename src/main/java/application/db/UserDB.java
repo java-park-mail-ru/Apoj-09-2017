@@ -16,7 +16,8 @@ public class UserDB {
 
     @NotNull
     public long addUser(String login, String password, String email) {
-        map.put(id.get(), new User(id.get(), login, password, email));
+        final long newId = id.get();
+        map.put(newId, new User(newId, login, password, email));
         return id.getAndIncrement();
     }
 

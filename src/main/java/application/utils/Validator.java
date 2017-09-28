@@ -30,10 +30,11 @@ public class Validator {
         if (StringUtils.isEmpty(login)) {
             error.add(EMPTY_LOGIN);
         }
-        if (login.length() < LOGIN_MIN_LENGTH) {
+        final int length = login.length();
+        if (length < LOGIN_MIN_LENGTH) {
             error.add(SHORT_LOGIN);
         }
-        if (login.length() > LOGIN_MAX_LENGTH) {
+        if (length > LOGIN_MAX_LENGTH) {
             error.add(LONG_LOGIN);
         }
         final Pattern p = Pattern.compile("^[a-z0-9_-]{3,15}$");
@@ -62,10 +63,11 @@ public class Validator {
         if (StringUtils.isEmpty(password)) {
             error.add(EMPTY_PASSWORD);
         }
-        if (password.length() < PASSWORD_MIN_LENGTH) {
+        final int length = password.length();
+        if (length < PASSWORD_MIN_LENGTH) {
             error.add(SHORT_PASSWORD);
         }
-        if (password.length() > PASSWORD_MAX_LENGTH) {
+        if (length > PASSWORD_MAX_LENGTH) {
             error.add(LONG_PASSWORD);
         }
         return error;
