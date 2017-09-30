@@ -19,7 +19,7 @@ import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 
 @RestController
-@CrossOrigin (origins = {"https://gametes.herokuapp.com", "localhost"})
+@CrossOrigin //(origins = {"https://gametes.herokuapp.com", "localhost"})
 public class SessionController {
     private AccountService service;
     public static final String JSON = "application/json";
@@ -115,7 +115,7 @@ public class SessionController {
         return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));
     }
 
-    @GetMapping(path = "/logout", produces = JSON)
+    @PostMapping(path = "/logout", produces = JSON)
     public ResponseEntity logout(HttpSession httpSession) {
         if (httpSession.getAttribute(Messages.USER_ID) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(Messages.NOT_AUTHORIZE));
