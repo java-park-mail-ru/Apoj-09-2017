@@ -25,9 +25,12 @@ public class UserDB {
         map.put(user.getId(), user);
     }
 
-    @NotNull
+    @Nullable
     public User getUser(long userId) {
-        return map.get(userId);
+        if (map.containsKey(userId)) {
+            return map.get(userId);
+        }
+        return null;
     }
 
     @Nullable

@@ -6,8 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.validation.constraints.NotNull;
 
 public class UserResponseWP {
-    @NotNull
-    private final Long id;
+    private final long id;
     @NotNull
     private final String login;
     @NotNull

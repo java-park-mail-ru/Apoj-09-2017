@@ -10,4 +10,5 @@ public class Messages {
     public static final String LOGIN_EXISTS = "Login already exist";
     public static final String EMAIL_EXISTS = "Email already exist";
     public static final String SUCCESS = "Successful";
+    public static final String BAD_COOKIE = "Bad cookie";
 }

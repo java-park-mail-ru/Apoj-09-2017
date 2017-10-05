@@ -27,23 +27,29 @@ public class AccountService {
     public void changePassword(long id, String password) {
         password = encoder.encode(password);
         final User user = db.getUser(id);
-        user.setPassword(password);
-        db.changeUserData(user);
+        if (user != null) {
+            user.setPassword(password);
+            db.changeUserData(user);
+        }
     }
 
     public void changeLogin(long id, String login) {
         final User user = db.getUser(id);
-        user.setLogin(login);
-        db.changeUserData(user);
+        if (user != null) {
+            user.setLogin(login);
+            db.changeUserData(user);
+        }
     }
 
     public void changeEmail(long id, String email) {
         final User user = db.getUser(id);
-        user.setEmail(email);
-        db.changeUserData(user);
+        if (user != null) {
+            user.setEmail(email);
+            db.changeUserData(user);
+        }
     }
 
-    @NotNull
+    @Nullable
     public User getUser(long id) {
         return db.getUser(id);
     }
@@ -66,7 +72,8 @@ public class AccountService {
     }
 
     public boolean checkSignin(long id, String password) {
-        return encoder.matches(password, db.getUser(id).getPassword());
+        final User user = db.getUser(id);
+        return user != null && encoder.matches(password, user.getPassword());
     }
 
 }
