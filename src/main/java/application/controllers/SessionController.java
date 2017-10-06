@@ -18,7 +18,7 @@ import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 
 @RestController
-@CrossOrigin(origins = {"https://gametes.herokuapp.com", "localhost"})
+@CrossOrigin //(origins = {"https://gametes.herokuapp.com", "http://www.apoj.me"})
 public class SessionController {
     private AccountService service;
     public static final String JSON = "application/json";
