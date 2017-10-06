@@ -35,5 +35,5 @@
 | Изменить пароль | newpswrd | ```{"password":"1834240", "change":"1834241"}```
 | Изменить логин | newlogin | ```{"password":"1834240", "change":"asdfg"}```
 | Изменить email | newemail | ```{"password":"1834240", "change":"asdf@mail.ru"}```
-| Разлогиниться | logout | -
+| Разлогиниться | logout | ```{}```
 
