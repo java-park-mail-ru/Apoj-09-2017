@@ -1,7 +1,5 @@
 package application.models;
 
-import application.utils.requests.SignupRequest;
-
 import javax.validation.constraints.NotNull;
 
 public class User {
@@ -9,13 +7,6 @@ public class User {
     private String login;
     private String password;
     private String email;
-
-    public User(Long id, SignupRequest user) {
-        this.id = id;
-        this.password = user.getPassword();
-        this.login = user.getLogin();
-        this.email = user.getEmail();
-    }
 
     public User(Long id, String login, String password, String email) {
         this.id = id;

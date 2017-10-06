@@ -25,12 +25,9 @@ public class UserDB {
         map.put(user.getId(), user);
     }
 
-    @Nullable
+    @NotNull
     public User getUser(long userId) {
-        if (map.containsKey(userId)) {
-            return map.get(userId);
-        }
-        return null;
+        return map.get(userId);
     }
 
     @Nullable
@@ -41,6 +38,10 @@ public class UserDB {
             }
         }
         return null;
+    }
+
+    public boolean hasId(long userId) {
+        return map.containsKey(userId);
     }
 
     public boolean hasLogin(String login) {

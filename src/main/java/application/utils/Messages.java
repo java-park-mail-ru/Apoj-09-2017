@@ -1,7 +1,6 @@
 package application.utils;
 
 public class Messages {
-    public static final String USER_ID = "userId";
     public static final String NOT_AUTHORIZE = "User not authorize";
     public static final String AUTHORIZED = "User already authorized";
     public static final String EXISTS = "Login or Email already exist";

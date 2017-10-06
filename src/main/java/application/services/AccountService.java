@@ -49,7 +49,7 @@ public class AccountService {
         }
     }
 
-    @Nullable
+    @NotNull
     public User getUser(long id) {
         return db.getUser(id);
     }
@@ -61,6 +61,10 @@ public class AccountService {
 
     public boolean checkLogin(String login) {
         return !db.hasLogin(login);
+    }
+
+    public boolean checkId(long id) {
+        return db.hasId(id);
     }
 
     public boolean checkEmail(String login) {

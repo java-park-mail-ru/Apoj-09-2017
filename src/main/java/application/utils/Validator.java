@@ -14,12 +14,12 @@ public class Validator {
     private static final String LOGIN_ERROR = "Invalid login";
     private static final String EMAIL_ERROR = "Invalid email";
     private static final String EMPTY_LOGIN = "Empty login";
-    private static final String SHORT_LOGIN = "Short login";
-    private static final String LONG_LOGIN = "Long login";
+    private static final String SHORT_LOGIN = "Short login(min 3 symbols)";
+    private static final String LONG_LOGIN = "Long login(max 15 symbols)";
     private static final String EMPTY_EMAIL = "Empty email";
     private static final String EMPTY_PASSWORD = "Empty password";
-    private static final String SHORT_PASSWORD = "Short password";
-    private static final String LONG_PASSWORD = "Long password";
+    private static final String SHORT_PASSWORD = "Short password(min 8 symbols)";
+    private static final String LONG_PASSWORD = "Long password(max 24 symbols)";
     private static final int LOGIN_MIN_LENGTH = 3;
     private static final int LOGIN_MAX_LENGTH = 15;
     private static final int PASSWORD_MIN_LENGTH = 8;
