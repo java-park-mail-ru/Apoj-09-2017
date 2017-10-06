@@ -56,7 +56,7 @@ public class SessionController {
         }
         final Long id = service.getId(body.getLogin());
         if (id == null || !service.checkSignin(id, body.getPassword())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(Messages.WRONG_LOGIN_PASSWORD));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(Messages.WRONG_LOGIN_PASSWORD));
         }
         httpSession.setAttribute(USER_ID, id);
         return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));
@@ -72,7 +72,7 @@ public class SessionController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(Messages.BAD_COOKIE));
         }
         if (!service.checkSignin(id, body.getPassword())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(Messages.WRONG_PASSWORD));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(Messages.WRONG_PASSWORD));
         }
         final ArrayList<String> error = Validator.checkPassword(body.getPassword());
         if (!error.isEmpty()) {
@@ -93,7 +93,7 @@ public class SessionController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(Messages.BAD_COOKIE));
         }
         if (!service.checkSignin(id, body.getPassword())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(Messages.WRONG_PASSWORD));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(Messages.WRONG_PASSWORD));
         }
         if (!service.checkLogin(body.getFieldToChange())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(Messages.LOGIN_EXISTS));
@@ -113,7 +113,7 @@ public class SessionController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(Messages.BAD_COOKIE));
         }
         if (!service.checkSignin(id, body.getPassword())) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(Messages.WRONG_PASSWORD));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(Messages.WRONG_PASSWORD));
         }
         if (!service.checkEmail(body.getFieldToChange())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(Messages.EMAIL_EXISTS));
