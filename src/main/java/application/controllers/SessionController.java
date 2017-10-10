@@ -62,7 +62,7 @@ public class SessionController {
         return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));
     }
 
-    @PostMapping(path = "/newpswrd", consumes = JSON, produces = JSON)
+    @PostMapping(path = "/newpassword", consumes = JSON, produces = JSON)
     public ResponseEntity setPassword(@RequestBody SettingsRequest body, HttpSession httpSession) {
         if (httpSession.getAttribute(USER_ID) == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(Messages.NOT_AUTHORIZE));
