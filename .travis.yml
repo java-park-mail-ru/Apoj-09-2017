@@ -1,0 +1,15 @@
+language: java
+sudo: required
+jdk:
+  - oraclejdk8
+deploy:
+  provider: heroku
+  api_key:
+    secure: $key
+  app: apoj
+  on:
+    repo: java-park-mail-ru/Apoj-09-2017
+    branch: develop
+  skip_cleanup: true
+install:
+  - mvn test -B
