@@ -1,6 +1,6 @@
 package application.services;
 
-import application.db.UserDB;
+import application.db.UserDaoImpl;
 import application.models.User;
 import application.utils.requests.SignupRequest;
 import org.jetbrains.annotations.NotNull;
@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AccountService {
-    private final UserDB db;
+    private final UserDaoImpl db;
     private final PasswordEncoder encoder;
 
-    public AccountService(@NotNull UserDB db, @NotNull PasswordEncoder encoder) {
+    public AccountService(@NotNull UserDaoImpl db, @NotNull PasswordEncoder encoder) {
         this.db = db;
         this.encoder = encoder;
     }
@@ -27,26 +27,20 @@ public class AccountService {
     public void changePassword(long id, String password) {
         password = encoder.encode(password);
         final User user = db.getUser(id);
-        if (user != null) {
-            user.setPassword(password);
-            db.changeUserData(user);
-        }
+        user.setPassword(password);
+        db.changeUserData(user);
     }
 
     public void changeLogin(long id, String login) {
         final User user = db.getUser(id);
-        if (user != null) {
-            user.setLogin(login);
-            db.changeUserData(user);
-        }
+        user.setLogin(login);
+        db.changeUserData(user);
     }
 
     public void changeEmail(long id, String email) {
         final User user = db.getUser(id);
-        if (user != null) {
-            user.setEmail(email);
-            db.changeUserData(user);
-        }
+        user.setEmail(email);
+        db.changeUserData(user);
     }
 
     @NotNull
@@ -56,28 +50,28 @@ public class AccountService {
 
     @Nullable
     public Long getId(String login) {
-        return db.getId(login);
+        return db.getId(login, null);
     }
 
     public boolean checkLogin(String login) {
-        return !db.hasLogin(login);
+        return db.getId(login, null) == null;
     }
 
     public boolean checkId(long id) {
         return db.hasId(id);
     }
 
-    public boolean checkEmail(String login) {
-        return !db.hasEmail(login);
+    public boolean checkEmail(String email) {
+        return db.getId(null, email) == null;
     }
 
     public boolean checkSignup(String login, String email) {
-        return !(db.hasLogin(login) || db.hasEmail(email));
+        return db.getId(login, email) == null;
     }
 
     public boolean checkSignin(long id, String password) {
         final User user = db.getUser(id);
-        return user != null && encoder.matches(password, user.getPassword());
+        return encoder.matches(password, user.getPassword());
     }
 
 }
