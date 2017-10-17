@@ -2,14 +2,12 @@ package application.utils.requests;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import javax.validation.constraints.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 public class SettingsRequest {
-    @NotNull
-    private final String password;
-    @NotNull
-    private final String fieldToChange;
+
+    private final @NotNull String password;
+    private final @NotNull String fieldToChange;
 
     @JsonCreator
     public SettingsRequest(@JsonProperty("password") @NotNull String password,

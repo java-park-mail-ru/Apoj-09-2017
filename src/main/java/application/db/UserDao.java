@@ -12,10 +12,11 @@ public interface UserDao {
 
     void changeUserData(User user);
 
-    @NotNull
+    @Nullable
     User getUser(long userId);
 
-    @Nullable Long getId(@Nullable String login, @Nullable String email);
+    @Nullable
+    User getUser(String login);
 
-    boolean hasId(long id);
+    @Nullable Long getId(@Nullable String login, @Nullable String email);
 }

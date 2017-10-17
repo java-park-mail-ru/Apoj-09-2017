@@ -48,10 +48,25 @@ public class UserDaoImpl implements UserDao {
     );
 
     @Override
-    @NotNull
+    @Nullable
     public User getUser(long id) {
-        final String query = "SELECT * FROM users WHERE id = ?";
-        return template.queryForObject(query, USER_MAPPER, id);
+        try {
+            final String query = "SELECT * FROM users WHERE id = ?";
+            return template.queryForObject(query, USER_MAPPER, id);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    @Nullable
+    public User getUser(String login) {
+        try {
+            final String query = "SELECT * FROM users WHERE login = ?";
+            return template.queryForObject(query, USER_MAPPER, login);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 
 
@@ -66,14 +81,4 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-    @Override
-    public boolean hasId(long id) {
-        try {
-            final String query = "SELECT * FROM users WHERE id = ?";
-            template.queryForObject(query, USER_MAPPER, id);
-            return true;
-        } catch (EmptyResultDataAccessException e) {
-            return false;
-        }
-    }
 }

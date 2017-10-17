@@ -1,5 +1,6 @@
 package application.services;
 
+import application.db.UserDao;
 import application.db.UserDaoImpl;
 import application.models.User;
 import application.utils.requests.SignupRequest;
@@ -11,10 +12,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AccountService {
-    private final UserDaoImpl db;
+    private final UserDao db;
     private final PasswordEncoder encoder;
 
-    public AccountService(@NotNull UserDaoImpl db, @NotNull PasswordEncoder encoder) {
+    public AccountService(@NotNull UserDao db, @NotNull PasswordEncoder encoder) {
         this.db = db;
         this.encoder = encoder;
     }
@@ -43,9 +44,14 @@ public class AccountService {
         db.changeUserData(user);
     }
 
-    @NotNull
+    @Nullable
     public User getUser(long id) {
         return db.getUser(id);
+    }
+
+    @Nullable
+    public User getUser(String login) {
+        return db.getUser(login);
     }
 
     @Nullable
@@ -55,10 +61,6 @@ public class AccountService {
 
     public boolean checkLogin(String login) {
         return db.getId(login, null) == null;
-    }
-
-    public boolean checkId(long id) {
-        return db.hasId(id);
     }
 
     public boolean checkEmail(String email) {
