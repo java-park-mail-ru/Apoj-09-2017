@@ -73,10 +73,15 @@ public class UserDaoImpl implements UserDao {
     @Nullable
     public Long getId(@Nullable String login, @Nullable String email) {
         try {
-            final String query = "SELECT id FROM users WHERE LOWER(login) = LOWER(?) OR LOWER(email) = LOWER(?)";
-            return template.queryForObject(query, Long.class, login, email);
+            final String query = "SELECT id FROM users WHERE LOWER(login) = LOWER(?)";
+            return template.queryForObject(query, Long.class, login);
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            try {
+                final String query = "SELECT id FROM users WHERE LOWER(email) = LOWER(?)";
+                return template.queryForObject(query, Long.class, email);
+            } catch (EmptyResultDataAccessException e1) {
+                return null;
+            }
         }
     }
 
