@@ -1,7 +1,6 @@
 package application.services;
 
 import application.db.UserDao;
-import application.db.UserDaoImpl;
 import application.models.User;
 import application.utils.requests.SignupRequest;
 import org.jetbrains.annotations.NotNull;
@@ -25,21 +24,18 @@ public class AccountService {
         return db.addUser(user.getLogin(), encodedPassword, user.getEmail());
     }
 
-    public void changePassword(long id, String password) {
+    public void changePassword(User user, String password) {
         password = encoder.encode(password);
-        final User user = db.getUser(id);
         user.setPassword(password);
         db.changeUserData(user);
     }
 
-    public void changeLogin(long id, String login) {
-        final User user = db.getUser(id);
+    public void changeLogin(User user, String login) {
         user.setLogin(login);
         db.changeUserData(user);
     }
 
-    public void changeEmail(long id, String email) {
-        final User user = db.getUser(id);
+    public void changeEmail(User user, String email) {
         user.setEmail(email);
         db.changeUserData(user);
     }

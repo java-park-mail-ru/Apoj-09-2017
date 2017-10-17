@@ -6,8 +6,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class SigninRequest {
 
-    private final @NotNull String login;
-    private final @NotNull String password;
+    @NotNull
+    private final String login;
+    @NotNull
+    private final String password;
 
     @JsonCreator
     public SigninRequest(@JsonProperty("login") @NotNull String login,

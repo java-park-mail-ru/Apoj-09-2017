@@ -6,8 +6,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class SettingsRequest {
 
-    private final @NotNull String password;
-    private final @NotNull String fieldToChange;
+    @NotNull
+    private final String password;
+    @NotNull
+    private final String fieldToChange;
 
     @JsonCreator
     public SettingsRequest(@JsonProperty("password") @NotNull String password,

@@ -4,8 +4,6 @@ import application.models.User;
 
 import org.jetbrains.annotations.Nullable;
 
-import javax.validation.constraints.NotNull;
-
 
 public interface UserDao {
     long addUser(String login, String password, String email);

@@ -80,7 +80,7 @@ public class SessionController {
         if (!error.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ValidatorResponse(error));
         }
-        service.changePassword(id, body.getFieldToChange());
+        service.changePassword(user, body.getFieldToChange());
 
         return ResponseEntity.ok(new UserResponseWP(user));
     }
@@ -101,7 +101,7 @@ public class SessionController {
         if (!service.checkLogin(body.getFieldToChange())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(Messages.LOGIN_EXISTS));
         }
-        service.changeLogin(id, body.getFieldToChange());
+        service.changeLogin(user, body.getFieldToChange());
 
         return ResponseEntity.ok(new UserResponseWP(user));
     }
@@ -122,7 +122,7 @@ public class SessionController {
         if (!service.checkEmail(body.getFieldToChange())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(Messages.EMAIL_EXISTS));
         }
-        service.changeEmail(id, body.getFieldToChange());
+        service.changeEmail(user, body.getFieldToChange());
 
         return ResponseEntity.ok(new UserResponseWP(user));
     }

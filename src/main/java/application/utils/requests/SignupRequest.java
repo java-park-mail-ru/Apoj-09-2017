@@ -6,9 +6,12 @@ import org.jetbrains.annotations.NotNull;
 
 public class SignupRequest {
 
-    private final @NotNull String login;
-    private final @NotNull String password;
-    private final @NotNull String email;
+    @NotNull
+    private final String login;
+    @NotNull
+    private final String password;
+    @NotNull
+    private final String email;
 
     @JsonCreator
     public SignupRequest(@JsonProperty("login") @NotNull String login,
