@@ -28,7 +28,7 @@ public class UserDaoImpl implements UserDao {
             pst.setString(3, email);
             return pst;
         }, idHolder);
-        return (long) idHolder.getKey();
+        return idHolder.getKey().longValue();
     }
 
     @Override
@@ -36,7 +36,7 @@ public class UserDaoImpl implements UserDao {
         final String query = "UPDATE Users SET "
                 + "login = COALESCE (?, login), "
                 + "email = COALESCE (?, email), "
-                + "password = COALESCE (?, password), "
+                + "password = COALESCE (?, password) "
                 + "WHERE id = ?";
         template.update(query, user.getLogin(), user.getEmail(), user.getPassword(), user.getId());
     }
