@@ -33,11 +33,11 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void changeUserData(User user) {
-        final String query = "UPDATE Users SET " +
-                "login = COALESCE (?, login), " +
-                "email = COALESCE (?, email), " +
-                "password = COALESCE (?, password), " +
-                "WHERE id = ?";
+        final String query = "UPDATE Users SET "
+                + "login = COALESCE (?, login), "
+                + "email = COALESCE (?, email), "
+                + "password = COALESCE (?, password), "
+                + "WHERE id = ?";
         template.update(query, user.getLogin(), user.getEmail(), user.getPassword(), user.getId());
     }
 
@@ -48,16 +48,16 @@ public class UserDaoImpl implements UserDao {
     );
 
     @Override
-    public @NotNull User getUser(long id) {
-            final String query = "SELECT * FROM users WHERE id = ?";
-            return template.queryForObject(query, USER_MAPPER, id);
+    @NotNull
+    public User getUser(long id) {
+        final String query = "SELECT * FROM users WHERE id = ?";
+        return template.queryForObject(query, USER_MAPPER, id);
     }
 
 
-
-
     @Override
-    public @Nullable Long getId(@Nullable String login, @Nullable String email) {
+    @Nullable
+    public Long getId(@Nullable String login, @Nullable String email) {
         try {
             final String query = "SELECT id FROM users WHERE LOWER(login) = LOWER(?) OR LOWER(email) = LOWER(?)";
             return template.queryForObject(query, Long.class, login, email);
