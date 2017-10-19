@@ -85,4 +85,9 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
+    @Override
+    public void clear() {
+        template.execute("TRUNCATE TABLE users");
+    }
+
 }

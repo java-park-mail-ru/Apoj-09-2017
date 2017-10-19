@@ -1,8 +1,10 @@
 package application.controller;
 
+import application.services.AccountService;
 import application.utils.requests.SignupRequest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +23,8 @@ public class SessionControllerTest {
     static final String EMAIL = "email@mail.ru";
     static final String PASSWORD = "qwerty123";
 
+    @Autowired
+    private AccountService usersService;
     @Autowired
     private TestRestTemplate template;
 
@@ -75,5 +79,9 @@ public class SessionControllerTest {
         signup("", EMAIL, PASSWORD, HttpStatus.BAD_REQUEST, null);
     }
 
+    @After
+    public void clear() {
+        usersService.clear();
+    }
 
 }

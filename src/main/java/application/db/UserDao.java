@@ -17,4 +17,6 @@ public interface UserDao {
     User getUser(String login);
 
     @Nullable Long getId(@Nullable String login, @Nullable String email);
+
+    void clear();
 }

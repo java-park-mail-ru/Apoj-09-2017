@@ -72,4 +72,8 @@ public class AccountService {
         return encoder.matches(password, user.getPassword());
     }
 
+    public void clear() {
+        db.clear();
+    }
+
 }
