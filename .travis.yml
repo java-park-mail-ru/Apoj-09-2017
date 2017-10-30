@@ -1,17 +1,16 @@
 language: java
 sudo: required
 jdk:
-  - oraclejdk8
-  branches:
-    only:
-    - develop
+- oraclejdk8
+branches:
+  only:
     - testbranch
-  services:
-    - postgresql
-  before_script:
-    - psql -c "create user testuser with password 'qwerty123';" -U postgres
-    - psql -c "create database test_database;" -U postgres
-    - psql -c "grant all on database test_database to testuser;" -U postgres
+services:
+  - postgresql
+before_script:
+  - psql -c "create user testuser with password 'qwerty123';" -U postgres
+  - psql -c "create database test_database;" -U postgres
+  - psql -c "grant all on database test_database to testuser;" -U postgres
 deploy:
   provider: heroku
   api_key:
