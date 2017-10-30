@@ -1,41 +1,34 @@
 package application.db;
 
 import application.models.User;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-
-import java.sql.PreparedStatement;
 
 public class UserDaoImpl implements UserDao {
     @Autowired
     private JdbcTemplate template;
 
     @Override
-    public long addUser(String login, String password, String email) {
-        final GeneratedKeyHolder idHolder = new GeneratedKeyHolder();
-        template.update(connection -> {
+    public Long addUser(String login, String password, String email) {
+        try {
             final String query = "INSERT INTO Users(login, password, email) VALUES(?,?,?) returning id";
-            final PreparedStatement pst = connection.prepareStatement(
-                    query,
-                    PreparedStatement.RETURN_GENERATED_KEYS);
-            pst.setString(1, login);
-            pst.setString(2, password);
-            pst.setString(3, email);
-            return pst;
-        }, idHolder);
-        return idHolder.getKey().longValue();
+            return template.queryForObject(query, Long.class, login, email, password);
+        } catch (DataAccessException e) {
+            return null;
+        }
     }
 
     @Override
     public void changeUserData(User user) {
         final String query = "UPDATE Users SET "
-                + "login = COALESCE (?, login), "
-                + "email = COALESCE (?, email), "
-                + "password = COALESCE (?, password) "
+                + "login = ?, "
+                + "email = ?, "
+                + "password = ? "
                 + "WHERE id = ?";
         template.update(query, user.getLogin(), user.getEmail(), user.getPassword(), user.getId());
     }
@@ -71,23 +64,42 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     @Nullable
-    public Long getId(@Nullable String login, @Nullable String email) {
+    public boolean checkSignup(@NotNull String login, @NotNull String email) {
         try {
-            final String query = "SELECT id FROM users WHERE LOWER(login) = LOWER(?)";
-            return template.queryForObject(query, Long.class, login);
+            final String query = "SELECT COUNT(*) FROM users WHERE LOWER(login) = LOWER(?) OR LOWER(email) = LOWER(?)";
+            final Long result = template.queryForObject(query, Long.class, login, email);
+            return result == 0;
         } catch (EmptyResultDataAccessException e) {
-            try {
-                final String query = "SELECT id FROM users WHERE LOWER(email) = LOWER(?)";
-                return template.queryForObject(query, Long.class, email);
-            } catch (EmptyResultDataAccessException e1) {
-                return null;
-            }
+            return true;
         }
     }
 
     @Override
+    @Nullable
+    public Long getIdByLogin(@NotNull String login) {
+        try {
+            final String query = "SELECT id FROM users WHERE LOWER(login) = LOWER(?)";
+            return template.queryForObject(query, Long.class, login);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    @Nullable
+    public Long getIdByEmail(@NotNull String email) {
+        try {
+            final String query = "SELECT id FROM users WHERE LOWER(email) = LOWER(?)";
+            return template.queryForObject(query, Long.class, email);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+
+    @Override
     public void clear() {
-        template.execute("TRUNCATE TABLE users");
+        template.execute("TRUNCATE TABLE users CASCADE");
     }
 
 }

@@ -2,14 +2,24 @@ language: java
 sudo: required
 jdk:
   - oraclejdk8
-#deploy:
-#  provider: heroku
-#  api_key:
-#    secure: $key
-#  app: apoj
-#  on:
-#    repo: java-park-mail-ru/Apoj-09-2017
-#    branch: develop
-#  skip_cleanup: true
+  branches:
+    only:
+    - develop
+    - testbranch
+  services:
+    - postgresql
+  before_script:
+    - psql -c "create user testuser with password 'qwerty123';" -U postgres
+    - psql -c "create database test_database;" -U postgres
+    - psql -c "grant all on database test_database to testuser;" -U postgres
+deploy:
+  provider: heroku
+  api_key:
+    secure: $key
+  app: apoj
+  on:
+    repo: java-park-mail-ru/Apoj-09-2017
+    branch: develop
+  skip_cleanup: true
 install:
   - mvn test -B
