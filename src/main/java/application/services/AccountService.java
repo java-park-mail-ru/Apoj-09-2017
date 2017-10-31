@@ -60,7 +60,9 @@ public class AccountService {
         return db.getIdByLogin(login) == null;
     }
 
-    public boolean checkEmail(String email) { return db.getIdByEmail(email) == null; }
+    public boolean checkEmail(String email) {
+        return db.getIdByEmail(email) == null;
+    }
 
     public boolean checkSignup(String login, String email) {
         return db.checkSignup(login, email);
