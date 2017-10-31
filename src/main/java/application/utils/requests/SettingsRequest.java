@@ -2,10 +2,10 @@ package application.utils.requests;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.jetbrains.annotations.NotNull;
 
 public class SettingsRequest {
-
     @NotNull
     private final String password;
     @NotNull

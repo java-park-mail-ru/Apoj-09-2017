@@ -75,7 +75,6 @@
         </dependency>
     </dependencies>
 
-
     <build>
         <plugins>
             <plugin>
@@ -99,6 +98,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
@@ -107,6 +107,7 @@
                     <url>jdbc:postgresql://localhost:5432/ilyadb</url>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 
