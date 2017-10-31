@@ -19,7 +19,6 @@ public class AccountService {
         this.encoder = encoder;
     }
 
-    @Nullable
     public Long addUser(SignupRequest user) {
         final String encodedPassword = encoder.encode(user.getPassword());
         return db.addUser(user.getLogin(), encodedPassword, user.getEmail());

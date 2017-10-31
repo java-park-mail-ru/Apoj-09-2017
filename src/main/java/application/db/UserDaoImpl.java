@@ -3,24 +3,23 @@ package application.db;
 import application.models.User;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.dao.DataAccessException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
+
+@Transactional
 public class UserDaoImpl implements UserDao {
+
     @Autowired
     private JdbcTemplate template;
 
     @Override
     public Long addUser(String login, String password, String email) {
-        try {
-            final String query = "INSERT INTO users(login, password, email) VALUES(?,?,?) RETURNING id";
-            return template.queryForObject(query, Long.class, login, password, email);
-        } catch (DataAccessException e) {
-            return null;
-        }
+        final String query = "INSERT INTO users(login, password, email) VALUES(?,?,?) RETURNING id";
+        return template.queryForObject(query, Long.class, login, password, email);
     }
 
     @Override

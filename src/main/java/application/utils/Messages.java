@@ -10,5 +10,4 @@ public class Messages {
     public static final String EMAIL_EXISTS = "Email уже существует";
     public static final String SUCCESS = "Успешно";
     public static final String BAD_COOKIE = "Плохие печеньки";
-    public static final String DATA_ERROR = "data access exeption";
 }

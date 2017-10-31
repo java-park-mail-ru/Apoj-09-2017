@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 
 
 public interface UserDao {
-    @Nullable
     Long addUser(String login, String password, String email);
 
     void changeUserData(User user);

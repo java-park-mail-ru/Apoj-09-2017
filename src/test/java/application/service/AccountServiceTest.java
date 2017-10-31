@@ -1,4 +1,4 @@
-package application.controller;
+package application.service;
 
 import application.services.AccountService;
 import application.utils.requests.SignupRequest;
@@ -18,7 +18,7 @@ import java.util.List;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SessionControllerTest {
+public class AccountServiceTest {
     static final String LOGIN = "login";
     static final String EMAIL = "email@mail.ru";
     static final String PASSWORD = "qwerty123";
@@ -28,14 +28,13 @@ public class SessionControllerTest {
     @Autowired
     private TestRestTemplate template;
 
-    @NotNull
-    private HttpEntity getHttpEntity(@NotNull Object body, @Nullable List<String> cookie) {
+    private HttpEntity<Object> getHttpEntity(@NotNull Object body, @Nullable List<String> cookie) {
         if (cookie != null) {
             final HttpHeaders headers = new HttpHeaders();
             headers.put("Cookie", cookie);
-            return new HttpEntity(body, headers);
+            return new HttpEntity<>(body, headers);
         } else {
-            return new HttpEntity(body);
+            return new HttpEntity<>(body);
         }
     }
 
@@ -43,7 +42,7 @@ public class SessionControllerTest {
                                           @NotNull HttpStatus status, @Nullable List<String> cookie) {
 
         final SignupRequest signupRequest = new SignupRequest(login, password, email);
-        final HttpEntity entity = getHttpEntity(signupRequest, cookie);
+        final HttpEntity<Object> entity = getHttpEntity(signupRequest, cookie);
 
         final ResponseEntity<String> response = template.exchange("/signup", HttpMethod.POST, entity, String.class);
         Assert.assertEquals(status, response.getStatusCode());
@@ -53,7 +52,7 @@ public class SessionControllerTest {
 
     @Test
     public void testFullRegistration() {
-        List<String> cookie = signup(LOGIN, EMAIL, PASSWORD, HttpStatus.OK, null);
+        signup(LOGIN, EMAIL, PASSWORD, HttpStatus.OK, null);
 
     }
 
@@ -70,7 +69,7 @@ public class SessionControllerTest {
 
     @Test
     public void testAuthorizedSignup() {
-        List<String> cookie = signup(LOGIN, EMAIL, PASSWORD, HttpStatus.OK, null);
+        final List<String> cookie = signup(LOGIN, EMAIL, PASSWORD, HttpStatus.OK, null);
         signup("uniq", "uniq@mail.ru", PASSWORD, HttpStatus.FORBIDDEN, cookie);
     }
 
