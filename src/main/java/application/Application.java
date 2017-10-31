@@ -1,6 +1,7 @@
 package application;
 
-import application.db.UserDB;
+import application.db.UserDao;
+import application.db.UserDaoImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -15,8 +16,8 @@ public class Application {
     }
 
     @Bean
-    public UserDB database() {
-        return new UserDB();
+    public UserDao database() {
+        return new UserDaoImpl();
     }
 
     @Bean
