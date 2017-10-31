@@ -19,6 +19,7 @@ public class AccountService {
         this.encoder = encoder;
     }
 
+    @Nullable
     public Long addUser(SignupRequest user) {
         final String encodedPassword = encoder.encode(user.getPassword());
         return db.addUser(user.getLogin(), encodedPassword, user.getEmail());
@@ -52,24 +53,26 @@ public class AccountService {
 
     @Nullable
     public Long getId(String login) {
-        return db.getId(login, null);
+        return db.getIdByLogin(login);
     }
 
     public boolean checkLogin(String login) {
-        return db.getId(login, null) == null;
+        return db.getIdByLogin(login) == null;
     }
 
-    public boolean checkEmail(String email) {
-        return db.getId(null, email) == null;
-    }
+    public boolean checkEmail(String email) { return db.getIdByEmail(email) == null; }
 
     public boolean checkSignup(String login, String email) {
-        return db.getId(login, email) == null;
+        return db.checkSignup(login, email);
     }
 
     public boolean checkSignin(long id, String password) {
         final User user = db.getUser(id);
         return encoder.matches(password, user.getPassword());
+    }
+
+    public void clear() {
+        db.clear();
     }
 
 }

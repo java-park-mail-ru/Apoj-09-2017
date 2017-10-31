@@ -1,7 +1,14 @@
 language: java
 sudo: required
 jdk:
-  - oraclejdk8
+- oraclejdk8
+services:
+  - postgresql
+before_install:
+  - psql -c "create user ilya with password 'qwerty123';" -U postgres
+  - psql -c "create database ilyadb;" -U postgres
+  - psql -c "grant all on database ilyadb to ilya;" -U postgres
+
 deploy:
   provider: heroku
   api_key:

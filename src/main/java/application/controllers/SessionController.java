@@ -42,6 +42,9 @@ public class SessionController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(Messages.EXISTS));
         }
         final Long id = service.addUser(body);
+        if (id == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(Messages.DATA_ERROR));
+        }
         httpSession.setAttribute(USER_ID, id);
         return ResponseEntity.ok(new UserResponseWP(id, body));
     }
