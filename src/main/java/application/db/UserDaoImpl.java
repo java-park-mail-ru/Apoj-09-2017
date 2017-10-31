@@ -61,7 +61,6 @@ public class UserDaoImpl implements UserDao {
         }
     }
 
-
     @Override
     @Nullable
     public boolean checkSignup(@NotNull String login, @NotNull String email) {
@@ -95,7 +94,6 @@ public class UserDaoImpl implements UserDao {
             return null;
         }
     }
-
 
     @Override
     public void clear() {
