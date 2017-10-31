@@ -104,7 +104,7 @@
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>4.1.2</version>
                 <configuration>
-                    <url>jdbc:postgresql://localhost:8080/postgres</url>
+                    <url>jdbc:postgresql://localhost:5432/ilyadb</url>
                 </configuration>
             </plugin>
         </plugins>

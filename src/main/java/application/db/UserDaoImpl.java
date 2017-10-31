@@ -16,7 +16,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public Long addUser(String login, String password, String email) {
         try {
-            final String query = "INSERT INTO users(login, password, email) VALUES(?,?,?) returning id";
+            final String query = "INSERT INTO users(login, password, email) VALUES(?,?,?) RETURNING id";
             return template.queryForObject(query, Long.class, login, password, email);
         } catch (DataAccessException e) {
             return null;
