@@ -11,6 +11,7 @@ import application.utils.responses.UserResponseWP;
 import application.utils.Messages;
 import application.utils.responses.ValidatorResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +23,7 @@ import java.util.ArrayList;
 @CrossOrigin //(origins = {"https://gametes.herokuapp.com", "http://www.apoj.me"})
 public class SessionController {
     private AccountService service;
-    public static final String JSON = "application/json";
+    public static final String JSON = MediaType.APPLICATION_JSON_UTF8_VALUE;
     public static final String USER_ID = "userId";
 
     public SessionController(AccountService service) {
