@@ -41,11 +41,6 @@ public class ControllerTest {
     @Autowired
     MockMvc mock;
 
-    @After
-    public void clearDB() {
-        service.clear();
-    }
-
     @Before
     public void before() {
         service.clear();
