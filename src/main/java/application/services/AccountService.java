@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AccountService {
+    @NotNull
     private final UserDao db;
+    @NotNull
     private final PasswordEncoder encoder;
 
     public AccountService(@NotNull UserDao db, @NotNull PasswordEncoder encoder) {
@@ -19,23 +21,24 @@ public class AccountService {
         this.encoder = encoder;
     }
 
-    public Long addUser(SignupRequest user) {
+    @NotNull
+    public Long addUser(@NotNull SignupRequest user) {
         final String encodedPassword = encoder.encode(user.getPassword());
         return db.addUser(user.getLogin(), encodedPassword, user.getEmail());
     }
 
-    public void changePassword(User user, String password) {
+    public void changePassword(@NotNull User user, @NotNull String password) {
         password = encoder.encode(password);
         user.setPassword(password);
         db.changeUserData(user);
     }
 
-    public void changeLogin(User user, String login) {
+    public void changeLogin(@NotNull User user, @NotNull String login) {
         user.setLogin(login);
         db.changeUserData(user);
     }
 
-    public void changeEmail(User user, String email) {
+    public void changeEmail(@NotNull User user, @NotNull String email) {
         user.setEmail(email);
         db.changeUserData(user);
     }
@@ -46,28 +49,23 @@ public class AccountService {
     }
 
     @Nullable
-    public User getUser(String login) {
+    public User getUser(@NotNull String login) {
         return db.getUser(login);
     }
 
-    @Nullable
-    public Long getId(String login) {
-        return db.getIdByLogin(login);
-    }
-
-    public boolean checkLogin(String login) {
+    public boolean checkLogin(@NotNull String login) {
         return db.getIdByLogin(login) == null;
     }
 
-    public boolean checkEmail(String email) {
+    public boolean checkEmail(@NotNull String email) {
         return db.getIdByEmail(email) == null;
     }
 
-    public boolean checkSignup(String login, String email) {
+    public boolean checkSignup(@NotNull String login, @NotNull String email) {
         return db.checkSignup(login, email);
     }
 
-    public boolean checkSignin(long id, String password) {
+    public boolean checkSignin(long id, @NotNull String password) {
         final User user = db.getUser(id);
         return encoder.matches(password, user.getPassword());
     }

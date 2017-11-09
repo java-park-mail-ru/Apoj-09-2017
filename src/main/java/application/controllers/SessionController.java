@@ -47,7 +47,7 @@ public class SessionController {
     }
 
     @PostMapping(path = "/signin", consumes = JSON, produces = JSON)
-    public ResponseEntity greetingSubmit(@RequestBody SigninRequest body, HttpSession httpSession) {
+    public ResponseEntity signin(@RequestBody SigninRequest body, HttpSession httpSession) {
         final ArrayList<String> error = Validator.checkSignin(body);
         if (!error.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ValidatorResponse(error));
@@ -56,10 +56,14 @@ public class SessionController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(Messages.AUTHORIZED));
         }
         final User user = service.getUser(body.getLogin());
-        if (user == null || !service.checkSignin(user.getId(), body.getPassword())) {
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(Messages.WRONG_LOGIN_PASSWORD));
         }
-        httpSession.setAttribute(USER_ID, user.getId());
+        final long userId = user.getId();
+        if (!service.checkSignin(userId, body.getPassword())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(Messages.WRONG_LOGIN_PASSWORD));
+        }
+        httpSession.setAttribute(USER_ID, userId);
         return ResponseEntity.ok(new UserResponseWP(user));
     }
 

@@ -17,13 +17,14 @@ public class UserDaoImpl implements UserDao {
     private JdbcTemplate template;
 
     @Override
-    public Long addUser(String login, String password, String email) {
+    @NotNull
+    public Long addUser(@NotNull String login, @NotNull String password, @NotNull String email) {
         final String query = "INSERT INTO users(login, password, email) VALUES(?,?,?) RETURNING id";
         return template.queryForObject(query, Long.class, login, password, email);
     }
 
     @Override
-    public void changeUserData(User user) {
+    public void changeUserData(@NotNull User user) {
         final String query = "UPDATE users SET "
                 + "login = ?, "
                 + "email = ?, "
@@ -32,7 +33,8 @@ public class UserDaoImpl implements UserDao {
         template.update(query, user.getLogin(), user.getEmail(), user.getPassword(), user.getId());
     }
 
-    private static final RowMapper<User> USER_MAPPER = (res, num) -> new User(res.getLong("id"),
+    private static final RowMapper<User> USER_MAPPER = (res, num) ->
+            new User(res.getLong("id"),
             res.getString("login"),
             res.getString("password"),
             res.getString("email")
@@ -51,7 +53,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     @Nullable
-    public User getUser(String login) {
+    public User getUser(@NotNull String login) {
         try {
             final String query = "SELECT * FROM users WHERE login = ?";
             return template.queryForObject(query, USER_MAPPER, login);
@@ -61,7 +63,6 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    @Nullable
     public boolean checkSignup(@NotNull String login, @NotNull String email) {
         try {
             final String query = "SELECT COUNT(*) FROM users WHERE LOWER(login) = LOWER(?) OR LOWER(email) = LOWER(?)";

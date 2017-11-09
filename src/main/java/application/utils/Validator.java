@@ -27,19 +27,17 @@ public class Validator {
 
     public static ArrayList<String> checkLogin(@NotNull String login) {
         final ArrayList<String> error = new ArrayList<>();
-        final int length = login.length();
         if (StringUtils.isEmpty(login)) {
             error.add(EMPTY_LOGIN);
         } else {
+            final int length = login.length();
             if (length < LOGIN_MIN_LENGTH) {
                 error.add(SHORT_LOGIN);
-            }
-
-            if (length > LOGIN_MAX_LENGTH) {
+            } else if (length > LOGIN_MAX_LENGTH) {
                 error.add(LONG_LOGIN);
             }
 
-            final Pattern p = Pattern.compile("^[a-z0-9_-]{1,}$");
+            final Pattern p = Pattern.compile("^[A-Za-z0-9_-]{1,}$");
             final Matcher m = p.matcher(login);
             if (!m.matches()) {
                 error.add(LOGIN_ERROR);
@@ -70,8 +68,7 @@ public class Validator {
             final int length = password.length();
             if (length < PASSWORD_MIN_LENGTH) {
                 error.add(SHORT_PASSWORD);
-            }
-            if (length > PASSWORD_MAX_LENGTH) {
+            } else if (length > PASSWORD_MAX_LENGTH) {
                 error.add(LONG_PASSWORD);
             }
         }
