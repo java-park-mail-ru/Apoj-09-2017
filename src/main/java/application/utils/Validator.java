@@ -11,15 +11,15 @@ import java.util.regex.Pattern;
 
 
 public class Validator {
-    private static final String LOGIN_ERROR = "Invalid login";
-    private static final String EMAIL_ERROR = "Invalid email";
-    private static final String EMPTY_LOGIN = "Empty login";
-    private static final String SHORT_LOGIN = "Short login(min 3 symbols)";
-    private static final String LONG_LOGIN = "Long login(max 15 symbols)";
-    private static final String EMPTY_EMAIL = "Empty email";
-    private static final String EMPTY_PASSWORD = "Empty password";
-    private static final String SHORT_PASSWORD = "Short password(min 8 symbols)";
-    private static final String LONG_PASSWORD = "Long password(max 24 symbols)";
+    public static final String LOGIN_ERROR = "Invalid login";
+    public static final String EMAIL_ERROR = "Invalid email";
+    public static final String EMPTY_LOGIN = "Empty login";
+    public static final String SHORT_LOGIN = "Short login(min 3 symbols)";
+    public static final String LONG_LOGIN = "Long login(max 15 symbols)";
+    public static final String EMPTY_EMAIL = "Empty email";
+    public static final String EMPTY_PASSWORD = "Empty password";
+    public static final String SHORT_PASSWORD = "Short password(min 8 symbols)";
+    public static final String LONG_PASSWORD = "Long password(max 24 symbols)";
     private static final int LOGIN_MIN_LENGTH = 3;
     private static final int LOGIN_MAX_LENGTH = 15;
     private static final int PASSWORD_MIN_LENGTH = 8;
@@ -29,18 +29,19 @@ public class Validator {
         final ArrayList<String> error = new ArrayList<>();
         if (StringUtils.isEmpty(login)) {
             error.add(EMPTY_LOGIN);
-        }
-        final int length = login.length();
-        if (length < LOGIN_MIN_LENGTH) {
-            error.add(SHORT_LOGIN);
-        }
-        if (length > LOGIN_MAX_LENGTH) {
-            error.add(LONG_LOGIN);
-        }
-        final Pattern p = Pattern.compile("^[a-z0-9_-]{3,15}$");
-        final Matcher m = p.matcher(login);
-        if (!m.matches()) {
-            error.add(LOGIN_ERROR);
+        } else {
+            final int length = login.length();
+            if (length < LOGIN_MIN_LENGTH) {
+                error.add(SHORT_LOGIN);
+            } else if (length > LOGIN_MAX_LENGTH) {
+                error.add(LONG_LOGIN);
+            }
+
+            final Pattern p = Pattern.compile("^[A-Za-z0-9_-]{1,}$");
+            final Matcher m = p.matcher(login);
+            if (!m.matches()) {
+                error.add(LOGIN_ERROR);
+            }
         }
         return error;
     }
@@ -49,11 +50,12 @@ public class Validator {
         final ArrayList<String> error = new ArrayList<>();
         if (StringUtils.isEmpty(email)) {
             error.add(EMPTY_EMAIL);
-        }
-        final Pattern p = Pattern.compile("^[-\\w.]+@([A-z0-9][-A-z0-9]+\\.)+[A-z]{2,4}$");
-        final Matcher m = p.matcher(email);
-        if (!m.matches()) {
-            error.add(EMAIL_ERROR);
+        } else {
+            final Pattern p = Pattern.compile("^[-\\w.]+@([A-z0-9][-A-z0-9]+\\.)+[A-z]{2,4}$");
+            final Matcher m = p.matcher(email);
+            if (!m.matches()) {
+                error.add(EMAIL_ERROR);
+            }
         }
         return error;
     }
@@ -62,13 +64,13 @@ public class Validator {
         final ArrayList<String> error = new ArrayList<>();
         if (StringUtils.isEmpty(password)) {
             error.add(EMPTY_PASSWORD);
-        }
-        final int length = password.length();
-        if (length < PASSWORD_MIN_LENGTH) {
-            error.add(SHORT_PASSWORD);
-        }
-        if (length > PASSWORD_MAX_LENGTH) {
-            error.add(LONG_PASSWORD);
+        } else {
+            final int length = password.length();
+            if (length < PASSWORD_MIN_LENGTH) {
+                error.add(SHORT_PASSWORD);
+            } else if (length > PASSWORD_MAX_LENGTH) {
+                error.add(LONG_PASSWORD);
+            }
         }
         return error;
     }

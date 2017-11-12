@@ -2,10 +2,10 @@ package application.utils.requests;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import javax.validation.constraints.NotNull;
+import org.jetbrains.annotations.NotNull;
 
 public class SignupRequest {
+
     @NotNull
     private final String login;
     @NotNull

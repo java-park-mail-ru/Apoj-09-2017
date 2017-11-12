@@ -1,5 +1,6 @@
 package application.controllers;
 
+import application.models.User;
 import application.services.AccountService;
 import application.utils.Validator;
 import application.utils.requests.SettingsRequest;
@@ -10,6 +11,7 @@ import application.utils.responses.UserResponseWP;
 import application.utils.Messages;
 import application.utils.responses.ValidatorResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +23,7 @@ import java.util.ArrayList;
 @CrossOrigin //(origins = {"https://gametes.herokuapp.com", "http://www.apoj.me"})
 public class SessionController {
     private AccountService service;
-    public static final String JSON = "application/json";
+    public static final String JSON = MediaType.APPLICATION_JSON_UTF8_VALUE;
     public static final String USER_ID = "userId";
 
     public SessionController(AccountService service) {
@@ -46,7 +48,7 @@ public class SessionController {
     }
 
     @PostMapping(path = "/signin", consumes = JSON, produces = JSON)
-    public ResponseEntity greetingSubmit(@RequestBody SigninRequest body, HttpSession httpSession) {
+    public ResponseEntity signin(@RequestBody SigninRequest body, HttpSession httpSession) {
         final ArrayList<String> error = Validator.checkSignin(body);
         if (!error.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ValidatorResponse(error));
@@ -54,12 +56,16 @@ public class SessionController {
         if (httpSession.getAttribute(USER_ID) != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(Messages.AUTHORIZED));
         }
-        final Long id = service.getId(body.getLogin());
-        if (id == null || !service.checkSignin(id, body.getPassword())) {
+        final User user = service.getUser(body.getLogin());
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(Messages.WRONG_LOGIN_PASSWORD));
         }
-        httpSession.setAttribute(USER_ID, id);
-        return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));
+        final long userId = user.getId();
+        if (!service.checkSignin(userId, body.getPassword())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new MessageResponse(Messages.WRONG_LOGIN_PASSWORD));
+        }
+        httpSession.setAttribute(USER_ID, userId);
+        return ResponseEntity.ok(new UserResponseWP(user));
     }
 
     @PostMapping(path = "/newpassword", consumes = JSON, produces = JSON)
@@ -68,7 +74,8 @@ public class SessionController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(Messages.NOT_AUTHORIZE));
         }
         final Long id = (Long) httpSession.getAttribute(USER_ID);
-        if (!service.checkId(id)) {
+        final User user = service.getUser(id);
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(Messages.BAD_COOKIE));
         }
         if (!service.checkSignin(id, body.getPassword())) {
@@ -78,9 +85,8 @@ public class SessionController {
         if (!error.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ValidatorResponse(error));
         }
-        service.changePassword(id, body.getFieldToChange());
-
-        return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));
+        service.changePassword(user, body.getFieldToChange());
+        return ResponseEntity.ok(new UserResponseWP(user));
     }
 
     @PostMapping(path = "/newlogin", consumes = JSON, produces = JSON)
@@ -89,7 +95,8 @@ public class SessionController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(Messages.NOT_AUTHORIZE));
         }
         final Long id = (Long) httpSession.getAttribute(USER_ID);
-        if (!service.checkId(id)) {
+        final User user = service.getUser(id);
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(Messages.BAD_COOKIE));
         }
         if (!service.checkSignin(id, body.getPassword())) {
@@ -98,9 +105,8 @@ public class SessionController {
         if (!service.checkLogin(body.getFieldToChange())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(Messages.LOGIN_EXISTS));
         }
-        service.changeLogin(id, body.getFieldToChange());
-
-        return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));
+        service.changeLogin(user, body.getFieldToChange());
+        return ResponseEntity.ok(new UserResponseWP(user));
     }
 
     @PostMapping(path = "/newemail", consumes = JSON, produces = JSON)
@@ -109,7 +115,8 @@ public class SessionController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(Messages.NOT_AUTHORIZE));
         }
         final Long id = (Long) httpSession.getAttribute(USER_ID);
-        if (!service.checkId(id)) {
+        final User user = service.getUser(id);
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(Messages.BAD_COOKIE));
         }
         if (!service.checkSignin(id, body.getPassword())) {
@@ -118,9 +125,8 @@ public class SessionController {
         if (!service.checkEmail(body.getFieldToChange())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(new MessageResponse(Messages.EMAIL_EXISTS));
         }
-        service.changeEmail(id, body.getFieldToChange());
-
-        return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));
+        service.changeEmail(user, body.getFieldToChange());
+        return ResponseEntity.ok(new UserResponseWP(user));
     }
 
     @PostMapping(path = "/logout", produces = JSON)
@@ -138,9 +144,10 @@ public class SessionController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new MessageResponse(Messages.NOT_AUTHORIZE));
         }
         final Long id = (Long) httpSession.getAttribute(USER_ID);
-        if (!service.checkId(id)) {
+        final User user = service.getUser(id);
+        if (user == null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(Messages.BAD_COOKIE));
         }
-        return ResponseEntity.ok(new UserResponseWP(service.getUser(id)));
+        return ResponseEntity.ok(new UserResponseWP(user));
     }
 }

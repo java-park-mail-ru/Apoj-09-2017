@@ -1,6 +1,6 @@
 package application.services;
 
-import application.db.UserDB;
+import application.db.UserDao;
 import application.models.User;
 import application.utils.requests.SignupRequest;
 import org.jetbrains.annotations.NotNull;
@@ -11,73 +11,67 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AccountService {
-    private final UserDB db;
+    @NotNull
+    private final UserDao db;
+    @NotNull
     private final PasswordEncoder encoder;
 
-    public AccountService(@NotNull UserDB db, @NotNull PasswordEncoder encoder) {
+    public AccountService(@NotNull UserDao db, @NotNull PasswordEncoder encoder) {
         this.db = db;
         this.encoder = encoder;
     }
 
-    public Long addUser(SignupRequest user) {
+    @NotNull
+    public Long addUser(@NotNull SignupRequest user) {
         final String encodedPassword = encoder.encode(user.getPassword());
         return db.addUser(user.getLogin(), encodedPassword, user.getEmail());
     }
 
-    public void changePassword(long id, String password) {
+    public void changePassword(@NotNull User user, @NotNull String password) {
         password = encoder.encode(password);
-        final User user = db.getUser(id);
-        if (user != null) {
-            user.setPassword(password);
-            db.changeUserData(user);
-        }
+        user.setPassword(password);
+        db.changeUserData(user);
     }
 
-    public void changeLogin(long id, String login) {
-        final User user = db.getUser(id);
-        if (user != null) {
-            user.setLogin(login);
-            db.changeUserData(user);
-        }
+    public void changeLogin(@NotNull User user, @NotNull String login) {
+        user.setLogin(login);
+        db.changeUserData(user);
     }
 
-    public void changeEmail(long id, String email) {
-        final User user = db.getUser(id);
-        if (user != null) {
-            user.setEmail(email);
-            db.changeUserData(user);
-        }
+    public void changeEmail(@NotNull User user, @NotNull String email) {
+        user.setEmail(email);
+        db.changeUserData(user);
     }
 
-    @NotNull
+    @Nullable
     public User getUser(long id) {
         return db.getUser(id);
     }
 
     @Nullable
-    public Long getId(String login) {
-        return db.getId(login);
+    public User getUser(@NotNull String login) {
+        return db.getUser(login);
     }
 
-    public boolean checkLogin(String login) {
-        return !db.hasLogin(login);
+    public boolean checkLogin(@NotNull String login) {
+        return db.getIdByLogin(login) == null;
     }
 
-    public boolean checkId(long id) {
-        return db.hasId(id);
+    public boolean checkEmail(@NotNull String email) {
+        return db.getIdByEmail(email) == null;
     }
 
-    public boolean checkEmail(String login) {
-        return !db.hasEmail(login);
+    public boolean checkSignup(@NotNull String login, @NotNull String email) {
+        return db.checkSignup(login, email);
     }
 
-    public boolean checkSignup(String login, String email) {
-        return !(db.hasLogin(login) || db.hasEmail(email));
-    }
-
-    public boolean checkSignin(long id, String password) {
+    public boolean checkSignin(long id, @NotNull String password) {
         final User user = db.getUser(id);
-        return user != null && encoder.matches(password, user.getPassword());
+        return encoder.matches(password, user.getPassword());
+    }
+
+    public void clear() {
+        db.clear();
     }
 
 }
