@@ -1,86 +1,92 @@
 package application.service;
 
+import application.models.User;
 import application.services.AccountService;
 import application.utils.requests.SignupRequest;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.junit.After;
-import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@Transactional
 public class AccountServiceTest {
     static final String LOGIN = "login";
     static final String EMAIL = "email@mail.ru";
     static final String PASSWORD = "qwerty123";
 
     @Autowired
-    private AccountService usersService;
-    @Autowired
-    private TestRestTemplate template;
+    private AccountService service;
 
-    private HttpEntity<Object> getHttpEntity(@NotNull Object body, @Nullable List<String> cookie) {
-        if (cookie != null) {
-            final HttpHeaders headers = new HttpHeaders();
-            headers.put("Cookie", cookie);
-            return new HttpEntity<>(body, headers);
-        } else {
-            return new HttpEntity<>(body);
-        }
-    }
+    private long testUserId;
 
-    private @Nullable List<String> signup(@NotNull String login, @NotNull String email, @NotNull String password,
-                                          @NotNull HttpStatus status, @Nullable List<String> cookie) {
-
-        final SignupRequest signupRequest = new SignupRequest(login, password, email);
-        final HttpEntity<Object> entity = getHttpEntity(signupRequest, cookie);
-
-        final ResponseEntity<String> response = template.exchange("/signup", HttpMethod.POST, entity, String.class);
-        Assert.assertEquals(status, response.getStatusCode());
-
-        return response.getHeaders().get("Set-Cookie");
+    @Before
+    public void before() {
+        final SignupRequest user = new SignupRequest(LOGIN, PASSWORD, EMAIL);
+        testUserId = service.addUser(user);
     }
 
     @Test
-    public void testFullRegistration() {
-        signup(LOGIN, EMAIL, PASSWORD, HttpStatus.OK, null);
-
+    public void testAddUser() {
+        final SignupRequest user = new SignupRequest(LOGIN + "q", PASSWORD + "q", EMAIL + "q");
+        final long id = service.addUser(user);
+        assertTrue(id > 0);
     }
 
     @Test
-    public void testConflictSignup() {
-        signup(LOGIN, EMAIL, PASSWORD, HttpStatus.OK, null);
-        signup(LOGIN, EMAIL, PASSWORD, HttpStatus.CONFLICT, null);
+    public void testGetUserById() {
+        final User user = service.getUser(testUserId);
+        assertEquals(user.getId(), testUserId);
+        assertEquals(user.getEmail(), EMAIL);
+        assertEquals(user.getLogin(), LOGIN);
     }
 
     @Test
-    public void testCorrectSignup() {
-        signup(LOGIN, EMAIL, PASSWORD, HttpStatus.OK, null);
+    public void testGetUserByLogin() {
+        final User user = service.getUser(LOGIN);
+        assertEquals(user.getId(), testUserId);
+        assertEquals(user.getEmail(), EMAIL);
+        assertEquals(user.getLogin(), LOGIN);
     }
 
     @Test
-    public void testAuthorizedSignup() {
-        final List<String> cookie = signup(LOGIN, EMAIL, PASSWORD, HttpStatus.OK, null);
-        signup("uniq", "uniq@mail.ru", PASSWORD, HttpStatus.FORBIDDEN, cookie);
+    public void testCheckLogin() {
+        assertFalse(service.checkLogin(LOGIN));
+        assertTrue(service.checkLogin("dfghjjfnjdfnvj"));
     }
 
     @Test
-    public void testBadRequestSignup() {
-        signup("", EMAIL, PASSWORD, HttpStatus.BAD_REQUEST, null);
+    public void testCheckEmail() {
+        assertFalse(service.checkEmail(EMAIL));
+        assertTrue(service.checkEmail("dfghjjfnjdfnvj@mail.dh"));
+    }
+
+    @Test
+    public void testCheckSignup() {
+        assertFalse(service.checkSignup(LOGIN, EMAIL));
+        assertFalse(service.checkSignup(LOGIN, "fvejfnve@jf.v"));
+        assertFalse(service.checkSignup("sfjnjsfv", EMAIL));
+        assertTrue(service.checkSignup("login123", "dfghjjfnjdfnvj@mail.dh"));
+    }
+
+    @Test
+    public void testCheckSignin() {
+        assertFalse(service.checkSignin(testUserId + 1, "fbhfbh7438473b"));
+        assertFalse(service.checkSignin(testUserId, "2313hdbch"));
+        assertFalse(service.checkSignin(testUserId + 1, PASSWORD));
+        assertTrue(service.checkSignin(testUserId, PASSWORD));
     }
 
     @After
     public void clear() {
-        usersService.clear();
+        service.clear();
     }
 
 }

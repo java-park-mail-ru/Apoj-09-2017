@@ -15,8 +15,7 @@ public class User {
         this.email = email;
     }
 
-    @NotNull
-    public Long getId() {
+    public long getId() {
         return id;
     }
 

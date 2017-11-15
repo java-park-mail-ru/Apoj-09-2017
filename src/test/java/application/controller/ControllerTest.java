@@ -43,8 +43,12 @@ public class ControllerTest {
 
     @Before
     public void before() {
-        service.clear();
         userId = service.addUser(new SignupRequest(LOGIN, PASSWORD, EMAIL));
+    }
+
+    @After
+    public void after() {
+        service.clear();
     }
 
     @Test
