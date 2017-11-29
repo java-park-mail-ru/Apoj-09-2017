@@ -20,17 +20,21 @@ public class Music {
         playList.add("Владимирский_централ.mp3");
     }
 
-    public @Nullable byte[] getSong() {
+    public @Nullable byte[] getSong(String name) {
         try {
-            final int index = random.nextInt(playList.capacity() - 1);
-            final Path path = Paths.get("/src/main/resources/music/" + playList.get(index));
+            final Path path = Paths.get("/src/main/resources/music/" + name);
             return Files.readAllBytes(path);
         } catch (IOException e) {
             return null;
         }
     }
 
-    public @NotNull byte[] reverseRecord(byte[] record) {
+    public @NotNull String getSongName() {
+        final int index = random.nextInt(playList.capacity() - 1);
+        return playList.get(index);
+    }
+
+    public @NotNull byte[] reverseRecord(@Nullable byte[] record) {
         final int length = record.length;
         for (int i = 0; i < length / 2; ++i) {
             final byte tmp = record[i];

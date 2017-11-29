@@ -8,13 +8,11 @@ import org.jetbrains.annotations.Nullable;
 public class ClientSnap extends Message{
     private long id = -1;
     @NotNull
-    private String mode;
-    @NotNull
     private String status;
     @Nullable
-    private String role;
-    @Nullable
     private byte[] song;
+    @Nullable
+    private String answer;
 
     public long getId() {
         return id;
@@ -42,11 +40,8 @@ public class ClientSnap extends Message{
         this.song = song;
     }
 
-    public @NotNull String getMode() {
-        return mode;
-    }
-
-    public void setMode(@NotNull String mode) {
-        this.mode = mode;
+    @Nullable
+    public String getAnswer() {
+        return answer;
     }
 }

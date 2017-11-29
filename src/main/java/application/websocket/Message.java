@@ -1,7 +1,7 @@
 package application.websocket;
 
 
-import application.mechanic.requests.Disconnect;
+import application.mechanic.requests.FinishGame;
 import application.mechanic.requests.JoinGame;
 import application.mechanic.snapshots.ClientSnap;
 
@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "class")
 @JsonSubTypes({
         @Type(JoinGame.Request.class),
-        @Type(Disconnect.Request.class),
+        @Type(FinishGame.class),
         @Type(ClientSnap.class),
         @Type(ServerSnap.class),
 })
