@@ -1,46 +1,21 @@
 package application.websocket;
 
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import application.mechanic.requests.Disconnect;
+import application.mechanic.requests.JoinGame;
+import application.mechanic.snapshots.ClientSnap;
 
-public class Message {
-    @Nullable
-    private String type;
-    @Nullable
-    private String data;
+import application.mechanic.snapshots.ServerSnap;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-    public Message() {
-    }
-
-    @JsonCreator
-    public Message(@JsonProperty("type") @NotNull String type,
-                   @JsonProperty("data") @NotNull String data) {
-        this.type = type;
-        this.data = data;
-    }
-
-    public Message(@NotNull Class clazz, @NotNull String data) {
-        this(clazz.getName(), data);
-    }
-
-    @Nullable
-    public String getType() {
-        return type;
-    }
-
-    @Nullable
-    public String getData() {
-        return data;
-    }
-
-    public void setType(@NotNull String type) {
-        this.type = type;
-    }
-
-    public void setData(@NotNull String data) {
-        this.data = data;
-    }
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "class")
+@JsonSubTypes({
+        @Type(JoinGame.Request.class),
+        @Type(Disconnect.Request.class),
+        @Type(ClientSnap.class),
+        @Type(ServerSnap.class),
+})
+public abstract class Message {
 }

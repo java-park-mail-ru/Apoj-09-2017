@@ -31,4 +31,6 @@ public class ValidatorTest {
         Assert.assertTrue(Validator.checkPassword("1234567111111111111111111111111111111111").contains(Validator.LONG_PASSWORD));
     }
 
+
+
 }

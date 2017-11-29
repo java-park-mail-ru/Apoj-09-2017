@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
+@SuppressWarnings("MissortedModifiers")
 @Service
 public class AccountService {
     @NotNull

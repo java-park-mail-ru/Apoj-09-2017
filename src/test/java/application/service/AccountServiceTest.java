@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,8 @@ public class AccountServiceTest {
 
     @Autowired
     private AccountService service;
+    @Autowired
+    private PasswordEncoder encoder;
 
     private long testUserId;
 
@@ -35,7 +38,7 @@ public class AccountServiceTest {
 
     @Test
     public void testAddUser() {
-        final SignupRequest user = new SignupRequest(LOGIN + "q", PASSWORD + "q", EMAIL + "q");
+        final SignupRequest user = new SignupRequest("qghnghn", "qfnhfn565756fgh", "qfghf@mail.ru");
         final long id = service.addUser(user);
         assertTrue(id > 0);
     }
@@ -46,6 +49,7 @@ public class AccountServiceTest {
         assertEquals(user.getId(), testUserId);
         assertEquals(user.getEmail(), EMAIL);
         assertEquals(user.getLogin(), LOGIN);
+        assertTrue(encoder.matches(PASSWORD, user.getPassword()));
     }
 
     @Test

@@ -47,7 +47,7 @@ public class RemotePointService {
     public void sendMessageToUser(@NotNull Long userId, @NotNull Message message) throws IOException {
         final WebSocketSession webSocketSession = sessions.get(userId);
         if (webSocketSession == null) {
-            throw new IOException("no game websocket for user " + userId);
+            throw new IOException("no mechanic websocket for user " + userId);
         }
         if (!webSocketSession.isOpen()) {
             throw new IOException("session is closed or not exsists");

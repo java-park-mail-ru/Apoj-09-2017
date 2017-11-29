@@ -14,7 +14,7 @@ import java.io.IOException;
 
 import static org.springframework.web.socket.CloseStatus.SERVER_ERROR;
 
-
+@SuppressWarnings("MissortedModifiers")
 public class GameSocketHandler extends TextWebSocketHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSocketHandler.class);
     private static final CloseStatus ACCESS_DENIED = new CloseStatus(4500, "Not logged in. Access denied");
@@ -70,7 +70,7 @@ public class GameSocketHandler extends TextWebSocketHandler {
         try {
             message = objectMapper.readValue(text.getPayload(), Message.class);
         } catch (IOException ex) {
-            LOGGER.error("wrong json format at game response", ex);
+            LOGGER.error("wrong json format at mechanic response", ex);
             return;
         }
         try {
