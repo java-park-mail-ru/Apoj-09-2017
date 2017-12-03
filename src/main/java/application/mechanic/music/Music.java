@@ -3,25 +3,31 @@ package application.mechanic.music;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Random;
 import java.util.Vector;
+
 //ToDo: сделать нормальный класс
 public class Music {
     private final Vector<String> playList = new Vector<>();
     private final Random random = new Random();
+    private static final int WAV_HEADER_SIZE = 44;
 
     public Music() {
-        playList.add("badtrip.mp3");
-        playList.add("Владимирский_централ.mp3");
+        playList.add("badtrip.wav");
+        playList.add("Владимирский_централ.wav");
     }
 
     public @Nullable byte[] getSong(String name) {
         try {
-            final Path path = Paths.get("/src/main/resources/music/" + name);
+            final Path path = Paths.get("/Users/ilamoskalev/Desktop/TechnoPark/Java/Apoj-09-2017/src/main/resources/music/" + name);
             return Files.readAllBytes(path);
         } catch (IOException e) {
             return null;
@@ -29,17 +35,61 @@ public class Music {
     }
 
     public @NotNull String getSongName() {
-        final int index = random.nextInt(playList.capacity() - 1);
+        final int index = random.nextInt(playList.size());
         return playList.get(index);
     }
 
-    public @NotNull byte[] reverseRecord(@NotNull byte[] record) {
-        final int length = record.length;
-        for (int i = 0; i < length / 2; ++i) {
-            final byte tmp = record[i];
-            record[i] = record[length - i - 1];
-            record[length - i -1] = tmp;
+    //ToDo: переписать без костылей и говнокода P.S.ебал мать этой хуйни если честно
+    public @Nullable byte[] reverseRecord(@NotNull byte[] record) {
+        try {
+            System.out.println("bytearraatbtbh = " + record.length);
+            final AudioInputStream stream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(record));
+            final int frameSize = stream.getFormat().getFrameSize();
+            final byte[][] frames = new byte[stream.available() / frameSize][frameSize];
+            for (int i = 0; i < frames.length; i++) {
+                final byte[] frame = new byte[frameSize];
+                final int numBytes = stream.read(frame, 0, frameSize);
+                if (numBytes == -1) {
+                    break;
+                }
+                frames[i] = frame;
+            }
+            System.out.println("FrameSize = " + frameSize);
+            System.out.println("Number frames = " + frames.length);
+            //System.out.println("Number frames read = " + i);
+            final byte[] result = new byte[record.length];
+            for (int i = 0; i < 78; ++i) {
+                result[i] = record[i];
+            }
+            for (int i = 0; i < frames.length / 2; ++i) {
+                final byte[] tmp = frames[i];
+                frames[i] = frames[frames.length - i - 1];
+                frames[frames.length - i - 1] = tmp;
+            }
+            for (int i = 0; i < frames.length; i++) {
+                for (int j = 0; j < 4; j++) {
+                    result[i * 4 + j + 78] = frames[i][j];
+                }
+            }
+            return result;
+        } catch (UnsupportedAudioFileException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return record;
+        return null;
+    }
+
+    public static void main(String[] args) {
+        final Music music = new Music();
+        final Path path = Paths.get("/Users/ilamoskalev/Desktop/TechnoPark/Java/Apoj-09-2017/src/main/resources/music/hh.wav");
+        try {
+            Files.createFile(path);
+            Files.write(path, music.reverseRecord(music.getSong("badtrip.wav")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
+
+
