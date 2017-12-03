@@ -1,7 +1,5 @@
 package application.mechanic;
 
-
-import application.mechanic.avatar.Player;
 import application.mechanic.internal.ClientSnapService;
 import application.mechanic.internal.GameSessionService;
 import application.mechanic.internal.ServerSnapService;
@@ -34,9 +32,9 @@ public class GameMechanics {
     @NotNull
     private final RemotePointService remotePointService;
     @NotNull
-    private ConcurrentLinkedQueue<Player> singleWaiters = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedQueue<User> singleWaiters = new ConcurrentLinkedQueue<>();
     @NotNull
-    private ConcurrentLinkedQueue<Player> multiWaiters = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedQueue<User> multiWaiters = new ConcurrentLinkedQueue<>();
 
     @NotNull
     private final Queue<Runnable> tasks = new ConcurrentLinkedQueue<>();
@@ -63,10 +61,10 @@ public class GameMechanics {
         }
         final User user = accountService.getUser(userId);
         if (user != null) {
-            if(mode.equals(Config.SINGLE_MODE)) {
-                singleWaiters.add(new Player(user));
+            if (mode.equals(Config.SINGLE_MODE)) {
+                singleWaiters.add(user);
             } else {
-                multiWaiters.add(new Player(user));
+                multiWaiters.add(user);
             }
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug(String.format("User %s added to the waiting list", user.getLogin()));
@@ -75,28 +73,28 @@ public class GameMechanics {
     }
 
     private void tryStartGames() {
-        final Set<Player> matchedPlayers = new LinkedHashSet<>();
+        final Set<User> matchedPlayers = new LinkedHashSet<>();
 
         while (multiWaiters.size() >= 2 || multiWaiters.size() >= 1 && matchedPlayers.size() >= 1) {
-            final Player candidate = multiWaiters.poll();
+            final User candidate = multiWaiters.poll();
             if (!insureCandidate(candidate)) {
                 continue;
             }
             matchedPlayers.add(candidate);
             if (matchedPlayers.size() == 2) {
-                final Iterator<Player> iterator = matchedPlayers.iterator();
-                gameSessionService.startGame(iterator.next(), iterator.next());
+                final Iterator<User> iterator = matchedPlayers.iterator();
+                gameSessionService.startMultiGame(iterator.next(), iterator.next());
                 matchedPlayers.clear();
             }
         }
         multiWaiters.addAll(matchedPlayers);
 
-        while (!singleWaiters.isEmpty()){
-            final Player candidate = singleWaiters.poll();
+        while (!singleWaiters.isEmpty()) {
+            final User candidate = singleWaiters.poll();
             if (!insureCandidate(candidate)) {
                 continue;
             }
-            gameSessionService.startGame(candidate);
+            gameSessionService.startSingleGame(candidate);
         }
     }
 
@@ -112,45 +110,80 @@ public class GameMechanics {
             }
         }
 
-        for (GameSession session : gameSessionService.getSessions()) {
-            clientSnapshotsService.processSnapshotsFor(session);
-        }
-
-        final List<GameSession> sessionsToTerminate = new ArrayList<>();
-        final List<GameSession> sessionsToFinish = new ArrayList<>();
-        for (GameSession session : gameSessionService.getSessions()) {
-            if (session.tryFinishGame()) {
-                sessionsToFinish.add(session);
-                continue;
-            }
-
-            if (!gameSessionService.checkHealthState(session)) {
-                sessionsToTerminate.add(session);
-                continue;
-            }
-
-            try {
-                serverSnapshotService.sendSnapshotsFor(session);
-            } catch (RuntimeException ex) {
-                LOGGER.error("Failed to send snapshots, terminating the session", ex);
-                sessionsToTerminate.add(session);
-            }
-        }
-        sessionsToTerminate.forEach(session -> gameSessionService.forceTerminate(session, true));
-        sessionsToFinish.forEach(session -> gameSessionService.forceTerminate(session, false));
+        multiSessionsProcess();
+        singleSessionsProcess();
 
         tryStartGames();
         clientSnapshotsService.reset();
     }
 
-    private boolean insureCandidate(Player candidate) {
+
+    private void multiSessionsProcess() {
+        final List<MultiGameSession> multiSessionsToTerminate = new ArrayList<>();
+
+        for (MultiGameSession session : gameSessionService.getMultiSessions()) {
+            try {
+                clientSnapshotsService.processSnapshotsFor(session);
+            } catch (RuntimeException ex) {
+                LOGGER.error("Failed to send snapshots, terminating the session", ex);
+                multiSessionsToTerminate.add(session);
+            }
+        }
+
+        final List<MultiGameSession> multiSessionsToFinish = new ArrayList<>();
+        for (MultiGameSession session : gameSessionService.getMultiSessions()) {
+            if (session.tryFinishGame()) {
+                multiSessionsToFinish.add(session);
+                continue;
+            }
+
+            if (!gameSessionService.checkHealthState(session)) {
+                multiSessionsToTerminate.add(session);
+            }
+        }
+        multiSessionsToTerminate.forEach(session -> gameSessionService.forceTerminate(session, true));
+        multiSessionsToFinish.forEach(session -> gameSessionService.forceTerminate(session, false));
+    }
+
+    private void singleSessionsProcess() {
+        final List<SingleGameSession> singleSessionsToTerminate = new ArrayList<>();
+
+        for (SingleGameSession session : gameSessionService.getSingleSessions()) {
+            try {
+                clientSnapshotsService.processSnapshotsFor(session);
+            } catch (RuntimeException ex) {
+                LOGGER.error("Failed to send snapshots, terminating the session", ex);
+                singleSessionsToTerminate.add(session);
+            }
+        }
+
+        final List<SingleGameSession> singleSessionsToFinish = new ArrayList<>();
+        for (SingleGameSession session : gameSessionService.getSingleSessions()) {
+            if (session.tryFinishGame()) {
+                singleSessionsToFinish.add(session);
+                continue;
+            }
+
+            if (!gameSessionService.checkHealthState(session)) {
+                singleSessionsToTerminate.add(session);
+            }
+        }
+        singleSessionsToTerminate.forEach(session -> gameSessionService.forceTerminate(session, true));
+        singleSessionsToFinish.forEach(session -> gameSessionService.forceTerminate(session, false));
+    }
+
+
+    private boolean insureCandidate(User candidate) {
         return remotePointService.isConnected(candidate.getId()) &&
                 accountService.getUser(candidate.getId()) != null;
     }
 
 
     public void reset() {
-        for (GameSession session : gameSessionService.getSessions()) {
+        for (MultiGameSession session : gameSessionService.getMultiSessions()) {
+            gameSessionService.forceTerminate(session, true);
+        }
+        for (SingleGameSession session : gameSessionService.getSingleSessions()) {
             gameSessionService.forceTerminate(session, true);
         }
         singleWaiters.forEach(user -> remotePointService.cutDownConnection(user.getId(), CloseStatus.SERVER_ERROR));

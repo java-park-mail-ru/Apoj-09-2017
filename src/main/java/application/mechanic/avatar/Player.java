@@ -8,12 +8,11 @@ public class Player {
     @NotNull
     private final User user;
     @NotNull
-    private String status = "";
-    @NotNull
-    private String role = "";
+    private String role;
 
-    public Player(@NotNull User user) {
+    public Player(@NotNull User user, @NotNull String role) {
         this.user = user;
+        this.role = role;
     }
 
     public @NotNull User getUser() {
@@ -22,14 +21,6 @@ public class Player {
 
     public long getId() {
         return user.getId();
-    }
-
-    public @NotNull String getStatus() {
-        return status;
-    }
-
-    public void setStatus(@NotNull String status) {
-        this.status = status;
     }
 
     @NotNull

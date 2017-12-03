@@ -1,8 +1,8 @@
 package application.mechanic.internal;
 
 import application.mechanic.Config;
-import application.mechanic.GameSession;
-import application.mechanic.avatar.Player;
+import application.mechanic.MultiGameSession;
+import application.mechanic.SingleGameSession;
 import application.mechanic.music.Music;
 import application.mechanic.snapshots.ClientSnap;
 import org.jetbrains.annotations.NotNull;
@@ -13,8 +13,15 @@ import java.util.*;
 @SuppressWarnings("MissortedModifiers")
 @Service
 public class ClientSnapService {
+    @NotNull
+    private final ServerSnapService serverSnapshotService;
+
     private final Map<Long, ClientSnap> snaps = new HashMap<>();
     private final Music music = new Music();
+
+    public ClientSnapService(@NotNull ServerSnapService serverSnapshotService) {
+        this.serverSnapshotService = serverSnapshotService;
+    }
 
     public void pushClientSnap(@NotNull Long user, @NotNull ClientSnap snap) {
         this.snaps.putIfAbsent(user, snap);
@@ -25,41 +32,40 @@ public class ClientSnapService {
         return snaps.get(user);
     }
 
-    public void processSnapshotsFor(@NotNull GameSession gameSession) {
-        if (gameSession.getMode().equals(Config.SINGLE_MODE)) {
-            singleProcess(gameSession);
-        } else {
-            multiProcess(gameSession);
-        }
+    public void processSnapshotsFor(@NotNull MultiGameSession gameSession) {
+
     }
 
-    public void singleProcess(@NotNull GameSession gameSession) {
-        final Player player = gameSession.getFirst();
-        final ClientSnap playerSnap = getSnapForUser(player.getId());
-        final String status = playerSnap.getStatus();
-        if(status.equals(Config.WAITING_SONG_STATUS)){
-            gameSession.setSongName(music.getSongName());
-            gameSession.setData(music.getSong(gameSession.getSongName()));
-            gameSession.setFirstStatus(Config.WAITING_SONG_STATUS);
-            return;
+    public void processSnapshotsFor(@NotNull SingleGameSession gameSession) {
+        final ClientSnap snap = getSnapForUser(gameSession.getUserId());
+        switch (snap.getType()) {
+            case Config.STEP_2:
+                if (gameSession.getStatus().equals(Config.STEP_1)) {
+                    gameSession.setStatus(Config.STEP_3);
+                    serverSnapshotService.sendSnapshotsFor(gameSession, music.getSong(gameSession.getSongName()));
+                } else {
+                    throw new RuntimeException("Server error");
+                }
+                break;
+            case Config.STEP_4:
+                if (gameSession.getStatus().equals(Config.STEP_3)) {
+                    gameSession.setStatus(Config.STEP_5);
+                    serverSnapshotService.sendSnapshotsFor(gameSession, music.reverseRecord(snap.getData()));
+                } else {
+                    throw new RuntimeException("Server error");
+                }
+                break;
+            case Config.STEP_6:
+                if (gameSession.getStatus().equals(Config.STEP_5)) {
+                    gameSession.setStatus(Config.STEP_7);
+                    gameSession.setResult(snap.getAnswer().toLowerCase().equals(gameSession.getSongName().toLowerCase()));
+                } else {
+                    throw new RuntimeException("Server error");
+                }
+                break;
+            default:
+                throw new RuntimeException("Server error");
         }
-        if(status.equals(Config.RECORDING_STATUS)){
-            gameSession.setFirstStatus(Config.RECORDING_STATUS);
-            return;
-        }
-        if(status.equals(Config.WAITING_RECORD_STATUS)){
-            gameSession.setData(music.reverseRecord(playerSnap.getSong()));
-            gameSession.setFirstStatus(Config.WAITING_RECORD_STATUS);
-            return;
-        }
-        if(status.equals(Config.FINISH_STATUS)){
-            gameSession.setResult(gameSession.getSongName().equals(playerSnap.getAnswer()));
-            gameSession.setFirstStatus(Config.FINISH_STATUS);
-        }
-    }
-
-    public void multiProcess(@NotNull GameSession gameSession) {
-
     }
 
     public void clearForUser(Long userProfileId) {

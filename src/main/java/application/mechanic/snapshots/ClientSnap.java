@@ -2,46 +2,36 @@ package application.mechanic.snapshots;
 
 import application.websocket.Message;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("MissortedModifiers")
 public class ClientSnap extends Message{
-    private long id = -1;
     @NotNull
-    private String status;
-    @Nullable
-    private byte[] song;
-    @Nullable
+    private String type;
+    private byte[] data;
     private String answer;
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
     @NotNull
-    public String getStatus() {
-        return status;
+    public String getType() {
+        return type;
     }
 
-    public void setStatus(@NotNull String status) {
-        this.status = status;
+    public void setType(@NotNull String type) {
+        this.type = type;
     }
 
-    @Nullable
-    public byte[] getSong() {
-        return song;
+    public byte[] getData() {
+        return data;
     }
 
-    public void setSong(@Nullable byte[] song) {
-        this.song = song;
+    public void setData(byte[] data) {
+        this.data = data;
     }
 
-    @Nullable
     public String getAnswer() {
         return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
     }
 }

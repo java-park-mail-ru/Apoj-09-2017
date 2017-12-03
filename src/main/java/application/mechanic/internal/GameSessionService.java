@@ -1,12 +1,13 @@
 package application.mechanic.internal;
 
 import application.mechanic.Config;
+import application.mechanic.SingleGameSession;
 import application.mechanic.avatar.Player;
+import application.mechanic.music.Music;
 import application.mechanic.requests.FinishGame;
 import application.models.User;
 import application.websocket.RemotePointService;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import application.mechanic.GameSession;
+import application.mechanic.MultiGameSession;
 
 @SuppressWarnings("MissortedModifiers")
 @Service
@@ -27,81 +28,127 @@ public class GameSessionService {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSessionService.class.getSimpleName());
 
     @NotNull
-    private final Map<Long, GameSession> usersMap = new ConcurrentHashMap<>();
+    private final Map<Long, MultiGameSession> multiUsersMap = new ConcurrentHashMap<>();
     @NotNull
-    private final Set<GameSession> gameSessions = new LinkedHashSet<>();
+    private final Set<MultiGameSession> multiGameSessions = new LinkedHashSet<>();
+    @NotNull
+    private final Map<Long, SingleGameSession> singleUsersMap = new ConcurrentHashMap<>();
+    @NotNull
+    private final Set<SingleGameSession> singleGameSessions = new LinkedHashSet<>();
     @NotNull
     private final RemotePointService remotePointService;
     @NotNull
     private final ClientSnapService clientSnapshotsService;
+    @NotNull
+    private final GameInitService gameInitService;
+    @NotNull
+    private final Music music = new Music();
 
-    public GameSessionService(@NotNull RemotePointService remotePointService, @NotNull ClientSnapService clientSnapshotsService) {
+    public GameSessionService(@NotNull RemotePointService remotePointService, @NotNull ClientSnapService clientSnapshotsService, @NotNull GameInitService gameInitService) {
         this.remotePointService = remotePointService;
         this.clientSnapshotsService = clientSnapshotsService;
+        this.gameInitService = gameInitService;
     }
 
-
-    public Set<GameSession> getSessions() {
-        return gameSessions;
+    public Set<MultiGameSession> getMultiSessions() {
+        return multiGameSessions;
     }
 
-    public void startGame(@NotNull Player first, @NotNull Player second) {
-        final GameSession gameSession = new GameSession(first, second, Config.MULTI_MODE, this);
-        gameSessions.add(gameSession);
-        usersMap.put(first.getId(), gameSession);
-        usersMap.put(second.getId(), gameSession);
+    public Set<SingleGameSession> getSingleSessions() {
+        return singleGameSessions;
+    }
+
+    public void startMultiGame(@NotNull User first, @NotNull User second) {
+        final Player singer = new Player(first, Config.SINGER_ROLE);
+        final Player listener = new Player(second, Config.LISTENER_ROLE);
+        final MultiGameSession gameSession = new MultiGameSession(singer, listener, music.getSongName(), Config.STEP_1, this);
+        multiGameSessions.add(gameSession);
+        multiUsersMap.put(first.getId(), gameSession);
+        multiUsersMap.put(second.getId(), gameSession);
+        gameInitService.initGameFor(gameSession);
         LOGGER.info("Game session " + gameSession.getId() + " started. " + gameSession.toString());
     }
 
-    public void startGame(@NotNull Player first) {
-        final GameSession gameSession = new GameSession(first, Config.SINGLE_MODE, this);
-        gameSessions.add(gameSession);
-        usersMap.put(first.getId(), gameSession);
+    public void startSingleGame(@NotNull User user) {
+        final Player player = new Player(user, Config.SINGER_ROLE);
+        final SingleGameSession gameSession = new SingleGameSession(player, music.getSongName(), Config.STEP_1, this);
+        singleGameSessions.add(gameSession);
+        singleUsersMap.put(user.getId(), gameSession);
+        gameInitService.initGameFor(gameSession);
         LOGGER.info("Game session " + gameSession.getId() + " started. " + gameSession.toString());
     }
 
     public boolean isPlaying(@NotNull Long id) {
-        return usersMap.containsKey(id);
+        return multiUsersMap.containsKey(id) || singleUsersMap.containsKey(id);
     }
 
-    public void forceTerminate(@NotNull GameSession gameSession, boolean error) {
-        final boolean exists = gameSessions.remove(gameSession);
+    public void forceTerminate(@NotNull MultiGameSession gameSession, boolean error) {
+        final boolean exists = multiGameSessions.remove(gameSession);
         gameSession.setFinished();
-        usersMap.remove(gameSession.getFirst().getId());
-        usersMap.remove(gameSession.getSecond().getId());
+        multiUsersMap.remove(gameSession.getSinger().getId());
+        multiUsersMap.remove(gameSession.getListener().getId());
         final CloseStatus status = error ? CloseStatus.SERVER_ERROR : CloseStatus.NORMAL;
         if (exists) {
-            remotePointService.cutDownConnection(gameSession.getFirst().getId(), status);
-            remotePointService.cutDownConnection(gameSession.getSecond().getId(), status);
+            remotePointService.cutDownConnection(gameSession.getSinger().getId(), status);
+            remotePointService.cutDownConnection(gameSession.getListener().getId(), status);
         }
-        clientSnapshotsService.clearForUser(gameSession.getFirst().getId());
-        clientSnapshotsService.clearForUser(gameSession.getSecond().getId());
+        clientSnapshotsService.clearForUser(gameSession.getSinger().getId());
+        clientSnapshotsService.clearForUser(gameSession.getListener().getId());
 
         LOGGER.info("Game session " + gameSession.getId() + (error ? " was terminated due to error. " : " was cleaned. ")
                 + gameSession.toString());
     }
 
-    public boolean checkHealthState(@NotNull GameSession gameSession) {
+    public void forceTerminate(@NotNull SingleGameSession gameSession, boolean error) {
+        final boolean exists = singleGameSessions.remove(gameSession);
+        gameSession.setFinished();
+        singleUsersMap.remove(gameSession.getPlayer().getId());
+        final CloseStatus status = error ? CloseStatus.SERVER_ERROR : CloseStatus.NORMAL;
+        if (exists) {
+            remotePointService.cutDownConnection(gameSession.getPlayer().getId(), status);
+        }
+        clientSnapshotsService.clearForUser(gameSession.getPlayer().getId());
+
+        LOGGER.info("Game session " + gameSession.getId() + (error ? " was terminated due to error. " : " was cleaned. ")
+                + gameSession.toString());
+    }
+
+    public boolean checkHealthState(@NotNull MultiGameSession gameSession) {
         return gameSession.getPlayers().stream().map(Player::getId).allMatch(remotePointService::isConnected);
     }
 
-    public void finishGame(@NotNull GameSession gameSession) {
+    public boolean checkHealthState(@NotNull SingleGameSession gameSession) {
+        return remotePointService.isConnected(gameSession.getUserId());
+    }
+
+    public void finishMultiGame(@NotNull MultiGameSession gameSession) {
         gameSession.setFinished();
         final boolean result = gameSession.getResult();
 
         try {
-            remotePointService.sendMessageToUser(gameSession.getFirst().getId(), new FinishGame(result));
+            remotePointService.sendMessageToUser(gameSession.getSinger().getId(), new FinishGame(result));
         } catch (IOException ex) {
             LOGGER.warn(String.format("Failed to send FinishGame message to user %s",
-                    gameSession.getFirst().getUser().getLogin()), ex);
+                    gameSession.getSinger().getUser().getLogin()), ex);
         }
-        if (gameSession.getSecond() != null) {
-            try {
-                remotePointService.sendMessageToUser(gameSession.getSecond().getId(), new FinishGame(result));
-            } catch (IOException ex) {
-                LOGGER.warn(String.format("Failed to send FinishGame message to user %s",
-                        gameSession.getSecond().getUser().getLogin()), ex);
-            }
+
+        try {
+            remotePointService.sendMessageToUser(gameSession.getListener().getId(), new FinishGame(result));
+        } catch (IOException ex) {
+            LOGGER.warn(String.format("Failed to send FinishGame message to user %s",
+                    gameSession.getListener().getUser().getLogin()), ex);
+        }
+    }
+
+    public void finishSingleGame(@NotNull SingleGameSession gameSession) {
+        gameSession.setFinished();
+        final boolean result = gameSession.getResult();
+
+        try {
+            remotePointService.sendMessageToUser(gameSession.getPlayer().getId(), new FinishGame(result));
+        } catch (IOException ex) {
+            LOGGER.warn(String.format("Failed to send FinishGame message to user %s",
+                    gameSession.getPlayer().getUser().getLogin()), ex);
         }
     }
 }

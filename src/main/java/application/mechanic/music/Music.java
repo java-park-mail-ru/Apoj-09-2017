@@ -9,9 +9,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Random;
 import java.util.Vector;
-
+//ToDo: сделать нормальный класс
 public class Music {
-    //ToDo: сделать БД с возможностью добавления песен
     private final Vector<String> playList = new Vector<>();
     private final Random random = new Random();
 
@@ -34,7 +33,7 @@ public class Music {
         return playList.get(index);
     }
 
-    public @NotNull byte[] reverseRecord(@Nullable byte[] record) {
+    public @NotNull byte[] reverseRecord(@NotNull byte[] record) {
         final int length = record.length;
         for (int i = 0; i < length / 2; ++i) {
             final byte tmp = record[i];
