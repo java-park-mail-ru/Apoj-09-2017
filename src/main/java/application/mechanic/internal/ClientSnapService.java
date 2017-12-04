@@ -39,25 +39,17 @@ public class ClientSnapService {
     public void processSnapshotsFor(@NotNull SingleGameSession gameSession) {
         final ClientSnap snap = getSnapForUser(gameSession.getUserId());
         switch (snap.getType()) {
-            case Config.STEP_2:
+            case Config.STEP_1:
                 if (gameSession.getStatus().equals(Config.STEP_1)) {
-                    gameSession.setStatus(Config.STEP_3);
-                    serverSnapshotService.sendSnapshotsFor(gameSession, music.getSong(gameSession.getSongName()));
-                } else {
-                    throw new RuntimeException("Server error");
-                }
-                break;
-            case Config.STEP_4:
-                if (gameSession.getStatus().equals(Config.STEP_3)) {
-                    gameSession.setStatus(Config.STEP_5);
+                    gameSession.setStatus(Config.STEP_2);
                     serverSnapshotService.sendSnapshotsFor(gameSession, music.reverseRecord(snap.getData()));
                 } else {
                     throw new RuntimeException("Server error");
                 }
                 break;
-            case Config.STEP_6:
-                if (gameSession.getStatus().equals(Config.STEP_5)) {
-                    gameSession.setStatus(Config.STEP_7);
+            case Config.STEP_2:
+                if (gameSession.getStatus().equals(Config.STEP_2)) {
+                    gameSession.setStatus(Config.STEP_3);
                     gameSession.setResult(snap.getAnswer().toLowerCase().equals(gameSession.getSongName().toLowerCase()));
                 } else {
                     throw new RuntimeException("Server error");

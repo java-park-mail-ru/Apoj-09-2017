@@ -73,7 +73,7 @@ public class SingleGameSession {
     }
 
     public boolean tryFinishGame() {
-        if (status.equals(Config.STEP_7)) {
+        if (status.equals(Config.STEP_3)) {
             gameSessionService.finishSingleGame(this);
             return true;
         }
