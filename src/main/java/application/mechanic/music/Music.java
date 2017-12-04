@@ -27,7 +27,7 @@ public class Music {
 
     public @Nullable byte[] getSong(String name) {
         try {
-            final Path path = Paths.get("/Users/ilamoskalev/Desktop/TechnoPark/Java/Apoj-09-2017/src/main/resources/music/" + name);
+            final Path path = Paths.get("./src/main/resources/music/" + name);
             return Files.readAllBytes(path);
         } catch (IOException e) {
             return null;
@@ -39,7 +39,7 @@ public class Music {
         return playList.get(index);
     }
 
-    //ToDo: переписать без костылей и говнокода P.S.ебал мать этой хуйни если честно
+    //ToDo: переписать без костылей и говнокода
     public @Nullable byte[] reverseRecord(@NotNull byte[] record) {
         try {
             System.out.println("bytearraatbtbh = " + record.length);
@@ -56,7 +56,7 @@ public class Music {
             }
             System.out.println("FrameSize = " + frameSize);
             System.out.println("Number frames = " + frames.length);
-            //System.out.println("Number frames read = " + i);
+            System.out.println(record.length - frameSize*frames.length);
             final byte[] result = new byte[record.length];
             for (int i = 0; i < 78; ++i) {
                 result[i] = record[i];
@@ -80,16 +80,16 @@ public class Music {
         return null;
     }
 
-    public static void main(String[] args) {
-        final Music music = new Music();
-        final Path path = Paths.get("/Users/ilamoskalev/Desktop/TechnoPark/Java/Apoj-09-2017/src/main/resources/music/hh.wav");
-        try {
-            Files.createFile(path);
-            Files.write(path, music.reverseRecord(music.getSong("badtrip.wav")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    public static void main(String[] args) {
+//        final Music music = new Music();
+//        final Path path = Paths.get("./src/main/resources/music/hh.wav");
+//        try {
+//            Files.createFile(path);
+//            Files.write(path, music.reverseRecord(music.getSong("Владимирский_централ.wav")));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }
 
 
