@@ -30,7 +30,4 @@ public class ValidatorTest {
         Assert.assertTrue(Validator.checkPassword("12").contains(Validator.SHORT_PASSWORD));
         Assert.assertTrue(Validator.checkPassword("1234567111111111111111111111111111111111").contains(Validator.LONG_PASSWORD));
     }
-
-
-
 }

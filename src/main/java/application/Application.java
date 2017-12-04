@@ -3,6 +3,7 @@ package application;
 import application.db.UserDao;
 import application.db.UserDaoImpl;
 import application.websocket.GameSocketHandler;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
