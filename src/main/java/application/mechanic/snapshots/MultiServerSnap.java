@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("MissortedModifiers")
-public class MultiServerSnap extends Message{
+public class MultiServerSnap extends Message {
     @NotNull
     private Player opponent;
     @NotNull

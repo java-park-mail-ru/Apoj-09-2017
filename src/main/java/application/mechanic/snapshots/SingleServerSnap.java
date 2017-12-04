@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("MissortedModifiers")
-public class SingleServerSnap extends Message{
+public class SingleServerSnap extends Message {
     @NotNull
     private String status;
     @Nullable

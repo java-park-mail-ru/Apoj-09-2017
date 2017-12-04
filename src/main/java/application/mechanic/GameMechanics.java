@@ -174,8 +174,8 @@ public class GameMechanics {
 
 
     private boolean insureCandidate(User candidate) {
-        return remotePointService.isConnected(candidate.getId()) &&
-                accountService.getUser(candidate.getId()) != null;
+        return remotePointService.isConnected(candidate.getId())
+                && accountService.getUser(candidate.getId()) != null;
     }
 
 

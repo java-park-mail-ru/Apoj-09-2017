@@ -15,7 +15,8 @@ public class Player {
         this.role = role;
     }
 
-    public @NotNull User getUser() {
+    @NotNull
+    public User getUser() {
         return user;
     }
 

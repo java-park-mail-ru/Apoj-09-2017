@@ -29,7 +29,11 @@ public class MultiGameSession {
     private boolean result = false;
 
 
-    public MultiGameSession(@NotNull Player singer, @NotNull Player listener, @NotNull String songName, @NotNull String status, @NotNull GameSessionService gameSessionService) {
+    public MultiGameSession(@NotNull Player singer,
+                            @NotNull Player listener,
+                            @NotNull String songName,
+                            @NotNull String status,
+                            @NotNull GameSessionService gameSessionService) {
         this.sessionId = ID_GENERATOR.getAndIncrement();
         this.singer = singer;
         this.listener = listener;
@@ -61,11 +65,15 @@ public class MultiGameSession {
     }
 
     @Override
-    public boolean equals(@Nullable Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(@Nullable Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
 
-        final MultiGameSession other = (MultiGameSession) o;
+        final MultiGameSession other = (MultiGameSession) object;
 
         return sessionId.equals(other.sessionId);
     }

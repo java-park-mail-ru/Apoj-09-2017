@@ -24,7 +24,10 @@ public class SingleGameSession {
     private final GameSessionService gameSessionService;
     private boolean result = false;
 
-    public SingleGameSession(@NotNull Player player, @NotNull String songName, @NotNull String status, @NotNull GameSessionService gameSessionService) {
+    public SingleGameSession(@NotNull Player player,
+                             @NotNull String songName,
+                             @NotNull String status,
+                             @NotNull GameSessionService gameSessionService) {
         this.sessionId = ID_GENERATOR.getAndIncrement();
         this.player = player;
         this.songName = songName;
@@ -43,11 +46,15 @@ public class SingleGameSession {
     }
 
     @Override
-    public boolean equals(@Nullable Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(@Nullable Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
 
-        final SingleGameSession other = (SingleGameSession) o;
+        final SingleGameSession other = (SingleGameSession) object;
 
         return sessionId.equals(other.sessionId);
     }
@@ -90,7 +97,9 @@ public class SingleGameSession {
         this.songName = songName;
     }
 
-    public long getUserId() { return player.getId(); }
+    public long getUserId() {
+        return player.getId();
+    }
 
     @NotNull
     public String getStatus() {

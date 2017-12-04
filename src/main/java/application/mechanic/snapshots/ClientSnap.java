@@ -4,7 +4,7 @@ import application.websocket.Message;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("MissortedModifiers")
-public class ClientSnap extends Message{
+public class ClientSnap extends Message {
     @NotNull
     private String type;
     private byte[] data;

@@ -1,7 +1,6 @@
 package application.db;
 
 import application.models.User;
-import application.websocket.GameSocketHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -44,10 +43,10 @@ public class UserDaoImpl implements UserDao {
 
     private static final RowMapper<User> USER_MAPPER = (res, num) ->
             new User(res.getLong("id"),
-            res.getString("login"),
-            res.getString("password"),
-            res.getString("email")
-    );
+                    res.getString("login"),
+                    res.getString("password"),
+                    res.getString("email")
+            );
 
     @Override
     @Nullable

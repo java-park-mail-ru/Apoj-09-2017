@@ -18,14 +18,15 @@ import java.util.Vector;
 public class Music {
     private final Vector<String> playList = new Vector<>();
     private final Random random = new Random();
-    private static final int WAV_HEADER_SIZE = 44;
+    private static final int WAV_HEADER_SIZE = 78;
 
     public Music() {
         playList.add("badtrip.wav");
         playList.add("Владимирский_централ.wav");
     }
 
-    public @Nullable byte[] getSong(String name) {
+    @Nullable
+    public byte[] getSong(String name) {
         try {
             final Path path = Paths.get("./src/main/resources/music/" + name);
             return Files.readAllBytes(path);
@@ -34,13 +35,15 @@ public class Music {
         }
     }
 
-    public @NotNull String getSongName() {
+    @NotNull
+    public String getSongName() {
         final int index = random.nextInt(playList.size());
         return playList.get(index);
     }
 
     //ToDo: переписать без костылей и говнокода
-    public @Nullable byte[] reverseRecord(@NotNull byte[] record) {
+    @Nullable
+    public byte[] reverseRecord(@NotNull byte[] record) {
         try {
             System.out.println("bytearraatbtbh = " + record.length);
             final AudioInputStream stream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(record));
@@ -56,9 +59,9 @@ public class Music {
             }
             System.out.println("FrameSize = " + frameSize);
             System.out.println("Number frames = " + frames.length);
-            System.out.println(record.length - frameSize*frames.length);
+            System.out.println(record.length - frameSize * frames.length);
             final byte[] result = new byte[record.length];
-            for (int i = 0; i < 78; ++i) {
+            for (int i = 0; i < WAV_HEADER_SIZE; ++i) {
                 result[i] = record[i];
             }
             for (int i = 0; i < frames.length / 2; ++i) {
@@ -67,8 +70,8 @@ public class Music {
                 frames[frames.length - i - 1] = tmp;
             }
             for (int i = 0; i < frames.length; i++) {
-                for (int j = 0; j < 4; j++) {
-                    result[i * 4 + j + 78] = frames[i][j];
+                for (int j = 0; j < frameSize; j++) {
+                    result[i * frameSize + j + WAV_HEADER_SIZE] = frames[i][j];
                 }
             }
             return result;

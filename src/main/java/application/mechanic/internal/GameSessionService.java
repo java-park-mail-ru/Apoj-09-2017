@@ -44,7 +44,9 @@ public class GameSessionService {
     @NotNull
     private final Music music = new Music();
 
-    public GameSessionService(@NotNull RemotePointService remotePointService, @NotNull ClientSnapService clientSnapshotsService, @NotNull GameInitService gameInitService) {
+    public GameSessionService(@NotNull RemotePointService remotePointService,
+                              @NotNull ClientSnapService clientSnapshotsService,
+                              @NotNull GameInitService gameInitService) {
         this.remotePointService = remotePointService;
         this.clientSnapshotsService = clientSnapshotsService;
         this.gameInitService = gameInitService;
@@ -87,30 +89,48 @@ public class GameSessionService {
         gameSession.setFinished();
         multiUsersMap.remove(gameSession.getSinger().getId());
         multiUsersMap.remove(gameSession.getListener().getId());
-        final CloseStatus status = error ? CloseStatus.SERVER_ERROR : CloseStatus.NORMAL;
+        final CloseStatus status;
+        if (error) {
+            status = CloseStatus.SERVER_ERROR;
+        } else {
+            status = CloseStatus.NORMAL;
+        }
         if (exists) {
             remotePointService.cutDownConnection(gameSession.getSinger().getId(), status);
             remotePointService.cutDownConnection(gameSession.getListener().getId(), status);
         }
         clientSnapshotsService.clearForUser(gameSession.getSinger().getId());
         clientSnapshotsService.clearForUser(gameSession.getListener().getId());
-
-        LOGGER.info("Game session " + gameSession.getId() + (error ? " was terminated due to error. " : " was cleaned. ")
-                + gameSession.toString());
+        final String logger;
+        if (error) {
+            logger = " was terminated due to error. ";
+        } else {
+            logger = " was cleaned. ";
+        }
+        LOGGER.info("Game session " + gameSession.getId() + logger + gameSession.toString());
     }
 
     public void forceTerminate(@NotNull SingleGameSession gameSession, boolean error) {
         final boolean exists = singleGameSessions.remove(gameSession);
         gameSession.setFinished();
         singleUsersMap.remove(gameSession.getPlayer().getId());
-        final CloseStatus status = error ? CloseStatus.SERVER_ERROR : CloseStatus.NORMAL;
+        final CloseStatus status;
+        if (error) {
+            status = CloseStatus.SERVER_ERROR;
+        } else {
+            status = CloseStatus.NORMAL;
+        }
         if (exists) {
             remotePointService.cutDownConnection(gameSession.getPlayer().getId(), status);
         }
         clientSnapshotsService.clearForUser(gameSession.getPlayer().getId());
-
-        LOGGER.info("Game session " + gameSession.getId() + (error ? " was terminated due to error. " : " was cleaned. ")
-                + gameSession.toString());
+        final String logger;
+        if (error) {
+            logger = " was terminated due to error. ";
+        } else {
+            logger = " was cleaned. ";
+        }
+        LOGGER.info("Game session " + gameSession.getId() + logger + gameSession.toString());
     }
 
     public boolean checkHealthState(@NotNull MultiGameSession gameSession) {
