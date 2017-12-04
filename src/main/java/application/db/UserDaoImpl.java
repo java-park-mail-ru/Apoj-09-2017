@@ -3,18 +3,22 @@ package application.db;
 import application.models.User;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-
+@SuppressWarnings("MissortedModifiers")
 @Transactional
 public class UserDaoImpl implements UserDao {
-
     @Autowired
     private JdbcTemplate template;
+    @NotNull
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserDaoImpl.class);
 
     @Override
     @NotNull
@@ -25,20 +29,24 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void changeUserData(@NotNull User user) {
-        final String query = "UPDATE users SET "
-                + "login = ?, "
-                + "email = ?, "
-                + "password = ? "
-                + "WHERE id = ?";
-        template.update(query, user.getLogin(), user.getEmail(), user.getPassword(), user.getId());
+        try {
+            final String query = "UPDATE users SET "
+                    + "login = ?, "
+                    + "email = ?, "
+                    + "password = ? "
+                    + "WHERE id = ?";
+            template.update(query, user.getLogin(), user.getEmail(), user.getPassword(), user.getId());
+        } catch (DuplicateKeyException e) {
+            LOGGER.error("DuplicateKeyException in changeUserData");
+        }
     }
 
     private static final RowMapper<User> USER_MAPPER = (res, num) ->
             new User(res.getLong("id"),
-            res.getString("login"),
-            res.getString("password"),
-            res.getString("email")
-    );
+                    res.getString("login"),
+                    res.getString("password"),
+                    res.getString("email")
+            );
 
     @Override
     @Nullable

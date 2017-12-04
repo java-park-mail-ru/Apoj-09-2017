@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
+@SuppressWarnings("MissortedModifiers")
 @Service
 public class AccountService {
     @NotNull
@@ -67,7 +68,8 @@ public class AccountService {
 
     public boolean checkSignin(long id, @NotNull String password) {
         final User user = db.getUser(id);
-        return encoder.matches(password, user.getPassword());
+        return user != null && encoder.matches(password, user.getPassword());
+
     }
 
     public void clear() {
