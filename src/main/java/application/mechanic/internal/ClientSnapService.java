@@ -40,7 +40,37 @@ public class ClientSnapService {
     }
 
     public void processSnapshotsFor(@NotNull MultiGameSession gameSession) {
-
+        final String status = gameSession.getStatus();
+        if (status.equals(Config.STEP_1)) {
+            final ClientSnap snap = getSnapForUser(gameSession.getSingerId());
+            final byte[] data = music.reverseRecord(decoder.decode(snap.getData()));
+            if (snap.getType().equals(Config.STEP_1) && data != null) {
+                serverSnapshotService.sendSnapshotsFor(gameSession, encoder.encode(data));
+                gameSession.setStatus(Config.STEP_1_5);
+            } else {
+                throw new RuntimeException("Server error");
+            }
+        }
+        if (status.equals(Config.STEP_1_5)) {
+            final ClientSnap snap = getSnapForUser(gameSession.getListenerId());
+            final byte[] data = music.reverseRecord(decoder.decode(snap.getData()));
+            if (snap.getType().equals(Config.STEP_1_5) && data != null) {
+                serverSnapshotService.sendSnapshotsFor(gameSession, encoder.encode(data));
+                gameSession.setStatus(Config.STEP_2);
+            } else {
+                throw new RuntimeException("Server error");
+            }
+        }
+        if (status.equals(Config.STEP_2)) {
+            final ClientSnap snap = getSnapForUser(gameSession.getListenerId());
+            final byte[] data = music.reverseRecord(decoder.decode(snap.getData()));
+            if (snap.getType().equals(Config.STEP_2) && data != null) {
+                gameSession.setStatus(Config.FINAL_STEP);
+                gameSession.setResult(snap.getAnswer().toLowerCase().equals(gameSession.getSongName().toLowerCase()));
+            } else {
+                throw new RuntimeException("Server error");
+            }
+        }
     }
 
     public void processSnapshotsFor(@NotNull SingleGameSession gameSession) {
@@ -57,7 +87,7 @@ public class ClientSnapService {
                 break;
             case Config.STEP_2:
                 if (gameSession.getStatus().equals(Config.STEP_2)) {
-                    gameSession.setStatus(Config.STEP_3);
+                    gameSession.setStatus(Config.FINAL_STEP);
                     gameSession.setResult(snap.getAnswer().toLowerCase().equals(gameSession.getSongName().toLowerCase()));
                 } else {
                     throw new RuntimeException("Server error");

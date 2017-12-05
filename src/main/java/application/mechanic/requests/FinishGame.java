@@ -4,7 +4,7 @@ import application.mechanic.Config;
 import application.websocket.Message;
 
 public class FinishGame extends Message {
-    private String type = Config.STEP_3;
+    private String type = Config.FINAL_STEP;
     private boolean result;
 
     public FinishGame(boolean result) {

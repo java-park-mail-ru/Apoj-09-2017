@@ -6,7 +6,7 @@ import application.mechanic.requests.JoinGame;
 import application.mechanic.snapshots.ClientSnap;
 
 import application.mechanic.snapshots.MultiServerSnap;
-import application.mechanic.snapshots.SingleServerSnap;
+import application.mechanic.snapshots.ServerSnap;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @Type(FinishGame.class),
         @Type(ClientSnap.class),
         @Type(MultiServerSnap.class),
-        @Type(SingleServerSnap.class),
+        @Type(ServerSnap.class),
 })
 public abstract class Message {
 }

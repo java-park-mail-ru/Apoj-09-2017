@@ -5,13 +5,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("MissortedModifiers")
-public class SingleServerSnap extends Message {
+public class ServerSnap extends Message {
     @NotNull
     private String status;
     @Nullable
     private byte[] data;
 
-    public SingleServerSnap(@NotNull String status) {
+    public ServerSnap(@NotNull String status) {
         this.status = status;
     }
 

@@ -5,6 +5,7 @@ import application.mechanic.MultiGameSession;
 import application.mechanic.SingleGameSession;
 import application.mechanic.avatar.Player;
 import application.mechanic.music.Music;
+import application.mechanic.requests.InitMultiGame;
 import application.mechanic.requests.InitSingleGame;
 import application.websocket.RemotePointService;
 import org.jetbrains.annotations.NotNull;
@@ -25,13 +26,19 @@ public class GameInitService {
     private final RemotePointService remotePointService;
 
     @NotNull
+    private final ServerSnapService serverSnapService;
+
+    @NotNull
     private final Base64.Encoder encoder = Base64.getEncoder();
 
     @NotNull
     private final Music music;
 
-    public GameInitService(@NotNull RemotePointService remotePointService, @NotNull Music music) {
+    public GameInitService(@NotNull RemotePointService remotePointService,
+                           @NotNull ServerSnapService serverSnapService,
+                           @NotNull Music music) {
         this.remotePointService = remotePointService;
+        this.serverSnapService = serverSnapService;
         this.music = music;
     }
 
@@ -53,18 +60,26 @@ public class GameInitService {
     }
 
     public void initGameFor(@NotNull MultiGameSession gameSession) {
-//        final Player singer = gameSession.getSinger();
-//        final Player listener = gameSession.getListener();
-//        final InitSingleGame.Request initSinger = new InitSingleGame.Request(listener.getUser().getLogin());
-//        final InitSingleGame.Request initListener = new InitSingleGame.Request(singer.getUser().getLogin());
-//        try {
-//            remotePointService.sendMessageToUser(singer.getId(), initSinger);
-//            remotePointService.sendMessageToUser(listener.getId(), initListener);
-//        } catch (IOException e) {
-//            remotePointService.cutDownConnection(singer.getId(), CloseStatus.SERVER_ERROR);
-//            remotePointService.cutDownConnection(listener.getId(), CloseStatus.SERVER_ERROR);
-//            LOGGER.error("Unnable to start a game", e);
-//        }
+        final Player singer = gameSession.getSinger();
+        final Player listener = gameSession.getListener();
+        final InitMultiGame.Request initSinger = new InitMultiGame.Request(Config.SINGER_ROLE, listener.getUser().getLogin());
+        final InitMultiGame.Request initListener = new InitMultiGame.Request(Config.LISTENER_ROLE, singer.getUser().getLogin());
+        final byte[] data = music.getSong(gameSession.getSongName());
+        if (data != null) {
+            try {
+                remotePointService.sendMessageToUser(singer.getId(), initSinger);
+                remotePointService.sendMessageToUser(listener.getId(), initListener);
+                serverSnapService.sendSnapshotsFor(gameSession, encoder.encode(data));
+            } catch (IOException e) {
+                remotePointService.cutDownConnection(singer.getId(), CloseStatus.SERVER_ERROR);
+                remotePointService.cutDownConnection(listener.getId(), CloseStatus.SERVER_ERROR);
+                LOGGER.error("Unnable to start a game", e);
+            }
+        } else {
+            remotePointService.cutDownConnection(singer.getId(), CloseStatus.SERVER_ERROR);
+            remotePointService.cutDownConnection(listener.getId(), CloseStatus.SERVER_ERROR);
+            LOGGER.error("Music service error");
+        }
     }
 
 }
