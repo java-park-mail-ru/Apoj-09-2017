@@ -16,11 +16,18 @@ public class ClientSnapService {
     @NotNull
     private final ServerSnapService serverSnapshotService;
 
-    private final Map<Long, ClientSnap> snaps = new HashMap<>();
-    private final Music music = new Music();
+    @NotNull
+    private final Base64.Encoder encoder = Base64.getEncoder();
 
-    public ClientSnapService(@NotNull ServerSnapService serverSnapshotService) {
+    @NotNull
+    private final Base64.Decoder decoder = Base64.getDecoder();
+
+    private final Map<Long, ClientSnap> snaps = new HashMap<>();
+    private final Music music;
+
+    public ClientSnapService(@NotNull ServerSnapService serverSnapshotService, Music music) {
         this.serverSnapshotService = serverSnapshotService;
+        this.music = music;
     }
 
     public void pushClientSnap(@NotNull Long user, @NotNull ClientSnap snap) {
@@ -39,25 +46,18 @@ public class ClientSnapService {
     public void processSnapshotsFor(@NotNull SingleGameSession gameSession) {
         final ClientSnap snap = getSnapForUser(gameSession.getUserId());
         switch (snap.getType()) {
+            case Config.STEP_1:
+                final byte[] data = music.reverseRecord(decoder.decode(snap.getData()));
+                if (gameSession.getStatus().equals(Config.STEP_1) && data != null) {
+                    gameSession.setStatus(Config.STEP_2);
+                    serverSnapshotService.sendSnapshotsFor(gameSession, encoder.encode(data));
+                } else {
+                    throw new RuntimeException("Server error");
+                }
+                break;
             case Config.STEP_2:
-                if (gameSession.getStatus().equals(Config.STEP_1)) {
+                if (gameSession.getStatus().equals(Config.STEP_2)) {
                     gameSession.setStatus(Config.STEP_3);
-                    serverSnapshotService.sendSnapshotsFor(gameSession, music.getSong(gameSession.getSongName()));
-                } else {
-                    throw new RuntimeException("Server error");
-                }
-                break;
-            case Config.STEP_4:
-                if (gameSession.getStatus().equals(Config.STEP_3)) {
-                    gameSession.setStatus(Config.STEP_5);
-                    serverSnapshotService.sendSnapshotsFor(gameSession, music.reverseRecord(snap.getData()));
-                } else {
-                    throw new RuntimeException("Server error");
-                }
-                break;
-            case Config.STEP_6:
-                if (gameSession.getStatus().equals(Config.STEP_5)) {
-                    gameSession.setStatus(Config.STEP_7);
                     gameSession.setResult(snap.getAnswer().toLowerCase().equals(gameSession.getSongName().toLowerCase()));
                 } else {
                     throw new RuntimeException("Server error");

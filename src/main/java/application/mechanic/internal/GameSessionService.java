@@ -42,14 +42,16 @@ public class GameSessionService {
     @NotNull
     private final GameInitService gameInitService;
     @NotNull
-    private final Music music = new Music();
+    private final Music music;
 
     public GameSessionService(@NotNull RemotePointService remotePointService,
                               @NotNull ClientSnapService clientSnapshotsService,
-                              @NotNull GameInitService gameInitService) {
+                              @NotNull GameInitService gameInitService,
+                              @NotNull Music music) {
         this.remotePointService = remotePointService;
         this.clientSnapshotsService = clientSnapshotsService;
         this.gameInitService = gameInitService;
+        this.music = music;
     }
 
     public Set<MultiGameSession> getMultiSessions() {

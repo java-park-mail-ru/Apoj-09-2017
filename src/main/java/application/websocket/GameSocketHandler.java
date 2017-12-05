@@ -1,8 +1,10 @@
 package application.websocket;
 
+import application.mechanic.requests.JoinGame;
 import application.models.User;
 import application.services.AccountService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -42,6 +44,7 @@ public class GameSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) {
         final Long id = (Long) webSocketSession.getAttributes().get("userId");
+        System.out.print(id);
         if (id == null || (accountService.getUser(id)) == null) {
             LOGGER.warn("User requested websocket is not registred or not logged in. Openning websocket session is denied.");
             closeSessionSilently(webSocketSession, ACCESS_DENIED);
@@ -68,7 +71,8 @@ public class GameSocketHandler extends TextWebSocketHandler {
     private void handleMessage(User userProfile, TextMessage text) {
         final Message message;
         try {
-            message = objectMapper.readValue(text.getPayload(), Message.class);
+            final ObjectNode node = objectMapper.readValue(text.getPayload(), ObjectNode.class);
+            message = new JoinGame.Request(node.get("mode").asText());
         } catch (IOException ex) {
             LOGGER.error("wrong json format at mechanic response", ex);
             return;
