@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 
 import java.io.IOException;
+import java.util.Base64;
 
 @SuppressWarnings("MissortedModifiers")
 @Service
@@ -24,20 +25,30 @@ public class GameInitService {
     private final RemotePointService remotePointService;
 
     @NotNull
-    private final Music music = new Music();
+    private final Base64.Encoder encoder = Base64.getEncoder();
 
-    public GameInitService(@NotNull RemotePointService remotePointService) {
+    @NotNull
+    private final Music music;
+
+    public GameInitService(@NotNull RemotePointService remotePointService, @NotNull Music music) {
         this.remotePointService = remotePointService;
+        this.music = music;
     }
 
     public void initGameFor(@NotNull SingleGameSession gameSession) {
         final Player player = gameSession.getPlayer();
-        final InitSingleGame.Request initMessage = new InitSingleGame.Request(Config.STEP_1, music.getSong(gameSession.getSongName()));
-        try {
-            remotePointService.sendMessageToUser(player.getId(), initMessage);
-        } catch (IOException e) {
+        final byte[] data = music.getSong(gameSession.getSongName());
+        if (data != null) {
+            final InitSingleGame.Request initMessage = new InitSingleGame.Request(Config.STEP_1, encoder.encode(data));
+            try {
+                remotePointService.sendMessageToUser(player.getId(), initMessage);
+            } catch (IOException e) {
+                remotePointService.cutDownConnection(player.getId(), CloseStatus.SERVER_ERROR);
+                LOGGER.error("Unnable to start a game", e);
+            }
+        } else {
             remotePointService.cutDownConnection(player.getId(), CloseStatus.SERVER_ERROR);
-            LOGGER.error("Unnable to start a game", e);
+            LOGGER.error("Music service error");
         }
     }
 

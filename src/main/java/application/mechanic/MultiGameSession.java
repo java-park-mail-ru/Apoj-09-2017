@@ -92,7 +92,7 @@ public class MultiGameSession {
     }
 
     public boolean tryFinishGame() {
-        if (status.equals(Config.STEP_7)) {
+        if (status.equals(Config.STEP_3)) {
             gameSessionService.finishMultiGame(this);
             isFinished = true;
             return true;

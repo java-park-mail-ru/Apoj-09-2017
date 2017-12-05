@@ -2,6 +2,9 @@ package application.mechanic.music;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -14,11 +17,12 @@ import java.nio.file.Paths;
 import java.util.Random;
 import java.util.Vector;
 
-//ToDo: сделать нормальный класс
+@SuppressWarnings("MissortedModifiers")
+@Service
 public class Music {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Music.class);
     private final Vector<String> playList = new Vector<>();
     private final Random random = new Random();
-    private static final int WAV_HEADER_SIZE = 78;
 
     public Music() {
         playList.add("badtrip.wav");
@@ -31,6 +35,7 @@ public class Music {
             final Path path = Paths.get("./src/main/resources/music/" + name);
             return Files.readAllBytes(path);
         } catch (IOException e) {
+            LOGGER.error(e.getMessage());
             return null;
         }
     }
@@ -41,11 +46,9 @@ public class Music {
         return playList.get(index);
     }
 
-    //ToDo: переписать без костылей и говнокода
     @Nullable
     public byte[] reverseRecord(@NotNull byte[] record) {
         try {
-            System.out.println("bytearraatbtbh = " + record.length);
             final AudioInputStream stream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(record));
             final int frameSize = stream.getFormat().getFrameSize();
             final byte[][] frames = new byte[stream.available() / frameSize][frameSize];
@@ -55,40 +58,31 @@ public class Music {
                 if (numBytes == -1) {
                     break;
                 }
-                frames[i] = frame;
+                frames[frames.length - i - 1] = frame;
             }
-            System.out.println("FrameSize = " + frameSize);
-            System.out.println("Number frames = " + frames.length);
-            System.out.println(record.length - frameSize * frames.length);
             final byte[] result = new byte[record.length];
-            for (int i = 0; i < WAV_HEADER_SIZE; ++i) {
-                result[i] = record[i];
-            }
-            for (int i = 0; i < frames.length / 2; ++i) {
-                final byte[] tmp = frames[i];
-                frames[i] = frames[frames.length - i - 1];
-                frames[frames.length - i - 1] = tmp;
-            }
+            final int headerSize = record.length - frames.length * frameSize;
+            System.arraycopy(record, 0, result, 0, headerSize);
             for (int i = 0; i < frames.length; i++) {
                 for (int j = 0; j < frameSize; j++) {
-                    result[i * frameSize + j + WAV_HEADER_SIZE] = frames[i][j];
+                    result[i * frameSize + j + headerSize] = frames[i][j];
                 }
             }
             return result;
         } catch (UnsupportedAudioFileException e) {
-            e.printStackTrace();
+            LOGGER.error("Unsuported audio file");
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
         return null;
     }
 
 //    public static void main(String[] args) {
 //        final Music music = new Music();
-//        final Path path = Paths.get("./src/main/resources/music/hh.wav");
+//        final Path path = Paths.get("./src/main/resources/music/hh2.wav");
 //        try {
 //            Files.createFile(path);
-//            Files.write(path, music.reverseRecord(music.getSong("Владимирский_централ.wav")));
+//            Files.write(path, music.reverseRecord(music.getSong("badtrip.wav")));
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
