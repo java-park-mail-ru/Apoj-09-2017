@@ -25,14 +25,14 @@ public class Music {
     private final Random random = new Random();
 
     public Music() {
-        playList.add("badtrip.wav");
-        playList.add("Владимирский_централ.wav");
+        playList.add("badtrip");
+        playList.add("Владимирский централ");
     }
 
     @Nullable
     public byte[] getSong(String name) {
         try {
-            final Path path = Paths.get("./src/main/resources/music/" + name);
+            final Path path = Paths.get("./src/main/resources/music/" + name + ".wav");
             return Files.readAllBytes(path);
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
@@ -69,13 +69,6 @@ public class Music {
                     result[i * frameSize + j + headerSize] = frames[i][j];
                 }
             }
-//            final Path path = Paths.get("./src/main/resources/music/hh2.wav");
-//            try {
-//                Files.createFile(path);
-//                Files.write(path, result);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
             return result;
         } catch (UnsupportedAudioFileException e) {
             LOGGER.error("Unsuported audio file");

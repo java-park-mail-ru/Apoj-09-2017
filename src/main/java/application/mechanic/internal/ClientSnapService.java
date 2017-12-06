@@ -90,7 +90,12 @@ public class ClientSnapService {
                 case Config.STEP_2:
                     if (gameSession.getStatus().equals(Config.STEP_2)) {
                         gameSession.setStatus(Config.FINAL_STEP);
-                        gameSession.setResult(snap.getAnswer().toLowerCase().equals(gameSession.getSongName().toLowerCase()));
+                        final String result = snap.getAnswer();
+                        if (result != null) {
+                            gameSession.setResult(snap.getAnswer().toLowerCase().equals(gameSession.getSongName().toLowerCase()));
+                        } else {
+                            gameSession.setResult(false);
+                        }
                     } else {
                         throw new RuntimeException("Server error");
                     }

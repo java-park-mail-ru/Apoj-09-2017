@@ -80,7 +80,7 @@ public class GameSocketHandler extends TextWebSocketHandler {
             if (node.has("mode")) {
                 message = new JoinGame.Request(node.get("mode").asText());
             } else {
-                message = new ClientSnap(node.get("type").asText(), node.get("data").asText());
+                message = new ClientSnap(node.get("type").asText(), node.get("data").asText(), node.get("answer"));
             }
         } catch (IOException ex) {
             LOGGER.error("wrong json format at mechanic response", ex);
