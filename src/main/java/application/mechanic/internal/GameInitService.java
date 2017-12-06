@@ -46,7 +46,7 @@ public class GameInitService {
         final Player player = gameSession.getPlayer();
         final byte[] data = music.getSong(gameSession.getSongName());
         if (data != null) {
-            final InitSingleGame.Request initMessage = new InitSingleGame.Request(Config.STEP_1, encoder.encode(data));
+            final InitSingleGame.Request initMessage = new InitSingleGame.Request(Config.STEP_1, encoder.encodeToString(data));
             try {
                 remotePointService.sendMessageToUser(player.getId(), initMessage);
             } catch (IOException e) {

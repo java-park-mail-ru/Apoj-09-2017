@@ -6,9 +6,9 @@ import org.jetbrains.annotations.Nullable;
 public class InitSingleGame {
     public static final class Request extends Message {
         private String type;
-        private byte[] data;
+        private String data;
 
-        public Request(String type, @Nullable byte[] data) {
+        public Request(String type, @Nullable String data) {
             this.type = type;
             this.data = data;
         }
@@ -21,11 +21,11 @@ public class InitSingleGame {
             this.type = type;
         }
 
-        public byte[] getData() {
+        public String getData() {
             return data;
         }
 
-        public void setData(byte[] data) {
+        public void setData(String data) {
             this.data = data;
         }
     }
