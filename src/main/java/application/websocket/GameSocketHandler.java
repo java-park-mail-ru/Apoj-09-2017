@@ -1,6 +1,7 @@
 package application.websocket;
 
 import application.mechanic.requests.JoinGame;
+import application.mechanic.snapshots.ClientSnap;
 import application.models.User;
 import application.services.AccountService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -72,7 +73,11 @@ public class GameSocketHandler extends TextWebSocketHandler {
         final Message message;
         try {
             final ObjectNode node = objectMapper.readValue(text.getPayload(), ObjectNode.class);
-            message = new JoinGame.Request(node.get("mode").asText());
+            if(node.has("mode")) {
+                message = new JoinGame.Request(node.get("mode").asText());
+            } else {
+                message = new ClientSnap(node.get("type").asText(), node.get("data").asText(), node.get("answer").asText());
+            }
         } catch (IOException ex) {
             LOGGER.error("wrong json format at mechanic response", ex);
             return;
