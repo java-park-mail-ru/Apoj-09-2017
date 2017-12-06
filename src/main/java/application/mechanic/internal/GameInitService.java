@@ -69,7 +69,7 @@ public class GameInitService {
             try {
                 remotePointService.sendMessageToUser(singer.getId(), initSinger);
                 remotePointService.sendMessageToUser(listener.getId(), initListener);
-                serverSnapService.sendSnapshotsFor(gameSession, encoder.encode(data));
+                serverSnapService.sendSnapshotsFor(gameSession, encoder.encodeToString(data));
             } catch (IOException e) {
                 remotePointService.cutDownConnection(singer.getId(), CloseStatus.SERVER_ERROR);
                 remotePointService.cutDownConnection(listener.getId(), CloseStatus.SERVER_ERROR);

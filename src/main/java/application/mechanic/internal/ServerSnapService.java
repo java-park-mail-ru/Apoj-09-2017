@@ -21,7 +21,7 @@ public class ServerSnapService {
         this.remotePointService = remotePointService;
     }
 
-    public void sendSnapshotsFor(@NotNull MultiGameSession gameSession, @NotNull byte[] data) {
+    public void sendSnapshotsFor(@NotNull MultiGameSession gameSession, @NotNull String data) {
         final String status = gameSession.getStatus();
         final ServerSnap snap = new ServerSnap(gameSession.getStatus());
         snap.setData(data);
@@ -37,7 +37,7 @@ public class ServerSnapService {
         }
     }
 
-    public void sendSnapshotsFor(@NotNull SingleGameSession gameSession, @NotNull byte[] data) {
+    public void sendSnapshotsFor(@NotNull SingleGameSession gameSession, @NotNull String data) {
         final ServerSnap snap = new ServerSnap(gameSession.getStatus());
         snap.setData(data);
         try {

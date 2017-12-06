@@ -69,6 +69,13 @@ public class Music {
                     result[i * frameSize + j + headerSize] = frames[i][j];
                 }
             }
+//            final Path path = Paths.get("./src/main/resources/music/hh2.wav");
+//            try {
+//                Files.createFile(path);
+//                Files.write(path, result);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
             return result;
         } catch (UnsupportedAudioFileException e) {
             LOGGER.error("Unsuported audio file");

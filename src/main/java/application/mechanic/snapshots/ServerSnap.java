@@ -8,19 +8,19 @@ import org.jetbrains.annotations.Nullable;
 public class ServerSnap extends Message {
     @NotNull
     private String type;
-    @Nullable
-    private byte[] data;
+    @NotNull
+    private String data;
 
     public ServerSnap(@NotNull String type) {
         this.type = type;
     }
 
-    @Nullable
-    public byte[] getData() {
+    @NotNull
+    public String getData() {
         return data;
     }
 
-    public void setData(@Nullable byte[] data) {
+    public void setData(@NotNull String data) {
         this.data = data;
     }
 
