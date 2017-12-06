@@ -7,6 +7,8 @@ import application.mechanic.music.Music;
 import application.mechanic.snapshots.ClientSnap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -67,7 +69,7 @@ public class ClientSnapService {
             final byte[] data = music.reverseRecord(decoder.decode(snap.getData()));
             if (snap.getType().equals(Config.STEP_2) && data != null) {
                 gameSession.setStatus(Config.FINAL_STEP);
-                gameSession.setResult(snap.getAnswer().toLowerCase().equals(gameSession.getSongName().toLowerCase()));
+                gameSession.setResult(snap.getData().toLowerCase().equals(gameSession.getSongName().toLowerCase()));
             } else {
                 throw new RuntimeException("Server error");
             }
@@ -76,6 +78,7 @@ public class ClientSnapService {
 
     public void processSnapshotsFor(@NotNull SingleGameSession gameSession) {
         final ClientSnap snap = getSnapForUser(gameSession.getUserId());
+        snaps.remove(gameSession.getUserId());
         if (snap != null) {
             switch (snap.getType()) {
                 case Config.STEP_1:
@@ -90,14 +93,7 @@ public class ClientSnapService {
                 case Config.STEP_2:
                     if (gameSession.getStatus().equals(Config.STEP_2)) {
                         gameSession.setStatus(Config.FINAL_STEP);
-                        final String result = snap.getAnswer();
-                        if (result != null) {
-                            System.out.println(snap.getAnswer().toLowerCase());
-                            System.out.println(gameSession.getSongName().toLowerCase());
-                            gameSession.setResult(snap.getAnswer().toLowerCase().equals(gameSession.getSongName().toLowerCase()));
-                        } else {
-                            gameSession.setResult(false);
-                        }
+                        gameSession.setResult(snap.getData().toLowerCase().equals(gameSession.getSongName().toLowerCase()));
                     } else {
                         throw new RuntimeException("Server error");
                     }
