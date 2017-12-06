@@ -21,7 +21,7 @@ import static org.springframework.web.socket.CloseStatus.SERVER_ERROR;
 public class GameSocketHandler extends TextWebSocketHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSocketHandler.class);
     private static final CloseStatus ACCESS_DENIED = new CloseStatus(4500, "Not logged in. Access denied");
-    private static final int MESSAGE_SIZE = 1000000;
+    private static final int MESSAGE_SIZE = 5000000;
 
     @NotNull
     private AccountService accountService;

@@ -79,7 +79,7 @@ public class ClientSnapService {
         if (snap != null) {
             switch (snap.getType()) {
                 case Config.STEP_1:
-                    final byte[] data = music.reverseRecord(decoder.decode(snap.getData()));
+                    final byte[] data = music.reverseRecord(decoder.decode(snap.getData().substring(22)));
                     if (gameSession.getStatus().equals(Config.STEP_1) && data != null) {
                         gameSession.setStatus(Config.STEP_2);
                         serverSnapshotService.sendSnapshotsFor(gameSession, encoder.encode(data));
