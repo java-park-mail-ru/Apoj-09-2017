@@ -10,10 +10,9 @@ public class ClientSnap extends Message {
     private String data;
     private String answer;
 
-    public ClientSnap(@NotNull String type, String data, String answer) {
+    public ClientSnap(@NotNull String type, String data) {
         this.type = type;
         this.data = data;
-        this.answer = answer;
     }
 
     @NotNull

@@ -21,6 +21,7 @@ import static org.springframework.web.socket.CloseStatus.SERVER_ERROR;
 public class GameSocketHandler extends TextWebSocketHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSocketHandler.class);
     private static final CloseStatus ACCESS_DENIED = new CloseStatus(4500, "Not logged in. Access denied");
+    private static final int MESSAGE_SIZE = 1000000;
 
     @NotNull
     private AccountService accountService;
@@ -56,6 +57,9 @@ public class GameSocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession webSocketSession, TextMessage message) {
+        if (webSocketSession.getTextMessageSizeLimit() != MESSAGE_SIZE) {
+            webSocketSession.setTextMessageSizeLimit(MESSAGE_SIZE);
+        }
         if (!webSocketSession.isOpen()) {
             return;
         }
@@ -73,10 +77,10 @@ public class GameSocketHandler extends TextWebSocketHandler {
         final Message message;
         try {
             final ObjectNode node = objectMapper.readValue(text.getPayload(), ObjectNode.class);
-            if(node.has("mode")) {
+            if (node.has("mode")) {
                 message = new JoinGame.Request(node.get("mode").asText());
             } else {
-                message = new ClientSnap(node.get("type").asText(), node.get("data").asText(), node.get("answer").asText());
+                message = new ClientSnap(node.get("type").asText(), node.get("data").asText());
             }
         } catch (IOException ex) {
             LOGGER.error("wrong json format at mechanic response", ex);
