@@ -92,6 +92,8 @@ public class ClientSnapService {
                         gameSession.setStatus(Config.FINAL_STEP);
                         final String result = snap.getAnswer();
                         if (result != null) {
+                            System.out.println(snap.getAnswer().toLowerCase());
+                            System.out.println(gameSession.getSongName().toLowerCase());
                             gameSession.setResult(snap.getAnswer().toLowerCase().equals(gameSession.getSongName().toLowerCase()));
                         } else {
                             gameSession.setResult(false);
