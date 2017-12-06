@@ -11,7 +11,19 @@ public class FinishGame extends Message {
         this.result = result;
     }
 
-    public boolean getResult() {
+    public void setResult(boolean result) {
+        this.result = result;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public boolean isResult() {
         return result;
     }
 }
