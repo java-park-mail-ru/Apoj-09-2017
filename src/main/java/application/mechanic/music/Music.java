@@ -62,6 +62,7 @@ public class Music {
             }
             final byte[] result = new byte[record.length];
             final int headerSize = record.length - frames.length * frameSize;
+            //System.out.println(headerSize);
             System.arraycopy(record, 0, result, 0, headerSize);
             for (int i = 0; i < frames.length; i++) {
                 for (int j = 0; j < frameSize; j++) {

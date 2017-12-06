@@ -7,12 +7,12 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings("MissortedModifiers")
 public class ServerSnap extends Message {
     @NotNull
-    private String status;
+    private String type;
     @Nullable
     private byte[] data;
 
-    public ServerSnap(@NotNull String status) {
-        this.status = status;
+    public ServerSnap(@NotNull String type) {
+        this.type = type;
     }
 
     @Nullable
@@ -25,11 +25,11 @@ public class ServerSnap extends Message {
     }
 
     @NotNull
-    public String getStatus() {
-        return status;
+    public String getType() {
+        return type;
     }
 
-    public void setStatus(@NotNull String status) {
-        this.status = status;
+    public void setType(@NotNull String type) {
+        this.type = type;
     }
 }
