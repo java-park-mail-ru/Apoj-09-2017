@@ -27,6 +27,9 @@ public class Music {
     public Music() {
         playList.add("badtrip");
         playList.add("Владимирский централ");
+        playList.add("ок");
+        playList.add("бургер");
+        playList.add("панелька");
     }
 
     @Nullable
@@ -80,10 +83,10 @@ public class Music {
 
 //    public static void main(String[] args) {
 //        final Music music = new Music();
-//        final Path path = Paths.get("./src/main/resources/music/hh2.wav");
+//        final Path path = Paths.get("./src/main/resources/music/.wav");
 //        try {
 //            Files.createFile(path);
-//            Files.write(path, music.reverseRecord(music.getSong("badtrip.wav")));
+//            Files.write(path, music.reverseRecord(music.getSong("")));
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }

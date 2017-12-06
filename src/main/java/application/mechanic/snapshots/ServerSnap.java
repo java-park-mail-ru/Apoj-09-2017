@@ -2,7 +2,6 @@ package application.mechanic.snapshots;
 
 import application.websocket.Message;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("MissortedModifiers")
 public class ServerSnap extends Message {
