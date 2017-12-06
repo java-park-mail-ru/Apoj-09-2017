@@ -6,6 +6,7 @@ import application.mechanic.SingleGameSession;
 import application.mechanic.music.Music;
 import application.mechanic.snapshots.ClientSnap;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -34,7 +35,7 @@ public class ClientSnapService {
         this.snaps.putIfAbsent(user, snap);
     }
 
-    @NotNull
+    @Nullable
     public ClientSnap getSnapForUser(@NotNull Long user) {
         return snaps.get(user);
     }
@@ -75,26 +76,28 @@ public class ClientSnapService {
 
     public void processSnapshotsFor(@NotNull SingleGameSession gameSession) {
         final ClientSnap snap = getSnapForUser(gameSession.getUserId());
-        switch (snap.getType()) {
-            case Config.STEP_1:
-                final byte[] data = music.reverseRecord(decoder.decode(snap.getData()));
-                if (gameSession.getStatus().equals(Config.STEP_1) && data != null) {
-                    gameSession.setStatus(Config.STEP_2);
-                    serverSnapshotService.sendSnapshotsFor(gameSession, encoder.encode(data));
-                } else {
+        if (snap != null) {
+            switch (snap.getType()) {
+                case Config.STEP_1:
+                    final byte[] data = music.reverseRecord(decoder.decode(snap.getData()));
+                    if (gameSession.getStatus().equals(Config.STEP_1) && data != null) {
+                        gameSession.setStatus(Config.STEP_2);
+                        serverSnapshotService.sendSnapshotsFor(gameSession, encoder.encode(data));
+                    } else {
+                        throw new RuntimeException("Server error");
+                    }
+                    break;
+                case Config.STEP_2:
+                    if (gameSession.getStatus().equals(Config.STEP_2)) {
+                        gameSession.setStatus(Config.FINAL_STEP);
+                        gameSession.setResult(snap.getAnswer().toLowerCase().equals(gameSession.getSongName().toLowerCase()));
+                    } else {
+                        throw new RuntimeException("Server error");
+                    }
+                    break;
+                default:
                     throw new RuntimeException("Server error");
-                }
-                break;
-            case Config.STEP_2:
-                if (gameSession.getStatus().equals(Config.STEP_2)) {
-                    gameSession.setStatus(Config.FINAL_STEP);
-                    gameSession.setResult(snap.getAnswer().toLowerCase().equals(gameSession.getSongName().toLowerCase()));
-                } else {
-                    throw new RuntimeException("Server error");
-                }
-                break;
-            default:
-                throw new RuntimeException("Server error");
+            }
         }
     }
 
