@@ -1,6 +1,5 @@
 package application.mechanic.internal;
 
-import application.mechanic.Config;
 import application.mechanic.MultiGameSession;
 import application.mechanic.SingleGameSession;
 import application.mechanic.snapshots.ServerSnap;
