@@ -58,11 +58,10 @@ public class GameMechanics {
         if (user != null) {
             if (mode.equals(Config.SINGLE_MODE)) {
                 singleWaiters.add(user);
+                LOGGER.info(String.format("User %s added to the single waiting list", user.getLogin()));
             } else if (mode.equals(Config.MULTI_MODE)) {
                 multiWaiters.add(user);
-            }
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(String.format("User %s added to the waiting list", user.getLogin()));
+                LOGGER.info(String.format("User %s added to the multi waiting list", user.getLogin()));
             }
         }
     }
