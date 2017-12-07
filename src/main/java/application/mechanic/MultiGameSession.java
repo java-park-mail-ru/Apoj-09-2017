@@ -92,7 +92,7 @@ public class MultiGameSession {
     }
 
     public boolean tryFinishGame() {
-        if (status.equals(Config.STEP_3)) {
+        if (status.equals(Config.FINAL_STEP)) {
             gameSessionService.finishMultiGame(this);
             isFinished = true;
             return true;
@@ -124,5 +124,13 @@ public class MultiGameSession {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public long getSingerId() {
+        return singer.getId();
+    }
+
+    public long getListenerId() {
+        return listener.getId();
     }
 }

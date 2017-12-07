@@ -167,6 +167,7 @@ public class GameSessionService {
         final boolean result = gameSession.getResult();
 
         try {
+            LOGGER.info(String.valueOf(result));
             remotePointService.sendMessageToUser(gameSession.getPlayer().getId(), new FinishGame(result));
         } catch (IOException ex) {
             LOGGER.warn(String.format("Failed to send FinishGame message to user %s",
