@@ -34,11 +34,11 @@ public class Music {
 
     @Nullable
     public byte[] getSong(String name) {
-        final ClassLoader classLoader = getClass().getClassLoader();
         try {
-            final Path path = Paths.get(classLoader.getResource("music/" + name + ".wav").getPath());
+            final ClassLoader classLoader = getClass().getClassLoader();
+            final Path path = Paths.get(classLoader.getResource("music/").getPath() + name + ".wav");
             return Files.readAllBytes(path);
-        } catch (IOException | NullPointerException e) {
+        } catch (IOException e) {
             LOGGER.error(e.getMessage());
             return null;
         }
