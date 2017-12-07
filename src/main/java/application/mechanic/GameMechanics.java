@@ -56,10 +56,10 @@ public class GameMechanics {
         }
         final User user = accountService.getUser(userId);
         if (user != null) {
-            if (mode.equals(Config.SINGLE_MODE)) {
+            if (mode.equals(Config.SINGLE_MODE) && !singleWaiters.contains(user)) {
                 singleWaiters.add(user);
                 LOGGER.info(String.format("User %s added to the single waiting list", user.getLogin()));
-            } else if (mode.equals(Config.MULTI_MODE)) {
+            } else if (mode.equals(Config.MULTI_MODE) && !multiWaiters.contains(user)) {
                 multiWaiters.add(user);
                 LOGGER.info(String.format("User %s added to the multi waiting list", user.getLogin()));
             }

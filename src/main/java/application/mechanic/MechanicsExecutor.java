@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.time.Clock;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -16,8 +15,6 @@ import java.util.concurrent.Executors;
 public class MechanicsExecutor {
     @NotNull
     private static final Logger LOGGER = LoggerFactory.getLogger(MechanicsExecutor.class);
-    private static final long STEP_TIME = 500;
-
     private Executor tickExecutor = Executors.newSingleThreadExecutor();
     private final GameMechanics mechanic;
 
@@ -42,24 +39,11 @@ public class MechanicsExecutor {
             this.gameMechanics = gameMechanics;
         }
 
-        private final Clock clock = Clock.systemDefaultZone();
-
         @Override
         public void run() {
             while (true) {
                 try {
-                    final long before = clock.millis();
-
                     gameMechanics.gmStep();
-
-                    final long after = clock.millis();
-                    try {
-                        final long sleepingTime = Math.max(0, STEP_TIME - (after - before));
-                        Thread.sleep(sleepingTime);
-                    } catch (InterruptedException e) {
-                        LOGGER.error("Mechanics thread was interrupted", e);
-                    }
-
                     if (Thread.currentThread().isInterrupted()) {
                         gameMechanics.reset();
                         return;
