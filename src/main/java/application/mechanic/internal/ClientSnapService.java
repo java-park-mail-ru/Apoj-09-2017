@@ -45,7 +45,7 @@ public class ClientSnapService {
         if (status.equals(Config.STEP_1)) {
             final ClientSnap snap = getSnapForUser(gameSession.getSingerId());
             if (snap != null) {
-                final byte[] data = music.reverseRecord(decoder.decode(snap.getData()));
+                final byte[] data = music.reverseRecord(decoder.decode(snap.getData().substring(22)));
                 if (snap.getType().equals(Config.STEP_1) && data != null) {
                     serverSnapshotService.sendSnapshotsFor(gameSession, encoder.encodeToString(data));
                     gameSession.setStatus(Config.STEP_1_5);
@@ -57,7 +57,7 @@ public class ClientSnapService {
         if (status.equals(Config.STEP_1_5)) {
             final ClientSnap snap = getSnapForUser(gameSession.getListenerId());
             if (snap != null) {
-                final byte[] data = music.reverseRecord(decoder.decode(snap.getData()));
+                final byte[] data = music.reverseRecord(decoder.decode(snap.getData().substring(22)));
                 if (snap.getType().equals(Config.STEP_1_5) && data != null) {
                     serverSnapshotService.sendSnapshotsFor(gameSession, encoder.encodeToString(data));
                     gameSession.setStatus(Config.STEP_2);
