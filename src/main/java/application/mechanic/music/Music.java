@@ -25,14 +25,17 @@ public class Music {
     private final Random random = new Random();
 
     public Music() {
-        playList.add("badtrip.wav");
-        playList.add("Владимирский_централ.wav");
+        playList.add("badtrip");
+        playList.add("Владимирский централ");
+        playList.add("ок");
+        playList.add("бургер");
+        playList.add("панелька");
     }
 
     @Nullable
     public byte[] getSong(String name) {
         try {
-            final Path path = Paths.get("./src/main/resources/music/" + name);
+            final Path path = Paths.get("./src/main/resources/music/" + name + ".wav");
             return Files.readAllBytes(path);
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
@@ -62,6 +65,7 @@ public class Music {
             }
             final byte[] result = new byte[record.length];
             final int headerSize = record.length - frames.length * frameSize;
+            //System.out.println(headerSize);
             System.arraycopy(record, 0, result, 0, headerSize);
             for (int i = 0; i < frames.length; i++) {
                 for (int j = 0; j < frameSize; j++) {
@@ -79,10 +83,10 @@ public class Music {
 
 //    public static void main(String[] args) {
 //        final Music music = new Music();
-//        final Path path = Paths.get("./src/main/resources/music/hh2.wav");
+//        final Path path = Paths.get("./src/main/resources/music/.wav");
 //        try {
 //            Files.createFile(path);
-//            Files.write(path, music.reverseRecord(music.getSong("badtrip.wav")));
+//            Files.write(path, music.reverseRecord(music.getSong("")));
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }

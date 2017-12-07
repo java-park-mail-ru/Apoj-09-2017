@@ -1,6 +1,7 @@
 package application.websocket;
 
 import application.mechanic.requests.JoinGame;
+import application.mechanic.snapshots.ClientSnap;
 import application.models.User;
 import application.services.AccountService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +21,7 @@ import static org.springframework.web.socket.CloseStatus.SERVER_ERROR;
 public class GameSocketHandler extends TextWebSocketHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSocketHandler.class);
     private static final CloseStatus ACCESS_DENIED = new CloseStatus(4500, "Not logged in. Access denied");
+    private static final int MESSAGE_SIZE = 5000000;
 
     @NotNull
     private AccountService accountService;
@@ -44,7 +46,6 @@ public class GameSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) {
         final Long id = (Long) webSocketSession.getAttributes().get("userId");
-        System.out.print(id);
         if (id == null || (accountService.getUser(id)) == null) {
             LOGGER.warn("User requested websocket is not registred or not logged in. Openning websocket session is denied.");
             closeSessionSilently(webSocketSession, ACCESS_DENIED);
@@ -55,6 +56,9 @@ public class GameSocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession webSocketSession, TextMessage message) {
+        if (webSocketSession.getTextMessageSizeLimit() != MESSAGE_SIZE) {
+            webSocketSession.setTextMessageSizeLimit(MESSAGE_SIZE);
+        }
         if (!webSocketSession.isOpen()) {
             return;
         }
@@ -72,7 +76,11 @@ public class GameSocketHandler extends TextWebSocketHandler {
         final Message message;
         try {
             final ObjectNode node = objectMapper.readValue(text.getPayload(), ObjectNode.class);
-            message = new JoinGame.Request(node.get("mode").asText());
+            if (node.has("mode")) {
+                message = new JoinGame.Request(node.get("mode").asText());
+            } else {
+                message = new ClientSnap(node.get("type").asText(), node.get("data").asText());
+            }
         } catch (IOException ex) {
             LOGGER.error("wrong json format at mechanic response", ex);
             return;

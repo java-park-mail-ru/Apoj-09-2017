@@ -7,8 +7,13 @@ import org.jetbrains.annotations.NotNull;
 public class ClientSnap extends Message {
     @NotNull
     private String type;
-    private byte[] data;
-    private String answer;
+    @NotNull
+    private String data;
+
+    public ClientSnap(@NotNull String type, @NotNull String data) {
+        this.type = type;
+        this.data = data;
+    }
 
     @NotNull
     public String getType() {
@@ -19,19 +24,12 @@ public class ClientSnap extends Message {
         this.type = type;
     }
 
-    public byte[] getData() {
+    @NotNull
+    public String getData() {
         return data;
     }
 
-    public void setData(byte[] data) {
+    public void setData(@NotNull String data) {
         this.data = data;
-    }
-
-    public String getAnswer() {
-        return answer;
-    }
-
-    public void setAnswer(String answer) {
-        this.answer = answer;
     }
 }
