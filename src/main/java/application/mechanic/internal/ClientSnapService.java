@@ -47,8 +47,8 @@ public class ClientSnapService {
             if (snap != null) {
                 final byte[] data = music.reverseRecord(decoder.decode(snap.getData().substring(22)));
                 if (snap.getType().equals(Config.STEP_1) && data != null) {
-                    serverSnapshotService.sendSnapshotsFor(gameSession, encoder.encodeToString(data));
                     gameSession.setStatus(Config.STEP_1_5);
+                    serverSnapshotService.sendSnapshotsFor(gameSession, encoder.encodeToString(data));
                 } else {
                     throw new RuntimeException("Server error");
                 }
@@ -59,8 +59,8 @@ public class ClientSnapService {
             if (snap != null) {
                 final byte[] data = music.reverseRecord(decoder.decode(snap.getData().substring(22)));
                 if (snap.getType().equals(Config.STEP_1_5) && data != null) {
-                    serverSnapshotService.sendSnapshotsFor(gameSession, encoder.encodeToString(data));
                     gameSession.setStatus(Config.STEP_2);
+                    serverSnapshotService.sendSnapshotsFor(gameSession, encoder.encodeToString(data));
                 } else {
                     throw new RuntimeException("Server error");
                 }
