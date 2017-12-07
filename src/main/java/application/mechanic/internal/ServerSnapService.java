@@ -22,16 +22,11 @@ public class ServerSnapService {
     }
 
     public void sendSnapshotsFor(@NotNull MultiGameSession gameSession, @NotNull String data) {
-        final String status = gameSession.getStatus();
         final ServerSnap snap = new ServerSnap(gameSession.getStatus());
         snap.setData(data);
         try {
-            if (status.equals(Config.STEP_1)) {
-                remotePointService.sendMessageToUser(gameSession.getSingerId(), snap);
-            }
-            if (status.equals(Config.STEP_1_5)) {
-                remotePointService.sendMessageToUser(gameSession.getListenerId(), snap);
-            }
+            remotePointService.sendMessageToUser(gameSession.getListenerId(), snap);
+            remotePointService.sendMessageToUser(gameSession.getSingerId(), snap);
         } catch (IOException ex) {
             throw new RuntimeException("Failed  sending snapshot", ex);
         }
