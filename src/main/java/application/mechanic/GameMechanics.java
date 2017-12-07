@@ -56,10 +56,10 @@ public class GameMechanics {
         }
         final User user = accountService.getUser(userId);
         if (user != null) {
-            if (mode.equals(Config.SINGLE_MODE) && !singleWaiters.contains(user)) {
+            if (mode.equals(Config.SINGLE_MODE)) {
                 singleWaiters.add(user);
                 LOGGER.info(String.format("User %s added to the single waiting list", user.getLogin()));
-            } else if (mode.equals(Config.MULTI_MODE) && !multiWaiters.contains(user)) {
+            } else if (mode.equals(Config.MULTI_MODE)) {
                 multiWaiters.add(user);
                 LOGGER.info(String.format("User %s added to the multi waiting list", user.getLogin()));
             }
@@ -77,7 +77,13 @@ public class GameMechanics {
             matchedPlayers.add(candidate);
             if (matchedPlayers.size() == 2) {
                 final Iterator<User> iterator = matchedPlayers.iterator();
-                gameSessionService.startMultiGame(iterator.next(), iterator.next());
+                final User user1 = iterator.next();
+                final User user2 = iterator.next();
+                if (user1.getId() != user2.getId()) {
+                    gameSessionService.startMultiGame(user1, user2);
+                } else {
+                    multiWaiters.add(user1);
+                }
                 matchedPlayers.clear();
             }
         }
