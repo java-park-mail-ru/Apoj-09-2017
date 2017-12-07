@@ -14,6 +14,11 @@ public class FinishGame extends Message {
         this.type = Config.FINAL_STEP;
     }
 
+    public FinishGame() {
+        this.result = false;
+        this.type = Config.LEAVE;
+    }
+
     public void setResult(boolean result) {
         this.result = result;
     }

@@ -10,4 +10,5 @@ public class Config {
     public static final String STEP_1_5 = "SecondRecording";
     public static final String STEP_2 = "Listening";
     public static final String FINAL_STEP = "Result";
+    public static final String LEAVE = "leave";
 }

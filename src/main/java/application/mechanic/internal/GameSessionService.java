@@ -136,7 +136,22 @@ public class GameSessionService {
     }
 
     public boolean checkHealthState(@NotNull MultiGameSession gameSession) {
-        return gameSession.getPlayers().stream().map(Player::getId).allMatch(remotePointService::isConnected);
+        final long singer = gameSession.getSingerId();
+        final long listener = gameSession.getListenerId();
+        try {
+            if (!remotePointService.isConnected(singer)) {
+                remotePointService.sendMessageToUser(listener, new FinishGame());
+                return false;
+            }
+            if (!remotePointService.isConnected(listener)) {
+                remotePointService.sendMessageToUser(singer, new FinishGame());
+                return false;
+            }
+        } catch (IOException ex) {
+            LOGGER.warn(String.format("Failed to send Leave message to user %s", ex));
+            return false;
+        }
+        return true;
     }
 
     public boolean checkHealthState(@NotNull SingleGameSession gameSession) {
