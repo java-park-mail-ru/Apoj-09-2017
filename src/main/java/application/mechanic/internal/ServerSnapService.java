@@ -1,5 +1,6 @@
 package application.mechanic.internal;
 
+import application.mechanic.Config;
 import application.mechanic.MultiGameSession;
 import application.mechanic.SingleGameSession;
 import application.mechanic.snapshots.ServerSnap;
@@ -24,7 +25,9 @@ public class ServerSnapService {
         final ServerSnap snap = new ServerSnap(gameSession.getStatus());
         snap.setData(data);
         try {
-            remotePointService.sendMessageToUser(gameSession.getListenerId(), snap);
+            if (!gameSession.getStatus().equals(Config.STEP_1)) {
+                remotePointService.sendMessageToUser(gameSession.getListenerId(), snap);
+            }
             remotePointService.sendMessageToUser(gameSession.getSingerId(), snap);
         } catch (IOException ex) {
             throw new RuntimeException("Failed  sending snapshot", ex);
