@@ -32,7 +32,7 @@ public class Music {
     @Nullable
     public byte[] getSong(String name) {
         try {
-            final Path path = Paths.get("./src/main/resources/music/" + name);
+            final Path path = Paths.get("/src/main/resources/music/" + name);
             return Files.readAllBytes(path);
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
