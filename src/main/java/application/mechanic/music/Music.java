@@ -10,10 +10,9 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStream;
 import java.util.Random;
 import java.util.Vector;
 
@@ -23,6 +22,7 @@ public class Music {
     private static final Logger LOGGER = LoggerFactory.getLogger(Music.class);
     private final Vector<String> playList = new Vector<>();
     private final Random random = new Random();
+    private static final int SIZE = 16384;
 
     public Music() {
         playList.add("badtrip");
@@ -34,14 +34,23 @@ public class Music {
 
     @Nullable
     public byte[] getSong(String name) {
+        final ClassLoader cl = this.getClass().getClassLoader();
+        final InputStream is = cl.getResourceAsStream("music/" + name + ".wav");
+        final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+
         try {
-            final ClassLoader classLoader = getClass().getClassLoader();
-            final Path path = Paths.get(classLoader.getResource("music/").getPath() + name + ".wav");
-            return Files.readAllBytes(path);
+            int readed;
+            final byte[] data = new byte[SIZE];
+            while ((readed = is.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, readed);
+            }
+            buffer.flush();
         } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-            return null;
+            e.printStackTrace();
         }
+
+        return buffer.toByteArray();
+
     }
 
     @NotNull
