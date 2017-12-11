@@ -5,15 +5,12 @@ import application.mechanic.internal.GameSessionService;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 @SuppressWarnings("MissortedModifiers")
 public class MultiGameSession {
     @NotNull
     private static final AtomicLong ID_GENERATOR = new AtomicLong(0);
-    private boolean isFinished;
     @NotNull
     private final Long sessionId;
     @NotNull
@@ -38,7 +35,6 @@ public class MultiGameSession {
         this.singer = singer;
         this.listener = listener;
         this.gameSessionService = gameSessionService;
-        this.isFinished = false;
         this.songName = songName;
         this.status = status;
         singer.setRole(Config.SINGER_ROLE);
@@ -53,11 +49,6 @@ public class MultiGameSession {
     @NotNull
     public Player getListener() {
         return listener;
-    }
-
-    @NotNull
-    public List<Player> getPlayers() {
-        return Arrays.asList(singer, listener);
     }
 
     public long getId() {
@@ -83,18 +74,9 @@ public class MultiGameSession {
         return sessionId.hashCode();
     }
 
-    public boolean isFinished() {
-        return isFinished;
-    }
-
-    public void setFinished() {
-        isFinished = true;
-    }
-
     public boolean tryFinishGame() {
         if (status.equals(Config.FINAL_STEP)) {
             gameSessionService.finishMultiGame(this);
-            isFinished = true;
             return true;
         }
         return false;
@@ -113,16 +95,12 @@ public class MultiGameSession {
         return songName;
     }
 
-    public void setSongName(@NotNull String songName) {
-        this.songName = songName;
-    }
-
     @NotNull
     public String getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(@NotNull String status) {
         this.status = status;
     }
 

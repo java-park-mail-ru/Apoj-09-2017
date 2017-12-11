@@ -45,17 +45,12 @@ public class GameInitService {
     public void initGameFor(@NotNull SingleGameSession gameSession) {
         final Player player = gameSession.getPlayer();
         final byte[] data = music.getSong(gameSession.getSongName());
-        if (data != null) {
-            final InitSingleGame.Request initMessage = new InitSingleGame.Request(Config.STEP_1, encoder.encodeToString(data));
-            try {
-                remotePointService.sendMessageToUser(player.getId(), initMessage);
-            } catch (IOException e) {
-                remotePointService.cutDownConnection(player.getId(), CloseStatus.SERVER_ERROR);
-                LOGGER.error("Unnable to start a game", e);
-            }
-        } else {
+        final InitSingleGame.Request initMessage = new InitSingleGame.Request(Config.STEP_1, encoder.encodeToString(data));
+        try {
+            remotePointService.sendMessageToUser(player.getId(), initMessage);
+        } catch (IOException e) {
             remotePointService.cutDownConnection(player.getId(), CloseStatus.SERVER_ERROR);
-            LOGGER.error("Music service error");
+            LOGGER.error("Unnable to start a game", e);
         }
     }
 

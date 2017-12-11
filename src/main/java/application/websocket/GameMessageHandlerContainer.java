@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("MissortedModifiers")
 @Service
 public class GameMessageHandlerContainer implements MessageHandlerContainer {
     @NotNull
@@ -26,11 +27,7 @@ public class GameMessageHandlerContainer implements MessageHandlerContainer {
     }
 
     @Override
-    public <T extends Message> void registerHandler(@NotNull Class<T> clazz, MessageHandler<T> handler) {
+    public <T extends Message> void registerHandler(@NotNull Class<T> clazz, @NotNull MessageHandler<T> handler) {
         handlerMap.put(clazz, handler);
-    }
-
-    public Map<Class<?>, MessageHandler<?>> getHandlerMap() {
-        return handlerMap;
     }
 }

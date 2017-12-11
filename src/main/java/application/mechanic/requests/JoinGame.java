@@ -13,10 +13,6 @@ public class JoinGame {
         public String getMode() {
             return mode;
         }
-
-        public void setMode(String mode) {
-            this.mode = mode;
-        }
     }
 }
 

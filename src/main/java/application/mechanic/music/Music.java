@@ -32,25 +32,21 @@ public class Music {
         playList.add("панелька");
     }
 
-    @Nullable
+    @NotNull
     public byte[] getSong(String name) {
         final ClassLoader cl = this.getClass().getClassLoader();
-        final InputStream is = cl.getResourceAsStream("music/" + name + ".wav");
-        final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-
-        try {
+        try (InputStream is = cl.getResourceAsStream("music/" + name + ".wav");
+             ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
             int readed;
             final byte[] data = new byte[SIZE];
             while ((readed = is.read(data, 0, data.length)) != -1) {
                 buffer.write(data, 0, readed);
             }
             buffer.flush();
+            return buffer.toByteArray();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Music Error", e);
         }
-
-        return buffer.toByteArray();
-
     }
 
     @NotNull
@@ -75,7 +71,6 @@ public class Music {
             }
             final byte[] result = new byte[record.length];
             final int headerSize = record.length - frames.length * frameSize;
-            //System.out.println(headerSize);
             System.arraycopy(record, 0, result, 0, headerSize);
             for (int i = 0; i < frames.length; i++) {
                 for (int j = 0; j < frameSize; j++) {
@@ -83,24 +78,11 @@ public class Music {
                 }
             }
             return result;
-        } catch (UnsupportedAudioFileException e) {
-            LOGGER.error("Unsuported audio file");
-        } catch (IOException e) {
+        } catch (UnsupportedAudioFileException | IOException e) {
             LOGGER.error(e.getMessage());
+            throw new RuntimeException("Music Error", e);
         }
-        return null;
     }
-
-//    public static void main(String[] args) {
-//        final Music music = new Music();
-//        final Path path = Paths.get("./src/main/resources/music/.wav");
-//        try {
-//            Files.createFile(path);
-//            Files.write(path, music.reverseRecord(music.getSong("")));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 }
 
 

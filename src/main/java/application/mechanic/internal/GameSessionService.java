@@ -88,7 +88,6 @@ public class GameSessionService {
 
     public void forceTerminate(@NotNull MultiGameSession gameSession, boolean error) {
         final boolean exists = multiGameSessions.remove(gameSession);
-        gameSession.setFinished();
         multiUsersMap.remove(gameSession.getSinger().getId());
         multiUsersMap.remove(gameSession.getListener().getId());
         final CloseStatus status;
@@ -114,7 +113,6 @@ public class GameSessionService {
 
     public void forceTerminate(@NotNull SingleGameSession gameSession, boolean error) {
         final boolean exists = singleGameSessions.remove(gameSession);
-        gameSession.setFinished();
         singleUsersMap.remove(gameSession.getPlayer().getId());
         final CloseStatus status;
         if (error) {
@@ -159,7 +157,6 @@ public class GameSessionService {
     }
 
     public void finishMultiGame(@NotNull MultiGameSession gameSession) {
-        gameSession.setFinished();
         final boolean result = gameSession.getResult();
 
         try {
@@ -178,7 +175,6 @@ public class GameSessionService {
     }
 
     public void finishSingleGame(@NotNull SingleGameSession gameSession) {
-        gameSession.setFinished();
         final boolean result = gameSession.getResult();
 
         try {

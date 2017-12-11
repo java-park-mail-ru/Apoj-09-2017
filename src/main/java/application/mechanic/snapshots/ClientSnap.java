@@ -20,16 +20,9 @@ public class ClientSnap extends Message {
         return type;
     }
 
-    public void setType(@NotNull String type) {
-        this.type = type;
-    }
-
     @NotNull
     public String getData() {
         return data;
     }
 
-    public void setData(@NotNull String data) {
-        this.data = data;
-    }
 }

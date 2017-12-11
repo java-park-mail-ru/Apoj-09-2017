@@ -11,7 +11,6 @@ import java.util.concurrent.atomic.AtomicLong;
 public class SingleGameSession {
     @NotNull
     private static final AtomicLong ID_GENERATOR = new AtomicLong(0);
-    private boolean isFinished;
     @NotNull
     private final Long sessionId;
     @NotNull
@@ -33,7 +32,6 @@ public class SingleGameSession {
         this.songName = songName;
         this.status = status;
         this.gameSessionService = gameSessionService;
-        this.isFinished = false;
     }
 
     @NotNull
@@ -64,14 +62,6 @@ public class SingleGameSession {
         return sessionId.hashCode();
     }
 
-    public boolean isFinished() {
-        return isFinished;
-    }
-
-    public void setFinished() {
-        isFinished = true;
-    }
-
     public boolean tryFinishGame() {
         if (status.equals(Config.FINAL_STEP)) {
             gameSessionService.finishSingleGame(this);
@@ -91,10 +81,6 @@ public class SingleGameSession {
     @NotNull
     public String getSongName() {
         return songName;
-    }
-
-    public void setSongName(@NotNull String songName) {
-        this.songName = songName;
     }
 
     public long getUserId() {

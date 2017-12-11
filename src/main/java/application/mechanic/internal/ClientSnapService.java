@@ -69,7 +69,6 @@ public class ClientSnapService {
         if (status.equals(Config.STEP_2)) {
             final ClientSnap snap = getSnapForUser(gameSession.getListenerId());
             if (snap != null) {
-                //final byte[] data = music.reverseRecord(decoder.decode(snap.getData()));
                 if (snap.getType().equals(Config.STEP_2)) {
                     gameSession.setStatus(Config.FINAL_STEP);
                     gameSession.setResult(snap.getData().toLowerCase().equals(gameSession.getSongName().toLowerCase()));
