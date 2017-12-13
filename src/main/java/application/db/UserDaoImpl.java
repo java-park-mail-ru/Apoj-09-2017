@@ -45,7 +45,9 @@ public class UserDaoImpl implements UserDao {
             new User(res.getLong("id"),
                     res.getString("login"),
                     res.getString("password"),
-                    res.getString("email")
+                    res.getString("email"),
+                    res.getInt("sscore"),
+                    res.getInt("mscore")
             );
 
     @Override
@@ -79,6 +81,32 @@ public class UserDaoImpl implements UserDao {
         } catch (EmptyResultDataAccessException e) {
             return true;
         }
+    }
+
+    @Override
+    @NotNull
+    public Integer updateSScore(long userId, boolean result) {
+            String query = "UPDATE users SET sscore = score ";
+            if (result) {
+                query += "+ 25";
+            } else {
+                query += "- 25";
+            }
+            query += "WHERE id = ? RETURNING sscore";
+            return template.queryForObject(query, Integer.class, userId);
+    }
+
+    @Override
+    @NotNull
+    public Integer updateMScore(long userId, boolean result) {
+        String query = "UPDATE users SET mscore = score ";
+        if (result) {
+            query += "+ 25";
+        } else {
+            query += "- 25";
+        }
+        query += "WHERE id = ? RETURNING mscore";
+        return template.queryForObject(query, Integer.class, userId);
     }
 
     @Override

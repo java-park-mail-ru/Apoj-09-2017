@@ -26,5 +26,11 @@ public interface UserDao {
 
     boolean checkSignup(@NotNull String login, @NotNull String email);
 
+    @NotNull
+    Integer updateSScore(long userId, boolean result);
+
+    @NotNull
+    Integer updateMScore(long userId, boolean result);
+
     void clear();
 }

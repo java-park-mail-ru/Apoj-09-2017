@@ -6,6 +6,7 @@ import application.mechanic.avatar.Player;
 import application.mechanic.music.Music;
 import application.mechanic.requests.FinishGame;
 import application.models.User;
+import application.services.AccountService;
 import application.websocket.RemotePointService;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -42,16 +43,20 @@ public class GameSessionService {
     @NotNull
     private final GameInitService gameInitService;
     @NotNull
+    private final AccountService accountService;
+    @NotNull
     private final Music music;
 
     public GameSessionService(@NotNull RemotePointService remotePointService,
                               @NotNull ClientSnapService clientSnapshotsService,
                               @NotNull GameInitService gameInitService,
+                              @NotNull AccountService accountService,
                               @NotNull Music music) {
         this.remotePointService = remotePointService;
         this.clientSnapshotsService = clientSnapshotsService;
         this.gameInitService = gameInitService;
         this.music = music;
+        this.accountService = accountService;
     }
 
     public Set<MultiGameSession> getMultiSessions() {
@@ -160,14 +165,16 @@ public class GameSessionService {
         final boolean result = gameSession.getResult();
 
         try {
-            remotePointService.sendMessageToUser(gameSession.getSinger().getId(), new FinishGame(result));
+            final int score = accountService.updateMScore(gameSession.getSingerId(), result);
+            remotePointService.sendMessageToUser(gameSession.getSingerId(), new FinishGame(result, score));
         } catch (IOException ex) {
             LOGGER.warn(String.format("Failed to send FinishGame message to user %s",
                     gameSession.getSinger().getUser().getLogin()), ex);
         }
 
         try {
-            remotePointService.sendMessageToUser(gameSession.getListener().getId(), new FinishGame(result));
+            final int score = accountService.updateMScore(gameSession.getListenerId(), result);
+            remotePointService.sendMessageToUser(gameSession.getListenerId(), new FinishGame(result, score));
         } catch (IOException ex) {
             LOGGER.warn(String.format("Failed to send FinishGame message to user %s",
                     gameSession.getListener().getUser().getLogin()), ex);
@@ -178,8 +185,8 @@ public class GameSessionService {
         final boolean result = gameSession.getResult();
 
         try {
-            LOGGER.info(String.valueOf(result));
-            remotePointService.sendMessageToUser(gameSession.getPlayer().getId(), new FinishGame(result));
+            final int score = accountService.updateSScore(gameSession.getUserId(), result);
+            remotePointService.sendMessageToUser(gameSession.getPlayer().getId(), new FinishGame(result, score));
         } catch (IOException ex) {
             LOGGER.warn(String.format("Failed to send FinishGame message to user %s",
                     gameSession.getPlayer().getUser().getLogin()), ex);
