@@ -88,9 +88,9 @@ public class UserDaoImpl implements UserDao {
     public Integer updateSScore(long userId, boolean result) {
             String query = "UPDATE users SET sscore = score ";
             if (result) {
-                query += "+ 25";
+                query += "+ 25 ";
             } else {
-                query += "- 25";
+                query += "- 25 ";
             }
             query += "WHERE id = ? RETURNING sscore";
             return template.queryForObject(query, Integer.class, userId);
