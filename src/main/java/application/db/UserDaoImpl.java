@@ -86,7 +86,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     @NotNull
     public Integer updateSScore(long userId, boolean result) {
-            String query = "UPDATE users SET sscore = score ";
+            String query = "UPDATE users SET sscore = sscore ";
             if (result) {
                 query += "+ 25 ";
             } else {
@@ -99,7 +99,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     @NotNull
     public Integer updateMScore(long userId, boolean result) {
-        String query = "UPDATE users SET mscore = score ";
+        String query = "UPDATE users SET mscore = mscore ";
         if (result) {
             query += "+ 25";
         } else {
