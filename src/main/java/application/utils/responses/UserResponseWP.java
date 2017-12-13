@@ -1,5 +1,6 @@
 package application.utils.responses;
 
+import application.db.UserDao;
 import application.models.User;
 import application.utils.requests.SignupRequest;
 
@@ -26,8 +27,8 @@ public class UserResponseWP {
         this.id = id;
         this.login = user.getLogin();
         this.email = user.getEmail();
-        this.sscore = 1000;
-        this.mscore = 1000;
+        this.sscore = UserDao.DEFAULT_SCORE;
+        this.mscore = UserDao.DEFAULT_SCORE;
     }
 
     public String getLogin() {

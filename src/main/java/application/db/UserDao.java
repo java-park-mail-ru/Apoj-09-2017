@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 
 public interface UserDao {
+    int DEFAULT_SCORE = 1000;
     @NotNull
     Long addUser(@NotNull String login, @NotNull String password, @NotNull String email);
 

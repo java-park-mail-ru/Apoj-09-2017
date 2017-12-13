@@ -72,11 +72,11 @@ public class AccountService {
 
     }
 
-    public Integer updateSScore(long id, boolean result){
+    public Integer updateSScore(long id, boolean result) {
         return db.updateSScore(id, result);
     }
 
-    public Integer updateMScore(long id, boolean result){
+    public Integer updateMScore(long id, boolean result) {
         return db.updateMScore(id, result);
     }
 
