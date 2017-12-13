@@ -32,7 +32,7 @@ public class ClientSnapService {
     }
 
     public void pushClientSnap(@NotNull Long user, @NotNull ClientSnap snap) {
-        this.snaps.putIfAbsent(user, snap);
+        this.snaps.put(user, snap);
     }
 
     @Nullable
