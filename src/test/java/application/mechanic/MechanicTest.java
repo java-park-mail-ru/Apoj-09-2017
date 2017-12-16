@@ -41,6 +41,7 @@ public class MechanicTest {
     @Autowired
     private Music music;
     private Long user1;
+    private Long user2;
 
 
     @Before
@@ -49,6 +50,16 @@ public class MechanicTest {
         accountService.clear();
         when(remotePointService.isConnected(any())).thenReturn(true);
         user1 = accountService.addUser(new SignupRequest("user1", "qwerty123", "user1@mail.ru"));
+        user2 = accountService.addUser(new SignupRequest("user2", "qwerty123", "user2@mail.ru"));
+    }
+
+    @Test
+    public void startMultiGame() {
+        gameMechanics.addUser(user1, Config.MULTI_MODE);
+        gameMechanics.addUser(user2, Config.MULTI_MODE);
+        gameMechanics.gmStep();
+        final Set<MultiGameSession> gameSession = gameSessionService.getMultiSessions();
+        Assert.assertFalse(gameSession.isEmpty());
     }
 
     @Test
@@ -73,6 +84,30 @@ public class MechanicTest {
         Assert.assertEquals(gameSession.getStatus(), Config.STEP_2);
         Assert.assertFalse(gameSession.getResult());
         snapService.pushClientSnap(user1, new ClientSnap(Config.STEP_2, songName));
+        snapService.processSnapshotsFor(gameSession);
+        Assert.assertEquals(gameSession.getStatus(), Config.FINAL_STEP);
+        Assert.assertTrue(gameSession.getResult());
+    }
+
+    @Test
+    public void multiGame() {
+        gameMechanics.addUser(user1, Config.MULTI_MODE);
+        gameMechanics.addUser(user2, Config.MULTI_MODE);
+        gameMechanics.gmStep();
+        final MultiGameSession gameSession = gameSessionService.getMultiSessions().iterator().next();
+        Assert.assertEquals(gameSession.getStatus(), Config.STEP_1);
+        Assert.assertFalse(gameSession.getResult());
+        final String songName = gameSession.getSongName();
+        final String data = "aaaaaaaaaaaaaaaaaaaaaa" + Base64.getEncoder().encodeToString(music.getSong(songName));
+        snapService.pushClientSnap(user1, new ClientSnap(Config.STEP_1, data));
+        snapService.processSnapshotsFor(gameSession);
+        Assert.assertEquals(gameSession.getStatus(), Config.STEP_1_5);
+        Assert.assertFalse(gameSession.getResult());
+        snapService.pushClientSnap(user2, new ClientSnap(Config.STEP_1_5, data));
+        snapService.processSnapshotsFor(gameSession);
+        Assert.assertEquals(gameSession.getStatus(), Config.STEP_2);
+        Assert.assertFalse(gameSession.getResult());
+        snapService.pushClientSnap(user2, new ClientSnap(Config.STEP_2, songName));
         snapService.processSnapshotsFor(gameSession);
         Assert.assertEquals(gameSession.getStatus(), Config.FINAL_STEP);
         Assert.assertTrue(gameSession.getResult());
