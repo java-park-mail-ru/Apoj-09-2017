@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @SuppressWarnings("MissortedModifiers")
 @Service
@@ -78,6 +80,14 @@ public class AccountService {
 
     public Integer updateMScore(long id, boolean result) {
         return db.updateMScore(id, result);
+    }
+
+    public List<User> getSTop(Integer limit, Integer since) {
+        return db.getSTop(limit, since);
+    }
+
+    public List<User> getMTop(Integer limit, Integer since) {
+        return db.getMTop(limit, since);
     }
 
     public void clear() {

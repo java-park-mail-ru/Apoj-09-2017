@@ -12,6 +12,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @SuppressWarnings("MissortedModifiers")
 @Transactional
 public class UserDaoImpl implements UserDao {
@@ -129,6 +131,18 @@ public class UserDaoImpl implements UserDao {
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    @Override
+    public @NotNull List<User> getSTop(@NotNull Integer limit, @NotNull Integer since) {
+        final String query = "SELECT * FROM users ORDER BY sscore DESC LIMIT ? OFFSET ?";
+        return template.query(query, USER_MAPPER, limit, since);
+    }
+
+    @Override
+    public @NotNull List<User> getMTop(@NotNull Integer limit, @NotNull Integer since) {
+        final String query = "SELECT * FROM users ORDER BY mscore DESC LIMIT ? OFFSET ?";
+        return template.query(query, USER_MAPPER, limit, since);
     }
 
     @Override
