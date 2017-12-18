@@ -13,7 +13,7 @@ public class SingleGameSession {
     @NotNull
     private final Long sessionId;
     @NotNull
-    private final Player player;
+    private final Player singer;
     @NotNull
     private String songName;
     @NotNull
@@ -22,20 +22,20 @@ public class SingleGameSession {
     private final GameSessionService gameSessionService;
     private boolean result = false;
 
-    public SingleGameSession(@NotNull Player player,
+    public SingleGameSession(@NotNull Player singer,
                              @NotNull String songName,
                              @NotNull Config.Step status,
                              @NotNull GameSessionService gameSessionService) {
         this.sessionId = ID_GENERATOR.getAndIncrement();
-        this.player = player;
+        this.singer = singer;
         this.songName = songName;
         this.status = status;
         this.gameSessionService = gameSessionService;
     }
 
     @NotNull
-    public Player getPlayer() {
-        return player;
+    public Player getSinger() {
+        return singer;
     }
 
     public long getId() {
@@ -83,7 +83,7 @@ public class SingleGameSession {
     }
 
     public long getUserId() {
-        return player.getId();
+        return singer.getId();
     }
 
     @NotNull

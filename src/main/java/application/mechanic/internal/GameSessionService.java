@@ -116,7 +116,7 @@ public class GameSessionService {
 
     public void forceTerminate(@NotNull SingleGameSession gameSession, boolean error) {
         final boolean exists = singleGameSessions.remove(gameSession);
-        singleUsersMap.remove(gameSession.getPlayer().getId());
+        singleUsersMap.remove(gameSession.getSinger().getId());
         final CloseStatus status;
         if (error) {
             status = CloseStatus.SERVER_ERROR;
@@ -124,9 +124,9 @@ public class GameSessionService {
             status = CloseStatus.NORMAL;
         }
         if (exists) {
-            remotePointService.cutDownConnection(gameSession.getPlayer().getId(), status);
+            remotePointService.cutDownConnection(gameSession.getSinger().getId(), status);
         }
-        clientSnapshotsService.clearForUser(gameSession.getPlayer().getId());
+        clientSnapshotsService.clearForUser(gameSession.getSinger().getId());
         final String logger;
         if (error) {
             logger = " was terminated due to error. ";
@@ -189,10 +189,10 @@ public class GameSessionService {
 
         try {
             final int score = accountService.updateSScore(gameSession.getUserId(), result);
-            remotePointService.sendMessageToUser(gameSession.getPlayer().getId(), new FinishGame(result, score));
+            remotePointService.sendMessageToUser(gameSession.getSinger().getId(), new FinishGame(result, score));
         } catch (IOException ex) {
             LOGGER.warn(String.format("Failed to send FinishGame message to user %s",
-                    gameSession.getPlayer().getUser().getLogin()), ex);
+                    gameSession.getSinger().getUser().getLogin()), ex);
         }
     }
 }
