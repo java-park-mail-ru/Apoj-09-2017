@@ -24,6 +24,8 @@ public class Validator {
     private static final int LOGIN_MAX_LENGTH = 15;
     private static final int PASSWORD_MIN_LENGTH = 8;
     private static final int PASSWORD_MAX_LENGTH = 24;
+    private static final Pattern LOGIN_PATTERN = Pattern.compile("^[A-Za-z0-9_-]+$");
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[-\\w.]+@([A-z0-9][-A-z0-9]+\\.)+[A-z]{2,4}$");
 
     public static ArrayList<String> checkLogin(@NotNull String login) {
         final ArrayList<String> error = new ArrayList<>();
@@ -37,8 +39,7 @@ public class Validator {
                 error.add(LONG_LOGIN);
             }
 
-            final Pattern p = Pattern.compile("^[A-Za-z0-9_-]{1,}$");
-            final Matcher m = p.matcher(login);
+            final Matcher m = LOGIN_PATTERN.matcher(login);
             if (!m.matches()) {
                 error.add(LOGIN_ERROR);
             }
@@ -51,8 +52,7 @@ public class Validator {
         if (StringUtils.isEmpty(email)) {
             error.add(EMPTY_EMAIL);
         } else {
-            final Pattern p = Pattern.compile("^[-\\w.]+@([A-z0-9][-A-z0-9]+\\.)+[A-z]{2,4}$");
-            final Matcher m = p.matcher(email);
+            final Matcher m = EMAIL_PATTERN.matcher(email);
             if (!m.matches()) {
                 error.add(EMAIL_ERROR);
             }
