@@ -169,45 +169,6 @@ public class ControllerTest {
     }
 
     @Test
-    public void invalidSignin() throws Exception {
-        final ArrayList<String> error = new ArrayList<>();
-        error.add(Validator.SHORT_LOGIN);
-        error.add(Validator.SHORT_PASSWORD);
-        mock.perform(post("/signin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"login\":\"jr\", \"password\":\"qwerty\"}"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message").value(error));
-
-        error.clear();
-        error.add(Validator.LONG_LOGIN);
-        error.add(Validator.LONG_PASSWORD);
-        mock.perform(post("/signin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"login\":\"ilyajfnvjfvjnvjfvnjfvnjfvn\", \"password\":\"qwefvtfvkmfkvmfkvkfvmfkvmfvmkfvmkfvmkfvmkfvy123\"}"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message").value(error));
-
-        error.clear();
-        error.add(Validator.EMPTY_LOGIN);
-        error.add(Validator.EMPTY_PASSWORD);
-        mock.perform(post("/signin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"login\":\"\", \"password\":\"\"}"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message").value(error));
-
-        error.clear();
-        error.add(Validator.LONG_LOGIN);
-        error.add(Validator.LOGIN_ERROR);
-        mock.perform(post("/signin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"login\":\"йцвйfdvdfvdfvdvdfvdfцвйвйв\", \"password\":\"qwerty123\"}"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message").value(error));
-    }
-
-    @Test
     public void unauthorizedChangePassword() throws Exception {
         mock.perform(post("/newpassword")
                 .contentType(MediaType.APPLICATION_JSON)
