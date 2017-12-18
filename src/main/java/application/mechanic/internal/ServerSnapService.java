@@ -34,7 +34,7 @@ public class ServerSnapService {
     public void sendSnapshotsFor(@NotNull SingleGameSession gameSession, @NotNull String data) {
         final ServerSnap snap = new ServerSnap(gameSession.getStatus().toString(), data);
         try {
-            remotePointService.sendMessageToUser(gameSession.getUserId(), snap);
+            remotePointService.sendMessageToUser(gameSession.getSingerId(), snap);
         } catch (IOException ex) {
             throw new RuntimeException("Failed  sending snapshot", ex);
         }

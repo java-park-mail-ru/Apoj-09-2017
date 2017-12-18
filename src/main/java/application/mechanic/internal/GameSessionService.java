@@ -161,7 +161,7 @@ public class GameSessionService {
     }
 
     public boolean checkHealthState(@NotNull SingleGameSession gameSession) {
-        return remotePointService.isConnected(gameSession.getUserId());
+        return remotePointService.isConnected(gameSession.getSingerId());
     }
 
     public void finishMultiGame(@NotNull MultiGameSession gameSession) {
@@ -188,7 +188,7 @@ public class GameSessionService {
         final boolean result = gameSession.getResult();
 
         try {
-            final int score = accountService.updateSScore(gameSession.getUserId(), result);
+            final int score = accountService.updateSScore(gameSession.getSingerId(), result);
             remotePointService.sendMessageToUser(gameSession.getSinger().getId(), new FinishGame(result, score));
         } catch (IOException ex) {
             LOGGER.warn(String.format("Failed to send FinishGame message to user %s",

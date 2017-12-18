@@ -80,7 +80,7 @@ public class ClientSnapService {
     }
 
     public void processSnapshotsFor(@NotNull SingleGameSession gameSession) {
-        final ClientSnap snap = getSnapForUser(gameSession.getUserId());
+        final ClientSnap snap = getSnapForUser(gameSession.getSingerId());
         if (snap != null) {
             final Step step = gameSession.getStatus();
             if (step == Step.RECORDING) {

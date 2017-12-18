@@ -31,6 +31,7 @@ public class SingleGameSession {
         this.songName = songName;
         this.status = status;
         this.gameSessionService = gameSessionService;
+        singer.setRole(Config.Role.SINGER);
     }
 
     @NotNull
@@ -82,7 +83,7 @@ public class SingleGameSession {
         return songName;
     }
 
-    public long getUserId() {
+    public long getSingerId() {
         return singer.getId();
     }
 
@@ -93,5 +94,10 @@ public class SingleGameSession {
 
     public void setStatus(@NotNull Config.Step status) {
         this.status = status;
+    }
+
+    @NotNull
+    public GameSessionService getGameSessionService() {
+        return gameSessionService;
     }
 }
