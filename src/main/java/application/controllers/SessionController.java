@@ -50,10 +50,6 @@ public class SessionController {
 
     @PostMapping(path = "/signin", consumes = JSON, produces = JSON)
     public ResponseEntity signin(@RequestBody SigninRequest body, HttpSession httpSession) {
-        final ArrayList<String> error = Validator.checkSignin(body);
-        if (!error.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ValidatorResponse(error));
-        }
         if (httpSession.getAttribute(USER_ID) != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(Messages.AUTHORIZED));
         }

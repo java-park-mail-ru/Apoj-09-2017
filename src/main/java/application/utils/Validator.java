@@ -1,7 +1,6 @@
 package application.utils;
 
 import application.utils.requests.SignupRequest;
-import application.utils.requests.SigninRequest;
 import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
@@ -80,13 +79,6 @@ public class Validator {
         error.addAll(checkLogin(user.getLogin()));
         error.addAll(checkPassword(user.getPassword()));
         error.addAll(checkEmail(user.getEmail()));
-        return error;
-    }
-
-    public static ArrayList<String> checkSignin(@NotNull SigninRequest user) {
-        final ArrayList<String> error = new ArrayList<>();
-        error.addAll(checkLogin(user.getLogin()));
-        error.addAll(checkPassword(user.getPassword()));
         return error;
     }
 
