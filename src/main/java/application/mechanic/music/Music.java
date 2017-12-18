@@ -16,7 +16,6 @@ import java.io.InputStream;
 import java.util.Random;
 import java.util.Vector;
 
-@SuppressWarnings("MissortedModifiers")
 @Service
 public class Music {
     private static final Logger LOGGER = LoggerFactory.getLogger(Music.class);

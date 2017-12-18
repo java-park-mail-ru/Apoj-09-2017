@@ -4,7 +4,6 @@ import application.mechanic.Config;
 import application.websocket.Message;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("MissortedModifiers")
 public class FinishGame extends Message {
     @NotNull
     private String type;

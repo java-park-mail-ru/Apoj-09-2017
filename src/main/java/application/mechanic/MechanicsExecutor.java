@@ -10,7 +10,6 @@ import javax.annotation.PostConstruct;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-@SuppressWarnings("MissortedModifiers")
 @Service
 public class MechanicsExecutor {
     @NotNull

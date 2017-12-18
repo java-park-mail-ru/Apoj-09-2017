@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-@SuppressWarnings("MissortedModifiers")
 @Service
 public class ClientSnapService {
     @NotNull

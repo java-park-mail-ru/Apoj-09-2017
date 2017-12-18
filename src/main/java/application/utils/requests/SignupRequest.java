@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("MissortedModifiers")
 public class SignupRequest {
 
     @NotNull

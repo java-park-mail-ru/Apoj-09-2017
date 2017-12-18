@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("MissortedModifiers")
 public class SigninRequest {
 
     @NotNull

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.Map;
 
-@SuppressWarnings("MissortedModifiers")
 @Service
 public class GameMessageHandlerContainer implements MessageHandlerContainer {
     @NotNull

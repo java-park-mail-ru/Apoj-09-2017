@@ -22,12 +22,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import application.mechanic.MultiGameSession;
 
-@SuppressWarnings("MissortedModifiers")
 @Service
 public class GameSessionService {
     @NotNull
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSessionService.class.getSimpleName());
-
     @NotNull
     private final Map<Long, MultiGameSession> multiUsersMap = new ConcurrentHashMap<>();
     @NotNull

@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@SuppressWarnings("MissortedModifiers")
 @Transactional
 public class UserDaoImpl implements UserDao {
     @Autowired

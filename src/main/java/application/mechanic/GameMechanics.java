@@ -15,7 +15,6 @@ import org.springframework.web.socket.CloseStatus;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@SuppressWarnings("MissortedModifiers")
 @Service
 public class GameMechanics {
     @NotNull

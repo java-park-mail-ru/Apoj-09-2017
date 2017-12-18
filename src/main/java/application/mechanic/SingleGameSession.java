@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-@SuppressWarnings("MissortedModifiers")
 public class SingleGameSession {
     @NotNull
     private static final AtomicLong ID_GENERATOR = new AtomicLong(0);

@@ -17,7 +17,6 @@ import org.springframework.web.socket.CloseStatus;
 import java.io.IOException;
 import java.util.Base64;
 
-@SuppressWarnings("MissortedModifiers")
 @Service
 public class GameInitService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ServerSnapService.class);

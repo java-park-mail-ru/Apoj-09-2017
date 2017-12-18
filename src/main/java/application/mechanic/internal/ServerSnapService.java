@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
-
-@SuppressWarnings("MissortedModifiers")
 @Service
 public class ServerSnapService {
     @NotNull

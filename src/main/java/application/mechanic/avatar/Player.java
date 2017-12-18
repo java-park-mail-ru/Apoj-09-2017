@@ -3,7 +3,6 @@ package application.mechanic.avatar;
 import application.models.User;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("MissortedModifiers")
 public class Player {
     @NotNull
     private final User user;
