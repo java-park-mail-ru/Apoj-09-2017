@@ -141,12 +141,17 @@ public class GameSessionService {
     public boolean checkHealthState(@NotNull MultiGameSession gameSession) {
         final long singer = gameSession.getSingerId();
         final long listener = gameSession.getListenerId();
+        final boolean singerConnection = remotePointService.isConnected(singer);
+        final boolean listenerConnection = remotePointService.isConnected(listener);
         try {
-            if (!remotePointService.isConnected(singer)) {
+            if (!singerConnection && !listenerConnection) {
+                return false;
+            }
+            if (!singerConnection) {
                 remotePointService.sendMessageToUser(listener, new FinishGame());
                 return false;
             }
-            if (!remotePointService.isConnected(listener)) {
+            if (!listenerConnection) {
                 remotePointService.sendMessageToUser(singer, new FinishGame());
                 return false;
             }

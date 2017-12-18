@@ -21,6 +21,7 @@ public class UserDaoImpl implements UserDao {
     private JdbcTemplate template;
     @NotNull
     private static final Logger LOGGER = LoggerFactory.getLogger(UserDaoImpl.class);
+    private static final Integer SCORE_CHANGE = 25;
 
     @Override
     @NotNull
@@ -88,14 +89,14 @@ public class UserDaoImpl implements UserDao {
     @Override
     @NotNull
     public Integer updateSScore(long userId, boolean result) {
-            String query = "UPDATE users SET sscore = sscore ";
-            if (result) {
-                query += "+ 25 ";
-            } else {
-                query += "- 25 ";
-            }
-            query += "WHERE id = ? RETURNING sscore";
-            return template.queryForObject(query, Integer.class, userId);
+        String query = "UPDATE users SET sscore = sscore ";
+        if (result) {
+            query += "+ " + SCORE_CHANGE + ' ';
+        } else {
+            query += "- " + SCORE_CHANGE + ' ';
+        }
+        query += "WHERE id = ? RETURNING sscore";
+        return template.queryForObject(query, Integer.class, userId);
     }
 
     @Override
@@ -103,9 +104,9 @@ public class UserDaoImpl implements UserDao {
     public Integer updateMScore(long userId, boolean result) {
         String query = "UPDATE users SET mscore = mscore ";
         if (result) {
-            query += "+ 25";
+            query += "+ " + SCORE_CHANGE + ' ';
         } else {
-            query += "- 25";
+            query += "- " + SCORE_CHANGE + ' ';
         }
         query += "WHERE id = ? RETURNING mscore";
         return template.queryForObject(query, Integer.class, userId);
