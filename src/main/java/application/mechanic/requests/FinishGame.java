@@ -12,7 +12,7 @@ public class FinishGame extends Message {
 
     public FinishGame(boolean result, int score) {
         this.result = result;
-        this.type = Config.FINAL_STEP;
+        this.type = Config.Step.RESULT.toString();
         this.score = score;
     }
 

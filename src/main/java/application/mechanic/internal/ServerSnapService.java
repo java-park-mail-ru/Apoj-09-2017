@@ -20,9 +20,9 @@ public class ServerSnapService {
     }
 
     public void sendSnapshotsFor(@NotNull MultiGameSession gameSession, @NotNull String data) {
-        final ServerSnap snap = new ServerSnap(gameSession.getStatus(), data);
+        final ServerSnap snap = new ServerSnap(gameSession.getStatus().toString(), data);
         try {
-            if (!gameSession.getStatus().equals(Config.STEP_1)) {
+            if (!(gameSession.getStatus() == Config.Step.RECORDING)) {
                 remotePointService.sendMessageToUser(gameSession.getListenerId(), snap);
             }
             remotePointService.sendMessageToUser(gameSession.getSingerId(), snap);
@@ -32,7 +32,7 @@ public class ServerSnapService {
     }
 
     public void sendSnapshotsFor(@NotNull SingleGameSession gameSession, @NotNull String data) {
-        final ServerSnap snap = new ServerSnap(gameSession.getStatus(), data);
+        final ServerSnap snap = new ServerSnap(gameSession.getStatus().toString(), data);
         try {
             remotePointService.sendMessageToUser(gameSession.getUserId(), snap);
         } catch (IOException ex) {

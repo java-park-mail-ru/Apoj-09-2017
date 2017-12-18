@@ -22,7 +22,6 @@ import java.util.Set;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.when;
 
-@SuppressWarnings("MissortedModifiers")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @RunWith(SpringJUnit4ClassRunner.class)
 public class MechanicTest {
@@ -75,17 +74,17 @@ public class MechanicTest {
         gameMechanics.addUser(user1, Config.SINGLE_MODE);
         gameMechanics.gmStep();
         final SingleGameSession gameSession = gameSessionService.getSingleSessions().iterator().next();
-        Assert.assertEquals(gameSession.getStatus(), Config.STEP_1);
+        Assert.assertEquals(gameSession.getStatus(), Config.Step.RECORDING);
         Assert.assertFalse(gameSession.getResult());
         final String songName = gameSession.getSongName();
         final String data = "aaaaaaaaaaaaaaaaaaaaaa" + Base64.getEncoder().encodeToString(music.getSong(songName));
-        snapService.pushClientSnap(user1, new ClientSnap(Config.STEP_1, data));
+        snapService.pushClientSnap(user1, new ClientSnap(Config.Step.RECORDING.toString(), data));
         snapService.processSnapshotsFor(gameSession);
-        Assert.assertEquals(gameSession.getStatus(), Config.STEP_2);
+        Assert.assertEquals(gameSession.getStatus(), Config.Step.LISTENING);
         Assert.assertFalse(gameSession.getResult());
-        snapService.pushClientSnap(user1, new ClientSnap(Config.STEP_2, songName));
+        snapService.pushClientSnap(user1, new ClientSnap(Config.Step.LISTENING.toString(), songName));
         snapService.processSnapshotsFor(gameSession);
-        Assert.assertEquals(gameSession.getStatus(), Config.FINAL_STEP);
+        Assert.assertEquals(gameSession.getStatus(), Config.Step.RESULT);
         Assert.assertTrue(gameSession.getResult());
     }
 
@@ -95,21 +94,21 @@ public class MechanicTest {
         gameMechanics.addUser(user2, Config.MULTI_MODE);
         gameMechanics.gmStep();
         final MultiGameSession gameSession = gameSessionService.getMultiSessions().iterator().next();
-        Assert.assertEquals(gameSession.getStatus(), Config.STEP_1);
+        Assert.assertEquals(gameSession.getStatus(), Config.Step.RECORDING);
         Assert.assertFalse(gameSession.getResult());
         final String songName = gameSession.getSongName();
         final String data = "aaaaaaaaaaaaaaaaaaaaaa" + Base64.getEncoder().encodeToString(music.getSong(songName));
-        snapService.pushClientSnap(user1, new ClientSnap(Config.STEP_1, data));
+        snapService.pushClientSnap(user1, new ClientSnap(Config.Step.RECORDING.toString(), data));
         snapService.processSnapshotsFor(gameSession);
-        Assert.assertEquals(gameSession.getStatus(), Config.STEP_1_5);
+        Assert.assertEquals(gameSession.getStatus(), Config.Step.SECOND_RECORDING);
         Assert.assertFalse(gameSession.getResult());
-        snapService.pushClientSnap(user2, new ClientSnap(Config.STEP_1_5, data));
+        snapService.pushClientSnap(user2, new ClientSnap(Config.Step.SECOND_RECORDING.toString(), data));
         snapService.processSnapshotsFor(gameSession);
-        Assert.assertEquals(gameSession.getStatus(), Config.STEP_2);
+        Assert.assertEquals(gameSession.getStatus(), Config.Step.LISTENING);
         Assert.assertFalse(gameSession.getResult());
-        snapService.pushClientSnap(user2, new ClientSnap(Config.STEP_2, songName));
+        snapService.pushClientSnap(user2, new ClientSnap(Config.Step.LISTENING.toString(), songName));
         snapService.processSnapshotsFor(gameSession);
-        Assert.assertEquals(gameSession.getStatus(), Config.FINAL_STEP);
+        Assert.assertEquals(gameSession.getStatus(), Config.Step.RESULT);
         Assert.assertTrue(gameSession.getResult());
     }
 

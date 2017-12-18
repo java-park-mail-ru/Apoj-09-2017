@@ -17,14 +17,14 @@ public class SingleGameSession {
     @NotNull
     private String songName;
     @NotNull
-    private String status;
+    private Config.Step status;
     @NotNull
     private final GameSessionService gameSessionService;
     private boolean result = false;
 
     public SingleGameSession(@NotNull Player player,
                              @NotNull String songName,
-                             @NotNull String status,
+                             @NotNull Config.Step status,
                              @NotNull GameSessionService gameSessionService) {
         this.sessionId = ID_GENERATOR.getAndIncrement();
         this.player = player;
@@ -62,7 +62,7 @@ public class SingleGameSession {
     }
 
     public boolean tryFinishGame() {
-        if (status.equals(Config.FINAL_STEP)) {
+        if (status == Config.Step.RESULT) {
             gameSessionService.finishSingleGame(this);
             return true;
         }
@@ -87,11 +87,11 @@ public class SingleGameSession {
     }
 
     @NotNull
-    public String getStatus() {
+    public Config.Step getStatus() {
         return status;
     }
 
-    public void setStatus(@NotNull String status) {
+    public void setStatus(@NotNull Config.Step status) {
         this.status = status;
     }
 }

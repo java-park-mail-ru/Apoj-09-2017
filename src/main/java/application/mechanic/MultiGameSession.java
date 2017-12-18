@@ -19,7 +19,7 @@ public class MultiGameSession {
     @NotNull
     private String songName;
     @NotNull
-    private String status;
+    private Config.Step status;
     @NotNull
     private final GameSessionService gameSessionService;
     private boolean result = false;
@@ -28,14 +28,14 @@ public class MultiGameSession {
     public MultiGameSession(@NotNull Player singer,
                             @NotNull Player listener,
                             @NotNull String songName,
-                            @NotNull String status,
+                            @NotNull Config.Step step,
                             @NotNull GameSessionService gameSessionService) {
         this.sessionId = ID_GENERATOR.getAndIncrement();
         this.singer = singer;
         this.listener = listener;
         this.gameSessionService = gameSessionService;
         this.songName = songName;
-        this.status = status;
+        this.status = step;
         singer.setRole(Config.SINGER_ROLE);
         listener.setRole(Config.LISTENER_ROLE);
     }
@@ -74,7 +74,7 @@ public class MultiGameSession {
     }
 
     public boolean tryFinishGame() {
-        if (status.equals(Config.FINAL_STEP)) {
+        if (status == Config.Step.RESULT) {
             gameSessionService.finishMultiGame(this);
             return true;
         }
@@ -95,12 +95,12 @@ public class MultiGameSession {
     }
 
     @NotNull
-    public String getStatus() {
+    public Config.Step getStatus() {
         return status;
     }
 
-    public void setStatus(@NotNull String status) {
-        this.status = status;
+    public void setStatus(@NotNull Config.Step step) {
+        this.status = step;
     }
 
     public long getSingerId() {
