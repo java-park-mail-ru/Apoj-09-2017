@@ -13,13 +13,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Random;
-import java.util.Vector;
 
 @Service
 public class Music {
     private static final Logger LOGGER = LoggerFactory.getLogger(Music.class);
-    private final Vector<String> playList = new Vector<>();
+    private final ArrayList<String> playList = new ArrayList<>();
     private final Random random = new Random();
     private static final int SIZE = 16384;
 
@@ -27,7 +27,6 @@ public class Music {
         playList.add("badtrip");
         playList.add("Владимирский централ");
         playList.add("ок");
-        playList.add("бургер");
         playList.add("панелька");
     }
 
@@ -54,7 +53,7 @@ public class Music {
         return playList.get(index);
     }
 
-    @Nullable
+    @NotNull
     public byte[] reverseRecord(@NotNull byte[] record) {
         try {
             final AudioInputStream stream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(record));
