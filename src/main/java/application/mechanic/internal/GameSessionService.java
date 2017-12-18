@@ -166,33 +166,25 @@ public class GameSessionService {
 
     public void finishMultiGame(@NotNull MultiGameSession gameSession) {
         final boolean result = gameSession.getResult();
+        int score = accountService.updateMScore(gameSession.getSingerId(), result);
+        sendMessage(gameSession.getSingerId(), result, score);
+        score = accountService.updateMScore(gameSession.getListenerId(), result);
+        sendMessage(gameSession.getListenerId(), result, score);
 
-        try {
-            final int score = accountService.updateMScore(gameSession.getSingerId(), result);
-            remotePointService.sendMessageToUser(gameSession.getSingerId(), new FinishGame(result, score));
-        } catch (IOException ex) {
-            LOGGER.warn(String.format("Failed to send FinishGame message to user %s",
-                    gameSession.getSinger().getUser().getLogin()), ex);
-        }
-
-        try {
-            final int score = accountService.updateMScore(gameSession.getListenerId(), result);
-            remotePointService.sendMessageToUser(gameSession.getListenerId(), new FinishGame(result, score));
-        } catch (IOException ex) {
-            LOGGER.warn(String.format("Failed to send FinishGame message to user %s",
-                    gameSession.getListener().getUser().getLogin()), ex);
-        }
     }
 
     public void finishSingleGame(@NotNull SingleGameSession gameSession) {
         final boolean result = gameSession.getResult();
+        final int score = accountService.updateSScore(gameSession.getSingerId(), result);
+        sendMessage(gameSession.getSingerId(), result, score);
+    }
 
+    public void sendMessage(Long userId, boolean result, int score) {
         try {
-            final int score = accountService.updateSScore(gameSession.getSingerId(), result);
-            remotePointService.sendMessageToUser(gameSession.getSinger().getId(), new FinishGame(result, score));
+            remotePointService.sendMessageToUser(userId, new FinishGame(result, score));
         } catch (IOException ex) {
-            LOGGER.warn(String.format("Failed to send FinishGame message to user %s",
-                    gameSession.getSinger().getUser().getLogin()), ex);
+            LOGGER.warn(String.format("Failed to send FinishGame message to user %d",
+                    userId), ex);
         }
     }
 }
