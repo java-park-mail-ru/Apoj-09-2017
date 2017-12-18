@@ -155,10 +155,10 @@ public class SessionController {
     @GetMapping(path = "stop", produces = JSON)
     public ResponseEntity getSTopp(@RequestParam(value = "limit", required = false) Integer limit,
                                    @RequestParam(value = "since", required = false) Integer since) {
-        if(limit == null){
+        if (limit == null) {
             limit = DEFAULT_TOP_SIZE;
         }
-        if( since == null){
+        if (since == null) {
             since = 0;
         }
         return ResponseEntity.status(HttpStatus.OK).body(service.getSTop(limit, since));
@@ -167,10 +167,10 @@ public class SessionController {
     @GetMapping(path = "mtop", produces = JSON)
     public ResponseEntity getMTopp(@RequestParam(value = "limit", required = false) Integer limit,
                                    @RequestParam(value = "since", required = false) Integer since) {
-        if(limit == null){
+        if (limit == null) {
             limit = DEFAULT_TOP_SIZE;
         }
-        if( since == null){
+        if (since == null) {
             since = 0;
         }
         return ResponseEntity.status(HttpStatus.OK).body(service.getMTop(limit, since));
