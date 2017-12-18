@@ -57,8 +57,8 @@ public class GameInitService {
     public void initGameFor(@NotNull MultiGameSession gameSession) {
         final Player singer = gameSession.getSinger();
         final Player listener = gameSession.getListener();
-        final InitMultiGame.Request initSinger = new InitMultiGame.Request(Config.SINGER_ROLE, listener.getUser().getLogin());
-        final InitMultiGame.Request initListener = new InitMultiGame.Request(Config.LISTENER_ROLE, singer.getUser().getLogin());
+        final InitMultiGame.Request initSinger = new InitMultiGame.Request(Config.Role.SINGER.toString(), listener.getUser().getLogin());
+        final InitMultiGame.Request initListener = new InitMultiGame.Request(Config.Role.LISTENER.toString(), singer.getUser().getLogin());
         final byte[] data = music.reverseRecord(music.getSong(gameSession.getSongName()));
         try {
             remotePointService.sendMessageToUser(singer.getId(), initSinger);

@@ -18,7 +18,7 @@ public class FinishGame extends Message {
 
     public FinishGame() {
         this.result = false;
-        this.type = Config.LEAVE;
+        this.type = Config.Step.LEAVE.toString();
     }
 
     public void setResult(boolean result) {

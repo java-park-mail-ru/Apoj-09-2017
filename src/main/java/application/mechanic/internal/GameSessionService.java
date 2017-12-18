@@ -66,8 +66,8 @@ public class GameSessionService {
     }
 
     public void startMultiGame(@NotNull User first, @NotNull User second) {
-        final Player singer = new Player(first, Config.SINGER_ROLE);
-        final Player listener = new Player(second, Config.LISTENER_ROLE);
+        final Player singer = new Player(first, Config.Role.SINGER);
+        final Player listener = new Player(second, Config.Role.LISTENER);
         final MultiGameSession gameSession = new MultiGameSession(singer, listener, music.getSongName(), Config.Step.RECORDING, this);
         multiGameSessions.add(gameSession);
         multiUsersMap.put(first.getId(), gameSession);
@@ -77,7 +77,7 @@ public class GameSessionService {
     }
 
     public void startSingleGame(@NotNull User user) {
-        final Player player = new Player(user, Config.SINGER_ROLE);
+        final Player player = new Player(user, Config.Role.SINGER);
         final SingleGameSession gameSession = new SingleGameSession(player, music.getSongName(), Config.Step.RECORDING, this);
         singleGameSessions.add(gameSession);
         singleUsersMap.put(user.getId(), gameSession);

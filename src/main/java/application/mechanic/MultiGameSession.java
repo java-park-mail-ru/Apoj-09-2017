@@ -15,7 +15,7 @@ public class MultiGameSession {
     @NotNull
     private final Player singer;
     @NotNull
-    private Player listener;
+    private final Player listener;
     @NotNull
     private String songName;
     @NotNull
@@ -36,8 +36,8 @@ public class MultiGameSession {
         this.gameSessionService = gameSessionService;
         this.songName = songName;
         this.status = step;
-        singer.setRole(Config.SINGER_ROLE);
-        listener.setRole(Config.LISTENER_ROLE);
+        singer.setRole(Config.Role.SINGER);
+        listener.setRole(Config.Role.LISTENER);
     }
 
     @NotNull

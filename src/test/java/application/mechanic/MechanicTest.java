@@ -54,8 +54,8 @@ public class MechanicTest {
 
     @Test
     public void startMultiGame() {
-        gameMechanics.addUser(user1, Config.MULTI_MODE);
-        gameMechanics.addUser(user2, Config.MULTI_MODE);
+        gameMechanics.addUser(user1, Config.Mode.MULTI.toString());
+        gameMechanics.addUser(user2, Config.Mode.MULTI.toString());
         gameMechanics.gmStep();
         final Set<MultiGameSession> gameSession = gameSessionService.getMultiSessions();
         Assert.assertFalse(gameSession.isEmpty());
@@ -63,7 +63,7 @@ public class MechanicTest {
 
     @Test
     public void startSingleGame() {
-        gameMechanics.addUser(user1, Config.SINGLE_MODE);
+        gameMechanics.addUser(user1, Config.Mode.SINGLE.toString());
         gameMechanics.gmStep();
         final Set<SingleGameSession> gameSession = gameSessionService.getSingleSessions();
         Assert.assertFalse(gameSession.isEmpty());
@@ -71,7 +71,7 @@ public class MechanicTest {
 
     @Test
     public void singleGame() {
-        gameMechanics.addUser(user1, Config.SINGLE_MODE);
+        gameMechanics.addUser(user1, Config.Mode.SINGLE.toString());
         gameMechanics.gmStep();
         final SingleGameSession gameSession = gameSessionService.getSingleSessions().iterator().next();
         Assert.assertEquals(gameSession.getStatus(), Config.Step.RECORDING);
@@ -90,8 +90,8 @@ public class MechanicTest {
 
     @Test
     public void multiGame() {
-        gameMechanics.addUser(user1, Config.MULTI_MODE);
-        gameMechanics.addUser(user2, Config.MULTI_MODE);
+        gameMechanics.addUser(user1, Config.Mode.MULTI.toString());
+        gameMechanics.addUser(user2, Config.Mode.MULTI.toString());
         gameMechanics.gmStep();
         final MultiGameSession gameSession = gameSessionService.getMultiSessions().iterator().next();
         Assert.assertEquals(gameSession.getStatus(), Config.Step.RECORDING);
