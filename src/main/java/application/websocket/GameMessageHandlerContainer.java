@@ -22,7 +22,7 @@ public class GameMessageHandlerContainer implements MessageHandlerContainer {
             throw new HandleException("no handler for message of " + message.getClass().getName() + " type");
         }
         messageHandler.handleMessage(message, forUser);
-        LOGGER.trace("message handled: type =[" + message.getClass().getName() + ']');
+        LOGGER.trace("message handled: type =[{}]", message.getClass().getName());
     }
 
     @Override
