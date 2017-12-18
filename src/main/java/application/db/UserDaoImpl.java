@@ -134,13 +134,15 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public @NotNull List<User> getSTop(@NotNull Integer limit, @NotNull Integer since) {
+    @NotNull
+    public List<User> getSTop(@NotNull Integer limit, @NotNull Integer since) {
         final String query = "SELECT * FROM users ORDER BY sscore DESC LIMIT ? OFFSET ?";
         return template.query(query, USER_MAPPER, limit, since);
     }
 
     @Override
-    public @NotNull List<User> getMTop(@NotNull Integer limit, @NotNull Integer since) {
+    @NotNull
+    public List<User> getMTop(@NotNull Integer limit, @NotNull Integer since) {
         final String query = "SELECT * FROM users ORDER BY mscore DESC LIMIT ? OFFSET ?";
         return template.query(query, USER_MAPPER, limit, since);
     }
