@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Transactional
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.MOCK)
 @AutoConfigureMockMvc(print = MockMvcPrint.NONE)
 public class ControllerTest {
     private static final String LOGIN = "ilya";
@@ -43,8 +43,12 @@ public class ControllerTest {
 
     @Before
     public void before() {
-        service.clear();
         userId = service.addUser(new SignupRequest(LOGIN, PASSWORD, EMAIL));
+    }
+
+    @After
+    public void after() {
+        service.clear();
     }
 
     @Test
@@ -162,45 +166,6 @@ public class ControllerTest {
                 .content("{\"login\":\"idfvdfa12\", \"password\":\"qwertdfvdy123\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("message").value(Messages.WRONG_LOGIN_PASSWORD));
-    }
-
-    @Test
-    public void invalidSignin() throws Exception {
-        final ArrayList<String> error = new ArrayList<>();
-        error.add(Validator.SHORT_LOGIN);
-        error.add(Validator.SHORT_PASSWORD);
-        mock.perform(post("/signin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"login\":\"jr\", \"password\":\"qwerty\"}"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message").value(error));
-
-        error.clear();
-        error.add(Validator.LONG_LOGIN);
-        error.add(Validator.LONG_PASSWORD);
-        mock.perform(post("/signin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"login\":\"ilyajfnvjfvjnvjfvnjfvnjfvn\", \"password\":\"qwefvtfvkmfkvmfkvkfvmfkvmfvmkfvmkfvmkfvmkfvy123\"}"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message").value(error));
-
-        error.clear();
-        error.add(Validator.EMPTY_LOGIN);
-        error.add(Validator.EMPTY_PASSWORD);
-        mock.perform(post("/signin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"login\":\"\", \"password\":\"\"}"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message").value(error));
-
-        error.clear();
-        error.add(Validator.LONG_LOGIN);
-        error.add(Validator.LOGIN_ERROR);
-        mock.perform(post("/signin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"login\":\"йцвйfdvdfvdfvdvdfvdfцвйвйв\", \"password\":\"qwerty123\"}"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("message").value(error));
     }
 
     @Test

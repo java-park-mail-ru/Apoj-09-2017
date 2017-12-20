@@ -25,6 +25,7 @@ public class SessionController {
     private AccountService service;
     public static final String JSON = MediaType.APPLICATION_JSON_UTF8_VALUE;
     public static final String USER_ID = "userId";
+    public static final Integer DEFAULT_TOP_SIZE = 10;
 
     public SessionController(AccountService service) {
         this.service = service;
@@ -49,10 +50,6 @@ public class SessionController {
 
     @PostMapping(path = "/signin", consumes = JSON, produces = JSON)
     public ResponseEntity signin(@RequestBody SigninRequest body, HttpSession httpSession) {
-        final ArrayList<String> error = Validator.checkSignin(body);
-        if (!error.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ValidatorResponse(error));
-        }
         if (httpSession.getAttribute(USER_ID) != null) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(Messages.AUTHORIZED));
         }
@@ -149,5 +146,29 @@ public class SessionController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new MessageResponse(Messages.BAD_COOKIE));
         }
         return ResponseEntity.ok(new UserResponseWP(user));
+    }
+
+    @GetMapping(path = "stop", produces = JSON)
+    public ResponseEntity getSTopp(@RequestParam(value = "limit", required = false) Integer limit,
+                                   @RequestParam(value = "since", required = false) Integer since) {
+        if (limit == null) {
+            limit = DEFAULT_TOP_SIZE;
+        }
+        if (since == null) {
+            since = 0;
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(service.getSTop(limit, since));
+    }
+
+    @GetMapping(path = "mtop", produces = JSON)
+    public ResponseEntity getMTopp(@RequestParam(value = "limit", required = false) Integer limit,
+                                   @RequestParam(value = "since", required = false) Integer since) {
+        if (limit == null) {
+            limit = DEFAULT_TOP_SIZE;
+        }
+        if (since == null) {
+            since = 0;
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(service.getMTop(limit, since));
     }
 }

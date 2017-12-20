@@ -2,13 +2,7 @@ package application.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringBootTest
 public class ValidatorTest {
     @Test
     public void testWrongLogin() {
@@ -30,5 +24,4 @@ public class ValidatorTest {
         Assert.assertTrue(Validator.checkPassword("12").contains(Validator.SHORT_PASSWORD));
         Assert.assertTrue(Validator.checkPassword("1234567111111111111111111111111111111111").contains(Validator.LONG_PASSWORD));
     }
-
 }

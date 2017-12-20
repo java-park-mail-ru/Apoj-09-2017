@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 
 @Service
 public class AccountService {
@@ -67,7 +68,24 @@ public class AccountService {
 
     public boolean checkSignin(long id, @NotNull String password) {
         final User user = db.getUser(id);
-        return encoder.matches(password, user.getPassword());
+        return user != null && encoder.matches(password, user.getPassword());
+
+    }
+
+    public Integer updateSScore(long id, boolean result) {
+        return db.updateSScore(id, result);
+    }
+
+    public Integer updateMScore(long id, boolean result) {
+        return db.updateMScore(id, result);
+    }
+
+    public List<User> getSTop(Integer limit, Integer since) {
+        return db.getSTop(limit, since);
+    }
+
+    public List<User> getMTop(Integer limit, Integer since) {
+        return db.getMTop(limit, since);
     }
 
     public void clear() {
