@@ -43,7 +43,8 @@ public class GameInitService {
 
     public void initGameFor(@NotNull SingleGameSession gameSession) {
         final Player player = gameSession.getSinger();
-        final byte[] data = music.getSong(gameSession.getSongName());
+
+        final byte[] data = music.reverseRecord(music.getSong(gameSession.getSongName()));
         final InitSingleGame.Request initMessage = new InitSingleGame.Request(encoder.encodeToString(data));
         try {
             remotePointService.sendMessageToUser(player.getId(), initMessage);
@@ -58,7 +59,7 @@ public class GameInitService {
         final Player listener = gameSession.getListener();
         final InitMultiGame.Request initSinger = new InitMultiGame.Request(Config.Role.SINGER.toString(), listener.getUser().getLogin());
         final InitMultiGame.Request initListener = new InitMultiGame.Request(Config.Role.LISTENER.toString(), singer.getUser().getLogin());
-        final byte[] data = music.reverseRecord(music.getSong(gameSession.getSongName()));
+        final byte[] data = music.getSong(gameSession.getSongName());
         try {
             remotePointService.sendMessageToUser(singer.getId(), initSinger);
             remotePointService.sendMessageToUser(listener.getId(), initListener);

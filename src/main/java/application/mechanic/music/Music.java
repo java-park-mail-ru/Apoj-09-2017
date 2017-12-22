@@ -24,9 +24,16 @@ public class Music {
 
     public Music() {
         playList.add("badtrip");
-        playList.add("Владимирский централ");
-        playList.add("ок");
-        playList.add("панелька");
+        playList.add("А мы не ангелы");
+        playList.add("Белые розы");
+        playList.add("В Питере пить");
+        playList.add("Звезда по имени солнце");
+        playList.add("Капитал");
+        playList.add("Стрекоза любви");
+        playList.add("Три полоски");
+        playList.add("Я верю");
+        playList.add("Я свободен");
+        playList.add("Я солдат");
     }
 
     @NotNull
@@ -80,6 +87,8 @@ public class Music {
             throw new RuntimeException("Music Error", e);
         }
     }
+
 }
+
 
 
