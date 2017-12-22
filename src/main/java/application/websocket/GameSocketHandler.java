@@ -6,6 +6,8 @@ import application.models.User;
 import application.services.AccountService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.eclipse.jetty.websocket.api.WebSocketBehavior;
+import org.eclipse.jetty.websocket.api.WebSocketPolicy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -21,6 +23,7 @@ public class GameSocketHandler extends TextWebSocketHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSocketHandler.class);
     private static final CloseStatus ACCESS_DENIED = new CloseStatus(4500, "Not logged in. Access denied");
     private static final int MESSAGE_SIZE = 5000000;
+    private static final int TIMEOUT = 120000;
 
     @NotNull
     private AccountService accountService;
@@ -40,6 +43,9 @@ public class GameSocketHandler extends TextWebSocketHandler {
         this.accountService = authService;
         this.remotePointService = remotePointService;
         this.objectMapper = objectMapper;
+        final WebSocketPolicy policy = new WebSocketPolicy(WebSocketBehavior.SERVER);
+        policy.setIdleTimeout(TIMEOUT);
+        policy.setAsyncWriteTimeout(TIMEOUT);
     }
 
     @Override
