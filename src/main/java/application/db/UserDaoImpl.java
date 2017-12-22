@@ -12,13 +12,15 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-@SuppressWarnings("MissortedModifiers")
+import java.util.List;
+
 @Transactional
 public class UserDaoImpl implements UserDao {
     @Autowired
     private JdbcTemplate template;
     @NotNull
     private static final Logger LOGGER = LoggerFactory.getLogger(UserDaoImpl.class);
+    private static final Integer SCORE_CHANGE = 25;
 
     @Override
     @NotNull
@@ -45,7 +47,9 @@ public class UserDaoImpl implements UserDao {
             new User(res.getLong("id"),
                     res.getString("login"),
                     res.getString("password"),
-                    res.getString("email")
+                    res.getString("email"),
+                    res.getInt("sscore"),
+                    res.getInt("mscore")
             );
 
     @Override
@@ -82,6 +86,32 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    @NotNull
+    public Integer updateSScore(long userId, boolean result) {
+        String query = "UPDATE users SET sscore = sscore ";
+        if (result) {
+            query += "+ " + SCORE_CHANGE + ' ';
+        } else {
+            query += "- " + SCORE_CHANGE + ' ';
+        }
+        query += "WHERE id = ? RETURNING sscore";
+        return template.queryForObject(query, Integer.class, userId);
+    }
+
+    @Override
+    @NotNull
+    public Integer updateMScore(long userId, boolean result) {
+        String query = "UPDATE users SET mscore = mscore ";
+        if (result) {
+            query += "+ " + SCORE_CHANGE + ' ';
+        } else {
+            query += "- " + SCORE_CHANGE + ' ';
+        }
+        query += "WHERE id = ? RETURNING mscore";
+        return template.queryForObject(query, Integer.class, userId);
+    }
+
+    @Override
     @Nullable
     public Long getIdByLogin(@NotNull String login) {
         try {
@@ -101,6 +131,20 @@ public class UserDaoImpl implements UserDao {
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    @Override
+    @NotNull
+    public List<User> getSTop(@NotNull Integer limit, @NotNull Integer since) {
+        final String query = "SELECT * FROM users ORDER BY sscore DESC LIMIT ? OFFSET ?";
+        return template.query(query, USER_MAPPER, limit, since);
+    }
+
+    @Override
+    @NotNull
+    public List<User> getMTop(@NotNull Integer limit, @NotNull Integer since) {
+        final String query = "SELECT * FROM users ORDER BY mscore DESC LIMIT ? OFFSET ?";
+        return template.query(query, USER_MAPPER, limit, since);
     }
 
     @Override

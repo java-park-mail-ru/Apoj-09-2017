@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
-
-@SuppressWarnings("MissortedModifiers")
 @Service
 public class ServerSnapService {
     @NotNull
@@ -22,26 +20,21 @@ public class ServerSnapService {
     }
 
     public void sendSnapshotsFor(@NotNull MultiGameSession gameSession, @NotNull String data) {
-        final String status = gameSession.getStatus();
-        final ServerSnap snap = new ServerSnap(gameSession.getStatus());
-        snap.setData(data);
+        final ServerSnap snap = new ServerSnap(gameSession.getStatus().toString(), data);
         try {
-            if (status.equals(Config.STEP_1)) {
-                remotePointService.sendMessageToUser(gameSession.getSingerId(), snap);
-            }
-            if (status.equals(Config.STEP_1_5)) {
+            if (!(gameSession.getStatus() == Config.Step.RECORDING)) {
                 remotePointService.sendMessageToUser(gameSession.getListenerId(), snap);
             }
+            remotePointService.sendMessageToUser(gameSession.getSingerId(), snap);
         } catch (IOException ex) {
             throw new RuntimeException("Failed  sending snapshot", ex);
         }
     }
 
     public void sendSnapshotsFor(@NotNull SingleGameSession gameSession, @NotNull String data) {
-        final ServerSnap snap = new ServerSnap(gameSession.getStatus());
-        snap.setData(data);
+        final ServerSnap snap = new ServerSnap(gameSession.getStatus().toString(), data);
         try {
-            remotePointService.sendMessageToUser(gameSession.getUserId(), snap);
+            remotePointService.sendMessageToUser(gameSession.getSingerId(), snap);
         } catch (IOException ex) {
             throw new RuntimeException("Failed  sending snapshot", ex);
         }

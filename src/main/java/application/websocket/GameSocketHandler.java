@@ -17,7 +17,6 @@ import java.io.IOException;
 
 import static org.springframework.web.socket.CloseStatus.SERVER_ERROR;
 
-@SuppressWarnings("MissortedModifiers")
 public class GameSocketHandler extends TextWebSocketHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSocketHandler.class);
     private static final CloseStatus ACCESS_DENIED = new CloseStatus(4500, "Not logged in. Access denied");
@@ -86,7 +85,6 @@ public class GameSocketHandler extends TextWebSocketHandler {
             return;
         }
         try {
-            //noinspection ConstantConditions
             messageHandlerContainer.handle(message, userProfile.getId());
         } catch (HandleException e) {
             LOGGER.error("Can't handle message of type " + message.getClass().getName() + " with content: " + text, e);

@@ -3,7 +3,6 @@ package application.mechanic.snapshots;
 import application.websocket.Message;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("MissortedModifiers")
 public class ClientSnap extends Message {
     @NotNull
     private String type;
@@ -20,16 +19,9 @@ public class ClientSnap extends Message {
         return type;
     }
 
-    public void setType(@NotNull String type) {
-        this.type = type;
-    }
-
     @NotNull
     public String getData() {
         return data;
     }
 
-    public void setData(@NotNull String data) {
-        this.data = data;
-    }
 }

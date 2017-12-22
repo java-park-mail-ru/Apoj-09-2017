@@ -2,7 +2,6 @@ package application.websocket;
 
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("MissortedModifiers")
 public abstract class MessageHandler<T extends Message> {
     @NotNull
     private final Class<T> clazz;

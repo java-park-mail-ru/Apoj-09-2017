@@ -8,10 +8,17 @@ public class FinishGame extends Message {
     @NotNull
     private String type;
     private boolean result;
+    private int score;
 
-    public FinishGame(boolean result) {
+    public FinishGame(boolean result, int score) {
         this.result = result;
-        this.type = Config.FINAL_STEP;
+        this.type = Config.Step.RESULT.toString();
+        this.score = score;
+    }
+
+    public FinishGame() {
+        this.result = false;
+        this.type = Config.Step.LEAVE.toString();
     }
 
     public void setResult(boolean result) {
@@ -29,5 +36,13 @@ public class FinishGame extends Message {
 
     public boolean isResult() {
         return result;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 }

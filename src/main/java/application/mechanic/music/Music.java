@@ -1,7 +1,6 @@
 package application.mechanic.music;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -10,36 +9,47 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Random;
-import java.util.Vector;
 
-@SuppressWarnings("MissortedModifiers")
 @Service
 public class Music {
     private static final Logger LOGGER = LoggerFactory.getLogger(Music.class);
-    private final Vector<String> playList = new Vector<>();
+    private final ArrayList<String> playList = new ArrayList<>();
     private final Random random = new Random();
+    private static final int SIZE = 16384;
 
     public Music() {
         playList.add("badtrip");
-        playList.add("Владимирский централ");
-        playList.add("ок");
-        playList.add("бургер");
-        playList.add("панелька");
+        playList.add("А мы не ангелы");
+        playList.add("Белые розы");
+        playList.add("В Питере пить");
+        playList.add("Звезда по имени солнце");
+        playList.add("Капитал");
+        playList.add("Стрекоза любви");
+        playList.add("Три полоски");
+        playList.add("Я верю");
+        playList.add("Я свободен");
+        playList.add("Я солдат");
     }
 
-    @Nullable
+    @NotNull
     public byte[] getSong(String name) {
-        try {
-            final Path path = Paths.get("./src/main/resources/music/" + name + ".wav");
-            return Files.readAllBytes(path);
+        final ClassLoader cl = this.getClass().getClassLoader();
+        try (InputStream is = cl.getResourceAsStream("music/" + name + ".wav");
+             ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+            int readed;
+            final byte[] data = new byte[SIZE];
+            while ((readed = is.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, readed);
+            }
+            buffer.flush();
+            return buffer.toByteArray();
         } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-            return null;
+            throw new RuntimeException("Music Error", e);
         }
     }
 
@@ -49,7 +59,7 @@ public class Music {
         return playList.get(index);
     }
 
-    @Nullable
+    @NotNull
     public byte[] reverseRecord(@NotNull byte[] record) {
         try {
             final AudioInputStream stream = AudioSystem.getAudioInputStream(new ByteArrayInputStream(record));
@@ -65,7 +75,6 @@ public class Music {
             }
             final byte[] result = new byte[record.length];
             final int headerSize = record.length - frames.length * frameSize;
-            //System.out.println(headerSize);
             System.arraycopy(record, 0, result, 0, headerSize);
             for (int i = 0; i < frames.length; i++) {
                 for (int j = 0; j < frameSize; j++) {
@@ -73,24 +82,13 @@ public class Music {
                 }
             }
             return result;
-        } catch (UnsupportedAudioFileException e) {
-            LOGGER.error("Unsuported audio file");
-        } catch (IOException e) {
+        } catch (UnsupportedAudioFileException | IOException e) {
             LOGGER.error(e.getMessage());
+            throw new RuntimeException("Music Error", e);
         }
-        return null;
     }
 
-//    public static void main(String[] args) {
-//        final Music music = new Music();
-//        final Path path = Paths.get("./src/main/resources/music/.wav");
-//        try {
-//            Files.createFile(path);
-//            Files.write(path, music.reverseRecord(music.getSong("")));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 }
+
 
 

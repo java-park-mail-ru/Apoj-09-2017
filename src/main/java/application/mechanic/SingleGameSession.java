@@ -7,38 +7,36 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-@SuppressWarnings("MissortedModifiers")
 public class SingleGameSession {
     @NotNull
     private static final AtomicLong ID_GENERATOR = new AtomicLong(0);
-    private boolean isFinished;
     @NotNull
     private final Long sessionId;
     @NotNull
-    private final Player player;
+    private final Player singer;
     @NotNull
     private String songName;
     @NotNull
-    private String status;
+    private Config.Step status;
     @NotNull
     private final GameSessionService gameSessionService;
     private boolean result = false;
 
-    public SingleGameSession(@NotNull Player player,
+    public SingleGameSession(@NotNull Player singer,
                              @NotNull String songName,
-                             @NotNull String status,
+                             @NotNull Config.Step status,
                              @NotNull GameSessionService gameSessionService) {
         this.sessionId = ID_GENERATOR.getAndIncrement();
-        this.player = player;
+        this.singer = singer;
         this.songName = songName;
         this.status = status;
         this.gameSessionService = gameSessionService;
-        this.isFinished = false;
+        singer.setRole(Config.Role.SINGER);
     }
 
     @NotNull
-    public Player getPlayer() {
-        return player;
+    public Player getSinger() {
+        return singer;
     }
 
     public long getId() {
@@ -64,16 +62,8 @@ public class SingleGameSession {
         return sessionId.hashCode();
     }
 
-    public boolean isFinished() {
-        return isFinished;
-    }
-
-    public void setFinished() {
-        isFinished = true;
-    }
-
     public boolean tryFinishGame() {
-        if (status.equals(Config.FINAL_STEP)) {
+        if (status == Config.Step.RESULT) {
             gameSessionService.finishSingleGame(this);
             return true;
         }
@@ -93,20 +83,21 @@ public class SingleGameSession {
         return songName;
     }
 
-    public void setSongName(@NotNull String songName) {
-        this.songName = songName;
-    }
-
-    public long getUserId() {
-        return player.getId();
+    public long getSingerId() {
+        return singer.getId();
     }
 
     @NotNull
-    public String getStatus() {
+    public Config.Step getStatus() {
         return status;
     }
 
-    public void setStatus(@NotNull String status) {
+    public void setStatus(@NotNull Config.Step status) {
         this.status = status;
+    }
+
+    @NotNull
+    public GameSessionService getGameSessionService() {
+        return gameSessionService;
     }
 }

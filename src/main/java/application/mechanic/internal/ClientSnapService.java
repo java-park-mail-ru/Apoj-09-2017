@@ -1,6 +1,5 @@
 package application.mechanic.internal;
 
-import application.mechanic.Config;
 import application.mechanic.MultiGameSession;
 import application.mechanic.SingleGameSession;
 import application.mechanic.music.Music;
@@ -11,7 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-@SuppressWarnings("MissortedModifiers")
+import static application.mechanic.Config.*;
+
 @Service
 public class ClientSnapService {
     @NotNull
@@ -32,7 +32,7 @@ public class ClientSnapService {
     }
 
     public void pushClientSnap(@NotNull Long user, @NotNull ClientSnap snap) {
-        this.snaps.putIfAbsent(user, snap);
+        this.snaps.put(user, snap);
     }
 
     @Nullable
@@ -41,66 +41,68 @@ public class ClientSnapService {
     }
 
     public void processSnapshotsFor(@NotNull MultiGameSession gameSession) {
-        final String status = gameSession.getStatus();
-        if (status.equals(Config.STEP_1)) {
+        final Step step = gameSession.getStatus();
+        if (step == Step.RECORDING) {
             final ClientSnap snap = getSnapForUser(gameSession.getSingerId());
-            final byte[] data = music.reverseRecord(decoder.decode(snap.getData()));
-            if (snap.getType().equals(Config.STEP_1) && data != null) {
-                serverSnapshotService.sendSnapshotsFor(gameSession, encoder.encodeToString(data));
-                gameSession.setStatus(Config.STEP_1_5);
-            } else {
-                throw new RuntimeException("Server error");
+            if (snap != null) {
+                final byte[] data = music.reverseRecord(decoder.decode(snap.getData().substring(22)));
+                if (Step.valueOf(snap.getType()) == Step.RECORDING) {
+                    gameSession.setStatus(Step.SECOND_RECORDING);
+                    serverSnapshotService.sendSnapshotsFor(gameSession, encoder.encodeToString(data));
+                } else {
+                    throw new RuntimeException("Server error");
+                }
             }
         }
-        if (status.equals(Config.STEP_1_5)) {
+        if (step == Step.SECOND_RECORDING) {
             final ClientSnap snap = getSnapForUser(gameSession.getListenerId());
-            final byte[] data = music.reverseRecord(decoder.decode(snap.getData()));
-            if (snap.getType().equals(Config.STEP_1_5) && data != null) {
-                serverSnapshotService.sendSnapshotsFor(gameSession, encoder.encodeToString(data));
-                gameSession.setStatus(Config.STEP_2);
-            } else {
-                throw new RuntimeException("Server error");
+            if (snap != null) {
+                final byte[] data = music.reverseRecord(decoder.decode(snap.getData().substring(22)));
+                if (Step.valueOf(snap.getType()) == Step.SECOND_RECORDING) {
+                    gameSession.setStatus(Step.LISTENING);
+                    serverSnapshotService.sendSnapshotsFor(gameSession, encoder.encodeToString(data));
+                } else {
+                    throw new RuntimeException("Server error");
+                }
             }
         }
-        if (status.equals(Config.STEP_2)) {
+        if (step == Step.LISTENING) {
             final ClientSnap snap = getSnapForUser(gameSession.getListenerId());
-            final byte[] data = music.reverseRecord(decoder.decode(snap.getData()));
-            if (snap.getType().equals(Config.STEP_2) && data != null) {
-                gameSession.setStatus(Config.FINAL_STEP);
-                gameSession.setResult(snap.getData().toLowerCase().equals(gameSession.getSongName().toLowerCase()));
-            } else {
-                throw new RuntimeException("Server error");
+            if (snap != null) {
+                if (Step.valueOf(snap.getType()) == Step.LISTENING) {
+                    gameSession.setStatus(Step.RESULT);
+                    gameSession.setResult(snap.getData().toLowerCase().equals(gameSession.getSongName().toLowerCase()));
+                } else {
+                    throw new RuntimeException("Server error");
+                }
             }
         }
     }
 
     public void processSnapshotsFor(@NotNull SingleGameSession gameSession) {
-        final ClientSnap snap = getSnapForUser(gameSession.getUserId());
-        snaps.remove(gameSession.getUserId());
+        final ClientSnap snap = getSnapForUser(gameSession.getSingerId());
         if (snap != null) {
-            switch (snap.getType()) {
-                case Config.STEP_1:
-                    final byte[] data = music.reverseRecord(decoder.decode(snap.getData().substring(22)));
-                    if (gameSession.getStatus().equals(Config.STEP_1) && data != null) {
-                        gameSession.setStatus(Config.STEP_2);
-                        serverSnapshotService.sendSnapshotsFor(gameSession, encoder.encodeToString(data));
-                    } else {
-                        throw new RuntimeException("Server error");
-                    }
-                    break;
-                case Config.STEP_2:
-                    if (gameSession.getStatus().equals(Config.STEP_2)) {
-                        gameSession.setStatus(Config.FINAL_STEP);
-                        gameSession.setResult(snap.getData().toLowerCase().equals(gameSession.getSongName().toLowerCase()));
-                    } else {
-                        throw new RuntimeException("Server error");
-                    }
-                    break;
-                default:
+            final Step step = gameSession.getStatus();
+            if (step == Step.RECORDING) {
+                final byte[] data = music.reverseRecord(decoder.decode(snap.getData().substring(22)));
+                if (Step.valueOf(snap.getType()) == Step.RECORDING) {
+                    gameSession.setStatus(Step.LISTENING);
+                    serverSnapshotService.sendSnapshotsFor(gameSession, encoder.encodeToString(data));
+                } else {
                     throw new RuntimeException("Server error");
+                }
+            }
+            if (step == Step.LISTENING) {
+                if (Step.valueOf(snap.getType()) == Step.LISTENING) {
+                    gameSession.setStatus(Step.RESULT);
+                    gameSession.setResult(snap.getData().toLowerCase().equals(gameSession.getSongName().toLowerCase()));
+                } else {
+                    throw new RuntimeException("Server error");
+                }
             }
         }
     }
+
 
     public void clearForUser(Long userProfileId) {
         snaps.remove(userProfileId);

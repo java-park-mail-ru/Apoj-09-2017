@@ -6,6 +6,7 @@ import application.mechanic.avatar.Player;
 import application.mechanic.music.Music;
 import application.mechanic.requests.FinishGame;
 import application.models.User;
+import application.services.AccountService;
 import application.websocket.RemotePointService;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -21,12 +22,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import application.mechanic.MultiGameSession;
 
-@SuppressWarnings("MissortedModifiers")
 @Service
 public class GameSessionService {
     @NotNull
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSessionService.class.getSimpleName());
-
     @NotNull
     private final Map<Long, MultiGameSession> multiUsersMap = new ConcurrentHashMap<>();
     @NotNull
@@ -42,16 +41,20 @@ public class GameSessionService {
     @NotNull
     private final GameInitService gameInitService;
     @NotNull
+    private final AccountService accountService;
+    @NotNull
     private final Music music;
 
     public GameSessionService(@NotNull RemotePointService remotePointService,
                               @NotNull ClientSnapService clientSnapshotsService,
                               @NotNull GameInitService gameInitService,
+                              @NotNull AccountService accountService,
                               @NotNull Music music) {
         this.remotePointService = remotePointService;
         this.clientSnapshotsService = clientSnapshotsService;
         this.gameInitService = gameInitService;
         this.music = music;
+        this.accountService = accountService;
     }
 
     public Set<MultiGameSession> getMultiSessions() {
@@ -63,9 +66,9 @@ public class GameSessionService {
     }
 
     public void startMultiGame(@NotNull User first, @NotNull User second) {
-        final Player singer = new Player(first, Config.SINGER_ROLE);
-        final Player listener = new Player(second, Config.LISTENER_ROLE);
-        final MultiGameSession gameSession = new MultiGameSession(singer, listener, music.getSongName(), Config.STEP_1, this);
+        final Player singer = new Player(first, Config.Role.SINGER);
+        final Player listener = new Player(second, Config.Role.LISTENER);
+        final MultiGameSession gameSession = new MultiGameSession(singer, listener, music.getSongName(), Config.Step.RECORDING, this);
         multiGameSessions.add(gameSession);
         multiUsersMap.put(first.getId(), gameSession);
         multiUsersMap.put(second.getId(), gameSession);
@@ -74,8 +77,8 @@ public class GameSessionService {
     }
 
     public void startSingleGame(@NotNull User user) {
-        final Player player = new Player(user, Config.SINGER_ROLE);
-        final SingleGameSession gameSession = new SingleGameSession(player, music.getSongName(), Config.STEP_1, this);
+        final Player player = new Player(user, Config.Role.SINGER);
+        final SingleGameSession gameSession = new SingleGameSession(player, music.getSongName(), Config.Step.RECORDING, this);
         singleGameSessions.add(gameSession);
         singleUsersMap.put(user.getId(), gameSession);
         gameInitService.initGameFor(gameSession);
@@ -88,7 +91,6 @@ public class GameSessionService {
 
     public void forceTerminate(@NotNull MultiGameSession gameSession, boolean error) {
         final boolean exists = multiGameSessions.remove(gameSession);
-        gameSession.setFinished();
         multiUsersMap.remove(gameSession.getSinger().getId());
         multiUsersMap.remove(gameSession.getListener().getId());
         final CloseStatus status;
@@ -114,8 +116,7 @@ public class GameSessionService {
 
     public void forceTerminate(@NotNull SingleGameSession gameSession, boolean error) {
         final boolean exists = singleGameSessions.remove(gameSession);
-        gameSession.setFinished();
-        singleUsersMap.remove(gameSession.getPlayer().getId());
+        singleUsersMap.remove(gameSession.getSinger().getId());
         final CloseStatus status;
         if (error) {
             status = CloseStatus.SERVER_ERROR;
@@ -123,9 +124,9 @@ public class GameSessionService {
             status = CloseStatus.NORMAL;
         }
         if (exists) {
-            remotePointService.cutDownConnection(gameSession.getPlayer().getId(), status);
+            remotePointService.cutDownConnection(gameSession.getSinger().getId(), status);
         }
-        clientSnapshotsService.clearForUser(gameSession.getPlayer().getId());
+        clientSnapshotsService.clearForUser(gameSession.getSinger().getId());
         final String logger;
         if (error) {
             logger = " was terminated due to error. ";
@@ -136,42 +137,54 @@ public class GameSessionService {
     }
 
     public boolean checkHealthState(@NotNull MultiGameSession gameSession) {
-        return gameSession.getPlayers().stream().map(Player::getId).allMatch(remotePointService::isConnected);
+        final long singer = gameSession.getSingerId();
+        final long listener = gameSession.getListenerId();
+        final boolean singerConnection = remotePointService.isConnected(singer);
+        final boolean listenerConnection = remotePointService.isConnected(listener);
+        try {
+            if (!singerConnection && !listenerConnection) {
+                return false;
+            }
+            if (!singerConnection) {
+                remotePointService.sendMessageToUser(listener, new FinishGame());
+                return false;
+            }
+            if (!listenerConnection) {
+                remotePointService.sendMessageToUser(singer, new FinishGame());
+                return false;
+            }
+        } catch (IOException ex) {
+            LOGGER.warn(String.format("Failed to send Leave message to user %s", ex));
+            return false;
+        }
+        return true;
     }
 
     public boolean checkHealthState(@NotNull SingleGameSession gameSession) {
-        return remotePointService.isConnected(gameSession.getUserId());
+        return remotePointService.isConnected(gameSession.getSingerId());
     }
 
     public void finishMultiGame(@NotNull MultiGameSession gameSession) {
-        gameSession.setFinished();
         final boolean result = gameSession.getResult();
+        int score = accountService.updateMScore(gameSession.getSingerId(), result);
+        sendMessage(gameSession.getSingerId(), result, score);
+        score = accountService.updateMScore(gameSession.getListenerId(), result);
+        sendMessage(gameSession.getListenerId(), result, score);
 
-        try {
-            remotePointService.sendMessageToUser(gameSession.getSinger().getId(), new FinishGame(result));
-        } catch (IOException ex) {
-            LOGGER.warn(String.format("Failed to send FinishGame message to user %s",
-                    gameSession.getSinger().getUser().getLogin()), ex);
-        }
-
-        try {
-            remotePointService.sendMessageToUser(gameSession.getListener().getId(), new FinishGame(result));
-        } catch (IOException ex) {
-            LOGGER.warn(String.format("Failed to send FinishGame message to user %s",
-                    gameSession.getListener().getUser().getLogin()), ex);
-        }
     }
 
     public void finishSingleGame(@NotNull SingleGameSession gameSession) {
-        gameSession.setFinished();
         final boolean result = gameSession.getResult();
+        final int score = accountService.updateSScore(gameSession.getSingerId(), result);
+        sendMessage(gameSession.getSingerId(), result, score);
+    }
 
+    public void sendMessage(Long userId, boolean result, int score) {
         try {
-            LOGGER.info(String.valueOf(result));
-            remotePointService.sendMessageToUser(gameSession.getPlayer().getId(), new FinishGame(result));
+            remotePointService.sendMessageToUser(userId, new FinishGame(result, score));
         } catch (IOException ex) {
-            LOGGER.warn(String.format("Failed to send FinishGame message to user %s",
-                    gameSession.getPlayer().getUser().getLogin()), ex);
+            LOGGER.warn(String.format("Failed to send FinishGame message to user %d",
+                    userId), ex);
         }
     }
 }

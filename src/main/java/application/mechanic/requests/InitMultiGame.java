@@ -5,7 +5,7 @@ import application.websocket.Message;
 
 public class InitMultiGame {
     public static final class Request extends Message {
-        private String type = Config.STEP_0;
+        private String type = Config.Step.PRE_GAME_DATA.toString();
         private String role;
         private String secondUser;
 
@@ -18,16 +18,12 @@ public class InitMultiGame {
             return type;
         }
 
-        public void setType(String type) {
-            this.type = type;
-        }
-
         public String getRole() {
             return role;
         }
 
-        public void setRole(String role) {
-            this.role = role;
+        public String getSecondUser() {
+            return secondUser;
         }
     }
 }

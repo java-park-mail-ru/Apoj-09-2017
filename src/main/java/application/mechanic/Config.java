@@ -1,13 +1,9 @@
 package application.mechanic;
 
 public class Config {
-    public static final String SINGLE_MODE = "singleplayer";
-    public static final String MULTI_MODE = "multiplayer";
-    public static final String SINGER_ROLE = "singer";
-    public static final String LISTENER_ROLE = "listener";
-    public static final String STEP_0 = "preGameData";
-    public static final String STEP_1 = "Recording";
-    public static final String STEP_1_5 = "secondRecording";
-    public static final String STEP_2 = "Listening";
-    public static final String FINAL_STEP = "Result";
+    public enum Mode { SINGLE, MULTI }
+
+    public enum Role { SINGER, LISTENER }
+
+    public enum Step { PRE_GAME_DATA, RECORDING, SECOND_RECORDING, LISTENING, RESULT, LEAVE }
 }

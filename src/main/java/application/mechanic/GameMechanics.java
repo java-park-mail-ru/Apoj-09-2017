@@ -15,7 +15,6 @@ import org.springframework.web.socket.CloseStatus;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-@SuppressWarnings("MissortedModifiers")
 @Service
 public class GameMechanics {
     @NotNull
@@ -56,13 +55,12 @@ public class GameMechanics {
         }
         final User user = accountService.getUser(userId);
         if (user != null) {
-            if (mode.equals(Config.SINGLE_MODE)) {
+            if (Config.Mode.valueOf(mode) == Config.Mode.SINGLE) {
                 singleWaiters.add(user);
-            } else if (mode.equals(Config.MULTI_MODE)) {
+                LOGGER.info(String.format("User %s added to the single waiting list", user.getLogin()));
+            } else if (Config.Mode.valueOf(mode) == Config.Mode.MULTI) {
                 multiWaiters.add(user);
-            }
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(String.format("User %s added to the waiting list", user.getLogin()));
+                LOGGER.info(String.format("User %s added to the multi waiting list", user.getLogin()));
             }
         }
     }
@@ -78,7 +76,13 @@ public class GameMechanics {
             matchedPlayers.add(candidate);
             if (matchedPlayers.size() == 2) {
                 final Iterator<User> iterator = matchedPlayers.iterator();
-                gameSessionService.startMultiGame(iterator.next(), iterator.next());
+                final User user1 = iterator.next();
+                final User user2 = iterator.next();
+                if (user1.getId() != user2.getId()) {
+                    gameSessionService.startMultiGame(user1, user2);
+                } else {
+                    multiWaiters.add(user1);
+                }
                 matchedPlayers.clear();
             }
         }
@@ -168,7 +172,7 @@ public class GameMechanics {
     }
 
 
-    private boolean insureCandidate(User candidate) {
+    private boolean insureCandidate(@NotNull User candidate) {
         return remotePointService.isConnected(candidate.getId())
                 && accountService.getUser(candidate.getId()) != null;
     }

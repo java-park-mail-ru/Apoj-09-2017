@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
-@SuppressWarnings("MissortedModifiers")
 @Component
 public class JoinGameHandler extends MessageHandler<JoinGame.Request> {
     @NotNull

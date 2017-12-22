@@ -22,15 +22,11 @@ public class GameMessageHandlerContainer implements MessageHandlerContainer {
             throw new HandleException("no handler for message of " + message.getClass().getName() + " type");
         }
         messageHandler.handleMessage(message, forUser);
-        LOGGER.trace("message handled: type =[" + message.getClass().getName() + ']');
+        LOGGER.trace("message handled: type =[{}]", message.getClass().getName());
     }
 
     @Override
-    public <T extends Message> void registerHandler(@NotNull Class<T> clazz, MessageHandler<T> handler) {
+    public <T extends Message> void registerHandler(@NotNull Class<T> clazz, @NotNull MessageHandler<T> handler) {
         handlerMap.put(clazz, handler);
-    }
-
-    public Map<Class<?>, MessageHandler<?>> getHandlerMap() {
-        return handlerMap;
     }
 }
