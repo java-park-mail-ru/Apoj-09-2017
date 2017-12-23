@@ -29,6 +29,12 @@ public class JoinGameHandler extends MessageHandler<JoinGame.Request> {
 
     @Override
     public void handle(@NotNull JoinGame.Request message, @NotNull Long forUser) {
-        gameMechanics.addUser(forUser, message.getMode());
+        String mode = message.getMode();
+        if (mode.equals("singleplayer")) {
+            mode = "SINGLE";
+        } else if (mode.equals("multiplayer")) {
+            mode = "MULTI";
+        }
+        gameMechanics.addUser(forUser, mode);
     }
 }
